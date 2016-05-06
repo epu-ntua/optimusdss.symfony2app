@@ -78,84 +78,13 @@ swiftmailer:
     spool:     { type: memory }
 
 parameters:
-    optimus_instance: Savona
+    optimus_instance: Sant Cugat
     optimus_endpoint: "http://optimusdss.epu.ntua.gr:8890/sparql"
-    optimus_graph: "http://optimus_savona"
+    optimus_graph: "http://optimus_santcugat"
 
-    OPTIMUS_SENSORS: 14
+    OPTIMUS_SENSORS: 0
 
-    OPTIMUS_SENSOR_1: 
-        url:  "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/sunnyportal_energy_production"
-        name:  Energy production
-        display:  yes
-        color:  "#594a0"	
-    OPTIMUS_SENSOR_2: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/sunnyportal_solar_radiation"
-        name: Solar radiation
-        display: yes
-        color: "#f669a4"
-    OPTIMUS_SENSOR_3: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_acconsumption"
-        name: Acconsumption
-        display: yes
-        color: "#19c5b5"
-    OPTIMUS_SENSOR_4: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_totalenergy"
-        name: Total energy
-        display: yes
-        color: "#afaae1"
-    OPTIMUS_SENSOR_5: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_unifler1consumption"
-        name: Unifler consumption - 1
-        display: yes
-        color: "#82BEE5"
-    OPTIMUS_SENSOR_6: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_unifler2consumption"
-        name: Unifler consumption - 2
-        display: no
-        color: "#82BEE5"
-    OPTIMUS_SENSOR_7: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_2ndlightsconsumption"
-        name: Light consumption - 2
-        display: yes
-        color: "#F0ABA1"
-    OPTIMUS_SENSOR_8: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_3ndlightsconsumption"
-        name: Light consumption - 3
-        display: no
-        color: "#82BEE5"
-    OPTIMUS_SENSOR_9: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_2ndtotalconsumption"
-        name: Total consumption - 2
-        display: yes
-        color: "#F7548D"
-    OPTIMUS_SENSOR_10: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_3ndtotalconsumption"
-        name: Total consumption - 3
-        display: no
-        color: "#82BEE5"
-    OPTIMUS_SENSOR_11: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_temperature1"
-        name: Temperature - 1
-        display: yes
-        color: "#F9E654"
-    OPTIMUS_SENSOR_12: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_temperature2"
-        name: Temperature - 2
-        display: no
-        color: "#82BEE5"
-    OPTIMUS_SENSOR_13: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_humidity"
-        name: Humidity
-        display: yes
-        color: "#867ADD"
-    OPTIMUS_SENSOR_14: 
-        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_co2"
-        name: CO2
-        display: yes
-        color: "#47CDB5"
-
-    optimus_actionPlans: 7
+    optimus_actionPlans: 6
 
     action_plan_1:
         name: "Scheduling and management of the occupancy"
@@ -170,30 +99,24 @@ parameters:
         description: "Support of the energy manager in adjusting the temperature set-point, taking into consideration thermal comfort parameters. The target is to optimize energy use, while maintaining comfort levels in accepted ranges (using the Predicted Mean Vote - PMV - index)."
 
     action_plan_3:
-        name: "Scheduling the set point temperature – adaptive comfort concept"
-        status: 0
-        type: 3
-        description: "Reduction of the building energy consumption and/or optimizing the thermal comfort by setting the indoor set point temperature according to adaptive comfort concept."
-
-    action_plan_4:
         name: "Optimum Start/Stop of the Heating/Cooling System"
         status: 0
         type: 4
         description: "Optimization of the boost time of the heating/cooling system taking into account the forecasting of the outdoor air temperature and the occupancy of the building."
 
-    action_plan_5:
+    action_plan_4:
         name: "PV Maintenance "
         status: 0
         type: 5
         description: "Detection of the need for maintenance of the PV system and communication with the user with an alert prompting for appropriate maintenance actions; identification of abnormalities and possible problems can be facilitated."
 
-    action_plan_6:
+    action_plan_5:
         name: "Scheduling of the Sale/Consumption of the RES Electricity Produced"
         status: 0
         type: 6
         description: "Optimization of selling/self-consumption of electricity produced by a PV system considering different scenarios of energy market (green strategy, finance strategy, intermediate strategy, peak strategy, load factor strategy)."
 
-    action_plan_7:
+    action_plan_6:
         name: "Scheduling of the Energy Flows"
         status: 0
         type: 7
