@@ -15,11 +15,6 @@ if (function_exists('date_default_timezone_get')) {
 
 class ARC2 {
 
-	function __construct()
-	{
-		return true;
-	}
-
   static function getVersion() {
     return '2011-12-01';
   }
