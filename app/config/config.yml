@@ -155,7 +155,7 @@ parameters:
         display: yes
         color: "#47CDB5"
 
-    optimus_actionPlans: 7
+    optimus_actionPlans: 6
 
     action_plan_1:
         name: "Scheduling and management of the occupancy"
@@ -170,34 +170,28 @@ parameters:
         description: "Support of the energy manager in adjusting the temperature set-point, taking into consideration thermal comfort parameters. The target is to optimize energy use, while maintaining comfort levels in accepted ranges (using the Predicted Mean Vote - PMV - index)."
 
     action_plan_3:
-        name: "Scheduling the set point temperature – adaptive comfort concept"
-        status: 0
-        type: 3
-        description: "Reduction of the building energy consumption and/or optimizing the thermal comfort by setting the indoor set point temperature according to adaptive comfort concept."
-
-    action_plan_4:
         name: "Optimum Start/Stop of the Heating/Cooling System"
         status: 0
         type: 4
         description: "Optimization of the boost time of the heating/cooling system taking into account the forecasting of the outdoor air temperature and the occupancy of the building."
 
-    action_plan_5:
+    action_plan_4:
         name: "PV Maintenance "
-        status: 0
+        status: 1
         type: 5
         description: "Detection of the need for maintenance of the PV system and communication with the user with an alert prompting for appropriate maintenance actions; identification of abnormalities and possible problems can be facilitated."
 
-    action_plan_6:
+    action_plan_5:
         name: "Scheduling of the Sale/Consumption of the RES Electricity Produced"
         status: 0
         type: 6
         description: "Optimization of selling/self-consumption of electricity produced by a PV system considering different scenarios of energy market (green strategy, finance strategy, intermediate strategy, peak strategy, load factor strategy)."
 
-    action_plan_7:
-        name: "Scheduling of the Energy Flows"
+    action_plan_6:
+        name: "Scheduling the battery use towards peak shaving and energy cost optimization"
         status: 0
         type: 7
-        description: "Efficient Management of Energy Flows linking buildings (e.g. Savona campus thermal and electrical demands), RES production (e.g. PV and CSP production) and dispatchable sources (e.g. storage)."
+        description: "Considering a priority series according to which the energy source to cover the demand is defined, (batteries, PV production or the grid), this action plan uses the outcome of the energy demand, RES production and energy prices prediction models, in order to estimate the energy purchased from the grid. It identifies power peaks during each day and suggests charging or discharging of the batteries, in order to avoid peak penalties and make use of less expensive pricing zones. In case of shiftable loads, additional suggestions are made, in order to redistribute energy demand and further decrease the energy cost of the building."
 
     energy_demand_threshold_percentage: 5
     daily_penalty_energy_threshold: 100000
