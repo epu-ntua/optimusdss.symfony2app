@@ -1,0 +1,109 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+   		
+	<div id="left" style="">
+		
+		
+		<p class="titleContentDescription"><strong>{{ optimus_instance }} </strong></p>				
+		<div id="attributesContentDescription">
+			<p><span>Buildings:</span>2</p>
+			<p><span>Total surface:</span> 18.593m2 </p>
+			<p><span>Renewable generation:</span> PV plant (23 MWh)</p>
+			<p><span>Thermal power:</span> 850 kW </p>
+			<p><span>Electrical power:</span> 440 kW</p>
+			<p><span>Total energy consumption:</span> 2157kWh/m2</p>
+			<p><span>CO2 emissions:</span> PV plant (23 MWh)</p>
+		</div>
+	</div>
+	
+	<div id="right" style="border:0px;">
+		<div id="topRight" style="background-color:#e8eef8; margin-bottom:20px;">
+			<p><strong><a href="{{ path('adminBuilding') }}">{{ optimus_instance }}</a> > {{ nameBuilding }} > {%trans%} Actions Plans {%endtrans%}</strong></p>					
+		</div>
+		<div id="centerRight">	
+			
+			<div>
+				<div style="overflow:hidden;">
+					<div style="background-color:#ddd; overflow:hidden; cursor:pointer;">
+						<p class="titleContentDescription" style="float:left;"><strong>{%trans%} Actions Plans {%endtrans%}</strong></p>
+					</div>
+					
+					<div style="background-color:#eee; overflow:hidden; margin-bottom:10px;">
+						<div style="float:left; border-right:1px solid #ddd; width:100%; font-size: 12px;">
+							<table border="0" style="background-color: #fff;font-size:12px; border:1px solid #e4e4e4; box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);">
+								<thead style="background-color:#fff; font-weight:bold; border-bottom:1px solid #e4e4e4; height:40px;">
+									<tr style="background-color: #f9f9f9; border-color: #eee;">
+										<td style="text-align:center;font-size:11px; border-right:0px; padding: 3px;">Id</td>
+										<td style="text-align:center;font-size:11px; border-right:0px; padding: 3px;">{%trans%} Name {%endtrans%}</td>
+										<td style="text-align:center;font-size:11px; border-right:0px; padding: 3px;">{%trans%} Description {%endtrans%}</td>
+										<td style="text-align:center;font-size:11px; border-right:0px; padding: 3px;">{%trans%} Enable {%endtrans%}</td>
+										<td style="text-align:center;font-size:11px; border-right:0px; padding: 3px;">Status {%trans%} Mappings {%endtrans%}</td>
+										<td style="text-align:center;font-size:11px; border-right:0px; padding: 3px;">{%trans%} Mappings {%endtrans%}</td>
+										<td style="text-align:center;font-size:11px; border-right:0px; padding: 3px;">{%trans%} Actions {%endtrans%}</td>
+									</tr>
+								</thead>
+								<tbody>
+									{% for actionPlan in actionPlans %}
+										<tr style="border-bottom:1px solid #e4e4e4;">
+											<td style="border-right:0px; padding: 3px;">{{ actionPlan.id }}</td>
+											<td style="border-right:0px; padding: 3px;">{{ actionPlan.name }}</td>
+											<td style="border-right:0px; padding: 3px;">-----</td>
+											<td style="border-right:0px; padding: 3px;">{{ actionPlan.status }}</td>
+											
+											<td style="border-right:0px; padding: 3px;">{{ actionPlan.mappings }}</td>
+											
+											<td style="border-right:0px; padding: 3px;"><p class="buttonBig" style="float:right; margin:0;" onclick="location.href='{{path('actionPlan_mapping', {'idBuilding': idBuilding, 'idActionPlan':actionPlan.id} )}}';">{%trans%} view mapping {%endtrans%}</p></td>
+											<td style="border-right:0px; padding: 3px;">
+												<p id="editActionPlan_{{actionPlan.id}}" class="buttonBig" style="float:right; margin:0;">{%trans%} edit {%endtrans%}</p>
+											</td>
+										</tr>
+											<div id="editActionPlanForm_{{actionPlan.id}}">
+												{{ render(controller('OptimusOptimusBundle:AdminActionPlan:edit', {'idBuilding': idBuilding, 'idActionPlan':actionPlan.id})) }}
+											</div>
+									{% endfor %}
+								</tbody>
+							</table>
+
+						</div>																
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+
+<script type="text/javascript">
+		$(function() {
+			$('.buttonBig').button();
+			
+			{% for actionPlan in actionPlans %} 
+			
+				$( "#editActionPlanForm_{{actionPlan.id}}" ).dialog({
+					autoOpen: false,
+					//height: 300,
+					width: 400,
+					modal: true,
+					buttons: {	
+						
+					},
+					close: function() {					
+						//allFields.removeClass( "ui-state-error" );
+					}
+				});
+				
+				$( "#editActionPlan_{{actionPlan.id}}").button().on( "click", function() {
+					$( "#editActionPlanForm_{{actionPlan.id}}" ).dialog( "open" );
+				});
+			{% endfor %}
+			
+		});
+</script>
+
+{% endblock %}

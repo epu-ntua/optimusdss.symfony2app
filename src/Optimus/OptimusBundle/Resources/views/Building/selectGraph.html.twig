@@ -1,0 +1,555 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+			
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.dashes.js') }}"></script>
+	<script language="javascript" type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.stack.js') }}"></script>
+{% endblock %}
+
+{% block content %} 
+
+<script type="text/javascript">
+/* ---------------- Graph Stack---------------*/
+	$(function(){
+		var stack = true,	bars = false,	lines = true,	steps = false;
+			
+		var stackSensors=["Energy production", "Total consumption", "CO2"];
+	
+		{% set maxY=0 %}
+		{% set minY=0 %}
+		{% set startPredictor=startDate | date('F j, Y H:i:s') %}
+		{% set endPredictor=endDate | date('F j, Y H:i:s') %}
+		{% set initPred = true %}
+		var dataset=[];
+		var aHeight = [];
+		aHeight["Energy cost"] = 70;
+		aHeight["CO2"] = 70;
+		aHeight["Energy consumption"] = 260;
+		aHeight["Produced renewable energy"] = 50;
+			
+		{% for z in mappingVariable %}
+			{% set lp_z=loop.index0 %}				
+
+			var dataVariable=[];			
+			
+			{% if mappingVariable[lp_z].data is not empty %}
+				{% for j in mappingVariable[lp_z].data %}
+					{% set lp_j=loop.index0 %}							
+					
+					
+					{% set date = mappingVariable[lp_z].data[lp_j].date | date("F j, Y H:i:s") %}
+					
+					var value = 0;
+					{% if mappingVariable[lp_z].maxValue != 0 %}
+						value = {{mappingVariable[lp_z].data[lp_j].value}} * aHeight["{{mappingVariable[lp_z].name}}"] / {{mappingVariable[lp_z].maxValue}}
+
+					{% endif %}					 
+					
+					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(2)+" {{mappingVariable[lp_z].units}}"]);	
+
+					//dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  {{mappingVariable[lp_z].data[lp_j].value}} {{mappingVariable[lp_z].units}}"]);			
+					
+				{% endfor %}		
+			{% endif %}
+			
+			dataset.push({data:dataVariable, label: "{{mappingVariable[lp_z].name}}", color:"{{mappingVariable[lp_z].color}}", dashes: { show: false, dashLength:[3, 3], lineWidth: 1, color:"{{mappingVariable[lp_z].color}}"}, shadowSize: 0, stack: {{mappingVariable[lp_z].stack}}});
+		
+		{% endfor %}	
+		
+		console.log(dataset);
+			
+		var plot2 = $.plot("#placeholder_stack", dataset,{
+			series: {
+				stack: stack,
+				lines: {
+					show: lines,
+					fill: true,
+					steps: steps,
+					lineWidth: 1.1,
+					strokeStyle: "#eee"
+				},
+				points: {
+					show: false
+				},
+				shadowSize: 1
+			}, 
+			 
+			grid: {
+				canvasText:{show:true},
+				hoverable: true,
+				backgroundColor: { colors: [ "#fff", "#fff" ] },
+				borderColor: "#bbb",
+				borderWidth: {
+					top: 1,
+					right: 1,
+					bottom: 1,
+					left: 1
+				},
+				/*markings: [
+					{ color: "#ddd", fillColor:0.1, lineWidth: 1, xaxis: { from:  new Date("{{ actualDate | date('F j, Y') }}"), to: new Date("{{ endDate | date('F j, Y') }}") } }
+				]*/
+			},
+			legend: {
+				show: false
+			},
+			crosshair: {
+				mode: "x"
+			},				
+			xaxis:{					
+					mode: "time", min: new Date("{{ startDate | date('F j, Y') }}"), max: new Date("{{ lastDay | date('F j, Y') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					show:true,
+					timeformat: "%a <br/> %d.%m",
+					//labelWidth: 50,
+					//minTickSize: [1, "day"], reserveSpace:true						
+				},
+			yaxis:{min:{{ minY }}, max: 400, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false},
+			//pan:{interactive:true, cursor: "move", frameRate: 20},
+			/*selection: {
+				mode: "x"
+			}*/
+		});	
+		
+		$("#placeholder_stack").bind("plothover", function (event, pos, item) {
+					if (item) {					
+						document.body.style.cursor = 'pointer';
+						if (previousPoint != item.dataIndex) {
+							previousPoint = item.dataIndex;
+							
+							//console.log(item);
+							$("#tooltip").remove();
+							var x = item.datapoint[0],
+								y = item.datapoint[1];
+								z = item.series.data[item.dataIndex+1][2];
+							showTooltip(item.pageX, item.pageY, z);
+						}
+					}else{
+						document.body.style.cursor = 'default';
+						$("#tooltip").remove();
+						previousPoint = null;
+					}
+				});
+		
+		plot2.setSelection({
+			xaxis: {
+				from: new Date("2015-05-11"), 
+				to: new Date("2015-05-14") 
+			}
+		});
+		
+		
+		/*------------------------------------------*/ 
+		
+		/* Graph Stack BARS User Activity */
+		var stack = true,	bars = true,	lines = false,	steps = false;
+			
+		var stackSensors=["Energy production", "Total consumption", "CO2"];
+		
+		var dataset=[];
+		var dAccepts = [];	
+		var dDeclines = [];	
+		var dUnknows = [];	
+		
+		{% set maxY=0 %}		
+		{% set valAccepts=0 %}		
+		{% set valDeclines=0 %}		
+		{% set valUnknows=0 %}		
+		
+		{% for z in dataDashboard[0].valuesDay %}
+			
+			{% set lp_z=loop.index0 %}
+			
+			{% set date = dataDashboard[0].valuesDay[lp_z].date | date("F j, Y") %}
+			
+			{% set valAccepts=dataDashboard[0].valuesDay[lp_z].accepts %}
+			{% set valDeclines=dataDashboard[0].valuesDay[lp_z].declines %}
+			{% set valUnknows=dataDashboard[0].valuesDay[lp_z].unknows %}
+			
+			{% set sumDay=dataDashboard[0].valuesDay[lp_z].accepts + dataDashboard[0].valuesDay[lp_z].declines + dataDashboard[0].valuesDay[lp_z].unknows %}
+			
+			{% if maxY < sumDay %}
+				{% set maxY=sumDay %}
+			{% endif %}
+			
+			var strAccepts="Accepts "+{{valAccepts}}+".";
+			var strDeclines="Declines "+{{valDeclines}}+".";
+			var strUnknows="Unknows "+{{valUnknows}}+".";
+			
+			dAccepts.push([new Date("{{date}}"), {{valAccepts}}, strAccepts]);
+			
+			dDeclines.push([new Date("{{date}}"), {{valDeclines}}, strDeclines]);
+			
+			dUnknows.push([new Date("{{date}}"), {{valUnknows}}, strUnknows]);
+			
+		{% endfor %}
+		
+		dataset.push({data:dAccepts, label: "Accepts", color:"#00ff00", dashes: { show: false}, shadowSize: 0, stack: 0 });
+		dataset.push({data:dDeclines, label: "Declines", color:"#ff0000", dashes: { show: false}, shadowSize: 0, stack: 0 });
+		dataset.push({data:dUnknows, label: "Unknows", color:"#ffff00",  dashes: { show: false}, shadowSize: 0, stack: 0 });
+		
+		console.log(dataset);
+			
+		var plot2 = $.plot("#placeholder_stackPila", dataset,{
+			series: {
+				stack: stack,
+				lines:{show:false},
+				bars: {
+					lineWidth: 0.5,
+					show: bars,
+					barWidth: 24 * 60 * 60 * 600
+				},				
+			}, 			 
+			grid: {
+				canvasText:{show:true},
+				hoverable: true,
+				backgroundColor: { colors: [ "#fff", "#fff" ] },
+				borderColor: "#bbb",
+				borderWidth: {
+					top: 1,
+					right: 1,
+					bottom: 1,
+					left: 1
+				},				
+			},
+			legend: {
+				show: false
+			},							
+			xaxis:{					
+					mode: "time", min: new Date("{{dataDashboard[0].valuesDay[0].date | date('F j, Y')}}"), 
+					max: new Date("{{ endDate | date('F j, Y') }}"), 
+					//tickLength: 5, 
+					font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					show:true,
+					timeformat: "%a <br/> %d.%m", //\n 
+					//minTickSize: [1, "day"],
+					//labelWidth: 50, reserveSpace:true						
+				},
+			yaxis:{min:0, max: {{maxY}}, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[0, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false},			
+			
+		});	
+		
+		$("#placeholder_stackPila").bind("plothover", function (event, pos, item) {
+			if (item) {					
+				document.body.style.cursor = 'pointer';
+				if (previousPoint != item.dataIndex) {
+					previousPoint = item.dataIndex;
+					
+					//console.log(item);
+					$("#tooltip").remove();
+					var x = item.datapoint[0],
+						y = item.datapoint[1];
+						z = item.series.data[item.dataIndex][2];
+						console.log(z);
+						//z = item.datapoint[2];
+					showTooltip(item.pageX, item.pageY, z);
+				}
+			}else{
+				document.body.style.cursor = 'default';
+				$("#tooltip").remove();
+				previousPoint = null;
+			}
+		});
+		
+		//Función compartida por todas las gráficas
+		function showTooltip(x, y, contents)
+		{
+			$('<div id="tooltip" style="font-size:10px;">' + contents + '</div>').css( {
+				position: 'absolute',
+				display: 'none',
+				top: y-20,
+				left: x + 10,
+				border: '1px solid #595959',
+				padding: '2px',				
+				'background-color': '#DADADA',
+				opacity: 0.80
+			}).appendTo("body").fadeIn(200);
+		}
+		
+	});	
+					
+		
+</script>
+  
+	<div id="left" style="">
+		
+		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}	
+		{{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding})) }}
+	</div>
+	
+	<div id="right">
+		<div id="topRight">
+			<p><strong><span style="text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > {{ nameBuilding }}</strong></p>						
+		</div>
+		<div id="centerRight">			
+			<div>
+				
+				
+				<!-- Dashboard -->
+				<div style="background-color:#ddd; overflow:hidden;" >
+					<div style="float:left; width:600px;">			
+						<p class="titleContentDescription" style="float:left;"><strong>{%trans%} Dashboard of the {%endtrans%} {{ nameBuilding }}</strong></p>
+						<p style="float:right; text-decoration:underline; cursor:pointer;" onclick="location.href='{{ path('prediction', {'idBuilding':idBuilding}) }}';">Access to monitoring data</p>
+					</div>
+					<div style="float:right;">
+						<!--<p style="margin:3px 10px;"><span style="color:#2e75b6">Status:</span> <span>No action required</span></p>-->
+						
+						<p><span style="color:#2e75b6">{%trans%} Data from {%endtrans%}:</span> <span> {{startDate | date('Y-m-d')}} to {{lastDay | date('Y-m-d')}} </span></p><!--style="margin:3px 10px;"-->
+					</div>
+				</div>
+					
+				<!-- Graph Stack -->
+				<div style="background-color:#eee; overflow:hidden; border-bottom:1px solid #ddd;">
+					<!-- if mapping is not empty => print-->
+					
+					
+					<div style="float:left; width:400px;">
+						<p style="font-size: 11px; font-weight:bold;">DSS indicators</p>
+						{% for key,indicator in globalRTime %}
+							{% if indicator[0] < indicator[1] %}
+								{% set arrow='&#9660;' %}								
+							{% elseif indicator[0] > indicator[1] %}
+								{% set arrow='&#9650;' %}							
+							{% else %}
+								{% set arrow="=" %}						
+							{% endif %}
+							
+							{% if indicator[2] > 0 %}
+								{% set color="#00ff00;" %}
+								
+							{% elseif indicator[2] < 0 %}
+								{% set color="#ff0000;" %}
+							{% else%}
+								{% set color="#44546a;" %}
+							{% endif %}
+							
+							<div style="margin: 5px 10px; overflow: hidden;">
+								<p style="font-size:11px; float:left; margin:0; width:220px;">
+									{% set colorVariable="#fff" %}
+									{% for z in mappingVariable %}
+										{% set lp_z=loop.index0 %}
+										{% if mappingVariable[lp_z].name==key %}
+											{% set colorVariable=mappingVariable[lp_z].color %}
+										{% endif %}
+									{% endfor %}
+									<span style="margin:2px 5px 2px 0; width:10px; height:10px; background-color:{{colorVariable}}; float:left; "></span><span style="color:#2e75b6; margin-right:15px;">{{key}} ({{unitsRTime[key]}})</span>
+								</p>
+								<p style="float:left; margin:0; width:160px; text-align:right;">
+									{{indicator[0]|round(1, 'floor')}} 
+									<span style="color:{{color}}; width:5px;"> {{arrow|raw}}</span>
+									{{indicator[1] |round(1, 'floor')}}
+								</p>
+							</div>
+						{% endfor %}
+					</div>
+					
+					<div style="float:left; width:470px;">
+						<!--{% if mappingVariable is not empty %}
+							<div style="float:left; margin-left:30px; width:100%;">
+								{% for z in mappingVariable %}
+									{% set lp_z=loop.index0 %}
+									<div style="float:left;"><p style="width:14px; height:14px; background-color:{{mappingVariable[lp_z].color}}; float:left; "></p><p style="float:left; margin-left:0; font-size:11px;"> {{mappingVariable[lp_z].name |trans}} </p></div>
+								{% endfor %}
+								
+							</div>
+						{% endif %}-->
+						<div id="placeholder_stack" style="{%if mappingVariable is empty%}display:none;{% endif %} height:120px; float:left; width: 470px;  margin-bottom:10px;">	</div>
+					</div>
+				</div>
+					
+				<!-- Graph Stack User activity -->
+				<div class="propertiesBuilding">
+					<div style="float:left; width:400px;">
+						<p style="font-size: 11px; font-weight:bold;">User activities</p>
+						
+						{% if dataDashboard[0].aWeek['accepts'] < dataDashboard[0].aMonth['accepts'] %}
+							{% set arrowA='&#9660;' %}
+							{% set colorA="#ff0000;" %}							
+						{% elseif dataDashboard[0].aWeek['accepts'] > dataDashboard[0].aMonth['accepts'] %}
+							{% set arrowA='&#9650;' %}
+							{% set colorA="#00ff00;" %}							
+						{% else%}
+							{% set arrowA="=" %}
+							{% set colorA="#44546a;" %}							
+						{% endif %}
+						
+						{% if dataDashboard[0].aWeek['declines'] < dataDashboard[0].aMonth['declines'] %}
+							{% set arrowD='&#9660;' %}
+							{% set colorD="#00ff00;" %}							
+						{% elseif dataDashboard[0].aWeek['declines'] > dataDashboard[0].aMonth['declines'] %}
+							{% set arrowD='&#9650;' %}
+							{% set colorD="#ff0000;" %}							
+						{% else%}
+							{% set arrowD="=" %}
+							{% set colorD="#44546a;" %}							
+						{% endif %}
+						
+						{% if dataDashboard[0].aWeek['unknows'] < dataDashboard[0].aMonth['unknows'] %}
+							{% set arrowU='&#9660;' %}
+							{% set colorU="#00ff00;" %}							
+						{% elseif dataDashboard[0].aWeek['unknows'] > dataDashboard[0].aMonth['unknows'] %}
+							{% set arrowU='&#9650;' %}
+							{% set colorU="#ff0000;" %}							
+						{% else%}
+							{% set arrowU="=" %}
+							{% set colorU="#44546a;" %}							
+						{% endif %}
+						
+						<div style=" font-size:11px; margin: 5px 10px; overflow: hidden;">
+							<p style="font-size:11px; float:left; margin:0; width:220px;">
+								<span style="margin:2px 5px 2px 0; width:10px; height:10px;  background-color:#00ff00; float:left; "></span>
+								<span style="color:#2e75b6; margin-right:15px;">Accepted action plans</span>
+							</p>
+							<p style="float:left; margin:0; width:160px; text-align:right;">
+								{{dataDashboard[0].aWeek['accepts']}} 
+								<span style="color:{{colorA}}; width:5px; font-size:12px;"> {{arrowA|raw}} </span> 
+								{{dataDashboard[0].aMonth['accepts']}}
+							</p>
+						</div>
+						<div style=" font-size:11px; margin: 5px 10px; overflow: hidden;">
+							<p style="font-size:11px; float:left; margin:0; width:220px;">
+								<span style="margin:2px 5px 2px 0; width:10px; height:10px;  background-color:#ff0000; float:left; "></span>
+								<span style="color:#2e75b6; margin-right:15px;">Declined action plans</span>
+							</p>
+							<p style="float:left; margin:0; width:160px; text-align:right;">	
+								{{dataDashboard[0].aWeek['declines']}} 
+								<span style="color:{{colorD}}; width:5px; font-size:12px;"> {{arrowD|raw}} </span> 
+								{{dataDashboard[0].aMonth['declines']}}
+							</p>
+						</div>
+						<div style=" font-size:11px; margin: 5px 10px; overflow: hidden;">
+							<p style="font-size:11px; float:left; margin:0; width:220px;">
+								<span style="margin:2px 5px 2px 0; width:10px; height:10px;  background-color:#ffff00; float:left; "></span>
+								<span style="color:#2e75b6; margin-right:15px;">Inactivity</span>
+							</p>
+							<p style="float:left; margin:0; width:160px; text-align:right;">
+								{{dataDashboard[0].aWeek['unknows']}} 
+								<span style="color:{{colorU}}; width:5px; font-size:12px;"> {{arrowU|raw}} </span> 
+								{{dataDashboard[0].aMonth['unknows']}}
+							</p>
+						</div>
+					</div>
+					
+					<div style="float:left; width:470px;">
+						<!--<div style="float:left; margin-left:30px; width:100%;">								
+								<div style="float:left;">
+									<p style="width:14px; height:14px; background-color:#00ff00; float:left; "></p>
+									<p style="float:left; margin-left:0; font-size:11px;"> Accepts </p>										
+								</div>
+								<div style="float:left;">
+									<p style="width:14px; height:14px; background-color:#ffff00; float:left; "></p>
+									<p style="float:left; margin-left:0; font-size:11px;"> Declines </p>										
+								</div>
+								<div style="float:left;">
+									<p style="width:14px; height:14px; background-color:#ff0000; float:left; "></p>
+									<p style="float:left; margin-left:0; font-size:11px;"> Inactivity </p>										
+								</div>
+						</div>-->
+						<div  id="placeholder_stackPila" style="float:left; width:470px; height:120px; margin-bottom:10px;"></div>
+					</div>
+				</div>
+					
+					
+			
+				
+				
+				<!-- Actions Plans-->
+				<div style="background-color:#ddd; overflow:hidden;">
+					<p class="titleContentDescription"><strong>{%trans%} Action Plans {%endtrans%}</strong></p>							
+				</div>
+				
+				<div style="background-color:#eee; overflow:hidden; margin-bottom:20px;">
+					{% set i=0 %}
+					{% for aPlan in actionPlans %}	
+						
+						{% if aPlan.type==1 %}
+							{% set direccion=path('getOccupancyPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==2 %}
+							{% set direccion=path('getSetPointPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==4 %}
+							{% set direccion=path('view_switchOnOff', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==6 %}
+							{% set direccion=path('actionPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==5 %}
+							{% set direccion=path('actionPlan_PVMaintenance', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==7 %}
+							{% set direccion=path('energySourcePlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==8 %}
+							{% set direccion=path('economizerPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% else %}
+							{% set direccion='' %}
+						{% endif %}
+						<div style="overflow:hidden; border-bottom:1px solid #ddd; padding:5px 0px;" onclick="location.href='{{direccion}}';">
+						
+							<div style="float:left; width:660px; cursor:pointer;">
+								<p><span style="color:#2e75b6"><strong>{{ aPlan.name }}</strong></span></p>
+							</div>
+							<div style="float:left; margin-left:30px; width:190px;">
+								
+								{% if statusActionPlans[aPlan.id] is defined %}
+									<p style="margin:3px 10px;"><span style="color:#2e75b6">{%trans%} Status {%endtrans%}:</span> 
+										{% if (statusActionPlans[aPlan.id][0].status ==1 ) %}<span style="color:#C00000"><strong> {%trans%} Action required {%endtrans%}</strong></span>
+										{% else %}
+											<span><strong> {%trans%} No action required {%endtrans%}</strong></span>
+										{% endif %}
+									</p>
+								{% endif %}
+								<p style="margin:3px 10px;"><span style="color:#2e75b6">{%trans%} Last action {%endtrans%}:</span> 
+									{% if(lastsDatesActionsPlans[i]!=null) %}	
+										{% set dateAP=date(lastsDatesActionsPlans[i].date | date('Y-m-d')) %}
+										{% set dateNow=date('now'|date('Y-m-d')) %}
+										
+										{% if (dateAP.diff(dateNow).days > 2) %}
+											<span style="color:#C00000"> <strong>{{ lastsDatesActionsPlans[i].date| date('Y-m-d')  }}</strong></span>
+										{% else %}
+											<strong>{{ lastsDatesActionsPlans[i].date| date('Y-m-d') }}</strong>
+										{% endif %}
+									{% else %}
+										<strong>{%trans%} No data {%endtrans%}</strong>
+									{% endif %}
+								</p>
+								
+								<p style="margin:3px 10px;">
+									
+									{% if statusActionPlans[aPlan.id] is defined %}
+										{% set j=0 %}
+										{% for  status in statusActionPlans[aPlan.id][0].aOutputActionPlan %}
+											{% if status.status=="#ffff00" %}
+												{% set text='Action plan unknown' %}
+											{% elseif status.status=="#00ff00" %}
+												{% set text='Action plan accepted' %}
+											{% elseif status.status=="#ff0000" %}
+												{% set text='Action plan declined' %}
+											{% else %}
+												{% set text='Action plan unknow' %}
+											{% endif %}
+											<p title="{{text}} - {{status.date |date('Y/m/d') }}" style="background-color:{{status.status}}; width:10px; height:10px;  float:left; margin:0 0 0 10px;"></p>
+											{% set j=j+1 %}
+										{% endfor %}
+									{% endif %}
+								</p>
+							</div>
+						</div>
+						{% set i=i+1 %}
+					{% endfor %}
+				</div>
+				<!-- ///////////////////////////// -->
+				
+				
+				
+				
+			</div>
+		</div>
+	</div>
+		
+    
+{% endblock %}

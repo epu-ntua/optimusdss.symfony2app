@@ -1,0 +1,145 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+{% endblock %}
+
+{% block content %} 			
+	<div id="left">			
+		<p class="titleContentDescription"><strong>{{ optimus_instance }} </strong></p>				
+		<div id="attributesContentDescription">
+			<p><span>{%trans%} Buildings {%endtrans%}:</span>2</p>
+			<p><span>{%trans%} Total surface {%endtrans%}:</span> 18.593m2 </p>
+			<p><span>{%trans%} Renewable generation {%endtrans%}:</span> PV plant (23 MWh)</p>
+			<p><span>{%trans%} Thermal power {%endtrans%}:</span> 850 kW </p>
+			<p><span>{%trans%} Electrical power {%endtrans%}:</span> 440 kW</p>
+			<p><span>{%trans%} Total energy consumption {%endtrans%}:</span> 2157kWh/m2</p>
+			<p><span>{%trans%} CO2 emissions {%endtrans%}:</span> PV plant (23 MWh)</p>
+		</div>
+	</div>
+	
+	<div id="right" style="border:0px;">
+		<div id="topRight" style="background-color:#e8eef8; margin-bottom:20px;">
+			<p><strong><a href="{{ path('adminBuilding') }}">{{ optimus_instance }}</a> > Real Time Indicators</strong></p>					
+		</div>
+		<div id="centerRight">				
+			<div>
+				<div style="overflow:hidden;">
+					<div style="background-color:#ddd; overflow:hidden; cursor:pointer;">
+						<p class="titleContentDescription" style="float:left;"><strong>Real Time Indicators</strong></p>
+					</div>
+					
+					<div style="background-color:#eee; overflow:hidden; margin-bottom:10px;">
+						<div style="float:left; border-right:1px solid #ddd; width:100%; font-size: 12px;">
+							<table border="0" style="background-color: #fff; font-size:12px; border:1px solid #e4e4e4; box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12); table-layout: fixed;">
+								<thead style="background-color:#fff; font-weight:bold; border-bottom:1px solid #e4e4e4; height:40px;">
+									<tr style="background-color: #f9f9f9; border-color: #eee;">										
+										<td style="text-align:center;font-size:11px; border-right:0px; padding: 3px;">Sensor real time</td>
+										<td style="text-align:center;font-size:11px; border-right:0px; padding: 3px;">Sensor mapping</td>
+										<td style="text-align:center;font-size:11px; border-right:0px; padding: 3px;">Actions</td>
+									</tr>
+								</thead>
+								<tbody>
+									{% for sensor in sensorsRTime %}
+										
+										<tr style="border-bottom:1px solid #e4e4e4;">
+											<td style="border-right:0px; padding: 3px;">{{ sensor }}</td>
+											{% set variableActual= false %}											
+											
+											{% for sRTMapping in buildingSRTime %}										
+												
+												{% if sRTMapping.name==sensor %}
+													<td style="border-right:0px; padding: 3px;">{{sRTMapping.getFkSensor().getName()}}</td>
+													<td style="border-right:0px; padding: 3px;">												
+														<p style=" margin: 10px; border: 1px solid #cccccc; border-radius: 4px; color: #44546a; font-size: 12px; font-weight: bold; background-color:#fff; padding:5px;" onclick="" id="editSensorRTime_{{sRTMapping.id}}" class="buttonBig">Edit Sensor</p>
+														<p style=" margin: 10px; border: 1px solid #cccccc; border-radius: 4px; color: #44546a; font-size: 12px; font-weight: bold; background-color:#fff; padding:5px;" onclick="deleteSensorRTime({{sRTMapping.id}});" class="buttonBig">Delete Sensor</p>
+													</td>
+													<div id="editSensorRTimeForm_{{sRTMapping.id}}">
+														{{ render(controller('OptimusOptimusBundle:Building:editSensorRTime', {'idBuilding': idBuilding, 'idSensorRTime':sRTMapping.id})) }}
+														
+													</div>
+													{% set variableActual= true %}
+												{% endif %}	
+												
+											{% endfor %}
+											{% if variableActual==false %}
+												<td style="border-right:0px; padding: 3px;">---</td>
+												<td style="border-right:0px; padding: 3px;">
+													<p style=" margin: 10px; border: 1px solid #cccccc; border-radius: 4px; color: #44546a; font-size: 12px; font-weight: bold; background-color:#fff; padding:5px;" onclick="openFormAddSensor('{{sensor}}');" class="buttonBig">Add Sensor</p>
+												</td>
+											{% endif %}	
+											
+										</tr>
+										
+									{% endfor %}
+								</tbody>
+							</table>
+							
+							<div id="addSensorRTimeForm">
+								<form action="{{ path('sensorRTime_create',{'idBuilding':idBuilding}) }}" method="post">
+									{{ form_errors(form) }} 
+									{{ form_rest(form) }}									
+									<button type="submit" class='buttonBig'> {%trans%} Add sensor {%endtrans%}</button>
+								</form>
+							</div>
+							
+						</div>																
+					</div>
+				</div>					
+				
+							
+			</div>
+		</div>
+	</div>
+		
+	
+<script type="text/javascript">
+	$(function() 
+	{
+		$('.buttonBig').button();
+		
+		$( "#addSensorRTimeForm" ).dialog({
+			autoOpen: false,
+			//height: 300,
+			width: 400,
+			modal: true				
+		});
+	
+		{% for sRTMapping in buildingSRTime %}
+			$( "#editSensorRTimeForm_{{sRTMapping.id}}" ).dialog({
+				autoOpen: false,
+				//height: 300,
+				width: 400,
+				modal: true,					
+			});
+			
+			$( "#editSensorRTime_{{sRTMapping.id}}").click( function() {
+				console.log("arrive");
+				$( "#editSensorRTimeForm_{{sRTMapping.id}}" ).dialog( "open" );
+			});
+			
+			
+		{% endfor %}
+		
+		
+	});
+	
+	function openFormAddSensor(nameSensorRTime)
+	{			
+		$("#optimus_optimusbundle_buildingsensorsrtimetype_name").val(nameSensorRTime);
+		$( "#addSensorRTimeForm" ).dialog( "open" );
+	}
+	
+	function deleteSensorRTime(idSensorRTime)
+	{
+		var url="{{ path('sensorRTime_delete', {'idBuilding':idBuilding, 'idSensorRTime':'id' }) }}";
+		url = url.replace("id", idSensorRTime);
+		
+		location.href=url;
+	}
+</script>
+    
+{% endblock %}

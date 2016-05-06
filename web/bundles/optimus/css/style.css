@@ -1,0 +1,315 @@
+/* ------------- RESET STYLES ------------- */
+/* line 14, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/normalize */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  outline: 0; }
+
+/* line 1, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid;
+  background-color: #fff;
+  
+  cursor: pointer; }
+  /* line 9, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+  table tr.headerTemp {
+    background-color: #eee;
+    text-align: center;
+    border-bottom: 2px solid; }
+    /* line 13, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+    table tr.headerTemp th {
+      border-bottom: 1px solid; }
+      /* line 15, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+      table tr.headerTemp th.firstColumnHeaderTemp {
+        width: 200px;
+        padding: 3px; }
+  /* line 21, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+  table tr.headerDays {
+    background-color: #AEAAAA;
+    text-align: center; }
+    /* line 24, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+    table tr.headerDays td {
+      border: 1px solid; }
+  /* line 29, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+  table tr td {
+    border-right: 1px solid;
+    padding-right: 3px;
+	word-wrap:break-word;
+    text-align: right; }
+    /* line 33, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+    table tr td.lastFirstBlock {
+      border-bottom: 1px solid; }
+    /* line 37, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+    table tr td.scheduleStart {
+      border: 1px solid;
+      border-bottom: 0px; }
+    /* line 41, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+    table tr td.scheduleEnd {
+      border: 1px solid;
+      border-top: 0px; }
+    /* line 46, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+    table tr td.value {
+      border: 1px solid; }
+    /* line 49, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+    table tr td.finalValue {
+      text-align: center;
+      font-size: 16px; }
+  /* line 56, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+  table tr.showDiv td {
+    border: 1px solid; }
+    /* line 58, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+    table tr.showDiv td.firstCellShowDiv {
+      text-align: center;
+      border: 0px; }
+    /* line 62, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/table */
+    table tr.showDiv td.secondCellShowDiv {
+      width: 100px;
+      border: 0px;
+      border-right: 1px solid; }
+
+/* line 2, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+body {
+  font: 100% Arial, Verdana, sans-serif;
+  background: #fff; }
+
+/* line 4, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+#container {
+  text-align: left;
+  min-height: 600px;
+  overflow: hidden;
+  margin: 0px auto;
+  width: 1200px; }
+  /* line 11, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+  #container #header {
+    height: 40px;
+    width: 100%;
+    background: #2e75b6;
+    overflow: hidden; }
+    /* line 17, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+    #container #header h3 {
+      color: #fff;
+      margin-top: 10px;
+      margin-left: 10px;
+	  float:left;}
+  /* line 24, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+  #container #main {
+    width: 100%;
+    overflow: hidden;
+    min-height: 700px; }
+    /* line 29, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+    #container #main #left {
+      width: 258px;
+      float: left;
+      border: 1px solid #ddd;
+      margin-top: 20px;
+      padding: 10px;
+      margin-right: 20px;
+      background: #e8eef8; }
+      /* line 35, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+      #container #main #left p.titleContentDescription {
+        font-size: 12px;
+        color: #44546a;
+        margin-bottom: 10px; }
+      /* line 41, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+      #container #main #left #imagesContentDescription {
+        float: left;
+        margin-bottom: 10px; }
+        /* line 45, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #left #imagesContentDescription img {
+          float: left;
+          width: 48%;
+          border: 1px solid #ddd; }
+          /* line 50, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #left #imagesContentDescription img.marginImgRight {
+            margin-right: 5px; }
+      /* line 55, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+      #container #main #left #attributesContentDescription {
+        float: left;
+        width: 100%; }
+        /* line 58, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #left #attributesContentDescription p {
+          font-size: 11px;
+          color: #626262; }
+          /* line 61, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #left #attributesContentDescription p span {
+            color: #2e75b6; }
+          /* line 64, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #left #attributesContentDescription p.marginBContentDescription {
+            margin-bottom: 10px; }
+    /* line 72, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+    #container #main #right {
+      width: 898px;
+      float: left;
+      border: 1px solid #ddd;
+      margin-top: 20px;
+      border: 0; }
+      /* line 76, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+      #container #main #right #topRight {
+        float: left;
+        width: 100%;
+        margin-bottom: 20px;
+        background-color: #e8eef8; }
+        /* line 82, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right #topRight span {
+          cursor: pointer; }
+      /* line 87, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+      #container #main #right p {
+        font-size: 12px;
+        color: #44546a;
+        /*margin:16px 10px;*/
+        margin: 10px; }
+        /* line 93, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right p.buttonFuncionality {
+          border: 1px solid #d6dce5;
+          text-align: center;
+          font-size: 11px;
+          float: left;
+          cursor: pointer;
+          background-color: #dbdbdb;
+          color: #2e75b6; }
+          /* line 102, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #right p.buttonFuncionality.activo {
+            background-color: #2e75b6;
+            color: #fff; }
+        /* line 108, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right p.buttonAnalyze {
+          width: 48px;
+          height: 43px;
+          padding: 7px 20px;
+          margin-right: 10px; }
+        /* line 112, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right p.buttonForecasted {
+          width: 65px;
+          height: 56px;
+          padding: 7px 20px; }
+        /* line 115, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right p.buttonAction {
+          width: 48px;
+          height: 29px;
+          padding: 20px;
+          line-height: 1.5; }
+      /* line 121, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+      #container #main #right #centerRight {
+        overflow: hidden;
+        width: 100%; }
+        /* line 125, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right #centerRight #indicators {
+          background-color: #d0cece;
+          width: 100%;
+          overflow: hidden;
+          border-bottom: 1px solid #aaa; }
+        /* line 132, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right #centerRight .buttonIndicator {
+          float: left;
+          height: 15px;
+          padding: 10px 10px 10px 10px;
+          margin: 0 0 0 30px;
+          border-right: 1px solid #aaa;
+          border-left: 1px solid #aaa;
+          text-align: center;
+          cursor: pointer;
+          background-color: #e8eef8; }
+          /* line 143, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #right #centerRight .buttonIndicator:hover {
+            opacity: 0.5; }
+        /* line 148, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right #centerRight #contentGraficas {
+          overflow: hidden;
+          float: left;
+          padding-top: 25px;
+          background-color: #f8f8f8;
+          width: 100%;
+          margin-bottom: 20px; }
+          /* line 156, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #right #centerRight #contentGraficas .contentTableResults {
+            width: 100%;
+            font-size: 14px; }
+        /* line 162, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right #centerRight #contentFilterTable {
+          overflow: hidden;
+          padding-bottom: 10px;
+          padding-top: 10px; }
+          /* line 167, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #right #centerRight #contentFilterTable #headerFilter {
+            width: 390px;
+            float: left;
+            text-align: right; }
+          /* line 172, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #right #centerRight #contentFilterTable #filters {
+            width: 505px;
+            float: left; }
+        /* line 178, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right #centerRight .contentAllBuildings {
+          overflow: hidden; }
+          /* line 181, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #right #centerRight .contentAllBuildings .contentBuilding {
+            overflow: hidden; }
+            /* line 184, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+            #container #main #right #centerRight .contentAllBuildings .contentBuilding .headerBuilding {
+              background-color: #ddd;
+              overflow: hidden;
+              cursor: pointer; }
+      /* line 194, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+      #container #main #right .propertiesBuilding {
+        background-color: #eee;
+        overflow: hidden;
+        margin-bottom: 10px;
+        font-size: 10px; }
+        /* line 200, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right .propertiesBuilding .columnBuilding {
+          float: left;
+          width: 290px; }
+          /* line 203, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #right .propertiesBuilding .columnBuilding p {
+            margin: 5px 10px;
+            font-size: 10px; }
+            /* line 206, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+            #container #main #right .propertiesBuilding .columnBuilding p span {
+              color: #2e75b6; }
+            /* line 209, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+            #container #main #right .propertiesBuilding .columnBuilding p.columnTitle {
+              font-size: 11px; }
+          /* line 214, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+          #container #main #right .propertiesBuilding .columnBuilding.middleColumn {
+            border-right: 1px solid #ddd;
+            border-left: 1px solid #ddd; }
+      /* line 221, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+      #container #main #right #contentJSTree {
+        background-color: #eee;
+        overflow: hidden;
+        margin-bottom: 10px; }
+        /* line 226, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+        #container #main #right #contentJSTree #jstree_demo_div {
+          float: left;
+          border-right: 1px solid #ddd; }
+      /* line 232, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
+      #container #main #right .buttonBig {
+        border: 1px solid #aaa;        
+        margin:0px 0 20px 397px;
+        padding: 5px;
+        cursor: pointer;
+        color: #44546a;
+		font-size:12px;
+		}
+.fieldClass{/*float:right;*/ width:98%;}
+form{font-size:11px;}
+form >div{overflow:hidden; display:block; margin-bottom: 10px;}
+form > button{ /*float:right;*/ margin-top:20px;}
+
+.nuevo_building > form > div{ float:left; width:260px; margin-right:20px;}
+.edit_building  > form > div{ float:left; width:260px; margin-right:20px;}
+
+.edit_sensor{font-size:11px;}
+.edit_sensor > label{font-size:11px;}
+.edit_sensor > div{overflow:hidden; display:block; margin-bottom: 10px;}
+
+a{color:#44546a;}
+
+.flot-overlay {
+	pointer-events:all;
+	clip:rect(20px, auto, auto, auto);
+	}

@@ -1,0 +1,26 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block content %}
+	
+		<div style="margin:30px auto; width:400px;  padding: 30px; border:1px solid #ededed;">
+			{% if error %}
+				<div style="padding:5px; margin-bottom:20px; background:#ff6666; color:#fff; font-size: 12px;">{{ error.message }}</div>
+			{% endif %}
+			
+			<form action="{{ path('login_check') }}" method="post">
+				<div style="overflow:hidden; margin-bottom:20px;">
+					<label style="font-size:12px; width:100px; float:left;" for="username">Username:</label>
+					<input style="width:200px;" type="text" id="nickname" name="_lastname" value="{{ last_username }}" />
+				</div>
+				<div style="overflow:hidden; margin-bottom:50px;">
+					<label style="font-size:12px; width:100px; float:left;" for="password">Password:</label>
+					<input style="width:200px;" type="password" id="password" name="_password" />
+
+					<input type="hidden" name="_target_path" value="selectOptions" />
+				</div>
+				
+				<button style="width:100px; padding:5px; border:1px solid #000; background-color:#fff; font-size:12px; margin-left: 150px; cursor:pointer;" type="submit">login</button>
+			</form>
+		</div>	
+{% endblock %}

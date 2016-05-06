@@ -1,0 +1,318 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.pie.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+{% endblock %}
+
+{% block clase_historicData %}activo{% endblock %}
+
+
+{% block content %}
+
+<script type="text/javascript">
+	var timeSelected='{{ allData.timeSelected }}';
+	
+	$(function(){		
+		$("#datepicker").hide();
+		
+		var startDate;
+		var endDate;
+		
+		var selectCurrentWeek = function() {
+			window.setTimeout(function () {
+				$('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+			}, 1);
+		}
+		
+		$('#datepicker').datepicker( {
+			/*showWeek: true,
+			firstDay: 1,*/
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			onSelect: function(dateText, inst) { 
+				var date = $(this).datepicker('getDate');
+				
+				console.log( date.getDate());
+				console.log( date.getDay());			
+				
+				if(timeSelected=='day'){
+					startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+					endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+					console.log( startDate);
+					console.log( endDate);
+					
+				}else if(timeSelected=='week'){
+					startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+					endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);
+				}else if(timeSelected=='month'){
+					startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+					endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 30);
+				}
+				
+				//endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);
+						
+				var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+				$('#startDate').text($.datepicker.formatDate("yy-mm-dd" , startDate, inst.settings )); //dateFormat
+				$('#endDate').text($.datepicker.formatDate( "yy-mm-dd", endDate, inst.settings ));
+				
+				selectCurrentWeek();
+				
+				location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+			},
+			beforeShowDay: function(date) {
+				var cssClass = '';
+				if((date >= startDate && date <= endDate) || (date>=new Date('{{ allData.startDate }}') && date <=new Date('{{ allData.endDate }}')))
+					cssClass = 'ui-datepicker-current-day';
+				return [true, cssClass];
+			},
+			onChangeMonthYear: function(year, month, inst) {
+				selectCurrentWeek();
+			}
+		});
+		
+		$(document).on('mousemove', '#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').addClass('ui-state-hover');    });
+		$(document).on('mouseleave','#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').removeClass('ui-state-hover'); });
+			
+		$("#placeholder3").bind("plothover", function (event, pos, item) {
+			if (item) {
+				document.body.style.cursor = 'pointer';
+				if (previousPoint != item.dataIndex) {
+					previousPoint = item.dataIndex;
+
+					$("#tooltip").remove();
+					var x = item.datapoint[0],
+						y = item.datapoint[1];
+					showTooltip(item.pageX, item.pageY,y);
+				}
+			}else{
+				document.body.style.cursor = 'default';
+				$("#tooltip").remove();
+				previousPoint = null;
+			}
+		});
+
+		//Diferentes gráficas para los diferentes valores 
+		{% for i in allData.allSensors %}
+			{% set lp_i=loop.index0 %}		
+				var plot= $.plot($("#placeholder_{{ lp_i }}"), [ 		
+				{% set maxY=0 %}
+				{% set minY=0 %}				
+			{data: [	
+			
+				{% for j in allData.allSensors[lp_i].values %}
+					{% set lp_j=loop.index0 %}
+					
+					{% if lp_j==0 %} 
+						{% set minY= allData.allSensors[lp_i].values[lp_j].value  %}
+					{% elseif minY > allData.allSensors[lp_i].values[lp_j].value %} 
+						{% set minY=allData.allSensors[lp_i].values[lp_j].value  %}
+					{% endif %}
+					
+					{% if maxY < allData.allSensors[lp_i].values[lp_j].value %} 
+						{% set maxY=allData.allSensors[lp_i].values[lp_j].value %}
+					{% endif %}			
+				
+					{% set date = allData.allSensors[lp_i].values[lp_j].datetime | date("F j, Y H:i:s") %}
+		
+				
+					[new Date("{{ date }}"), {{ allData.allSensors[lp_i].values[lp_j].value }} ],	
+				{% endfor %}				 
+				], color:'{{ allData.allSensors[lp_i].color }}', lines:{show:true, lineWidth:0.5, fillColor:'#000000'},			
+				
+				{% if allData.allSensors[lp_i].type =='Panel' %}
+					points: { show: true, symbol:'cross' }	
+					
+				{% endif %}
+					},
+				{% set panYmin = 0.1+(0.1/100)*100 %}
+				{% set panYmax = maxY+(maxY/100)*20 %}			
+			],
+			{
+				grid: {
+					canvasText:{show:true},
+					hoverable: true,
+					clickable: true,
+					borderWidth: 1,
+					borderColor:"#cacaca",
+					minBorderMargin: 0.5,
+					axisMargin: 1,
+					backgroundColor:'#fff'
+				},
+							
+				xaxis:{					
+					mode: "time", min: new Date("{{ allData.startDate | date('F j, Y H:i:s') }}"), max: new Date("{{ allData.endDate | date('F j, Y H:i:s') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					{% if lp_i==0 %}  
+						position:'top', 
+					{% endif %}					
+					{% if lp_i < (allData.allSensors | length)-1 and lp_i!=0 %} 					
+						show:false, 
+					{% else %}
+						show:true,
+						timeformat: "%a \n %d.%m",
+						labelWidth: 50,
+						minTickSize: [1, "day"], reserveSpace:true				
+					{% endif %} 
+				},
+				yaxis:{min:{{ minY }}, max:{{ maxY }}, tickDecimals: 2,  panRange:[{{ panYmin}},{{ panYmax}}], labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, {{ maxY }}], font:{size: 9, family: "sans-serif", color:"#626262"}},
+				pan:{interactive:true, cursor: "move", frameRate: 20}
+			});
+			
+			var previousPoint = null;
+			$("#placeholder_{{ lp_i }}").bind("plothover", function (event, pos, item) {
+				if (item) {					
+					document.body.style.cursor = 'pointer';
+					if (previousPoint != item.dataIndex) {
+						previousPoint = item.dataIndex;
+
+						$("#tooltip").remove();
+						var x = item.datapoint[0],
+							y = item.datapoint[1];
+						showTooltip(item.pageX, item.pageY,y);
+					}
+				}else{
+					document.body.style.cursor = 'default';
+					$("#tooltip").remove();
+					previousPoint = null;
+				}
+			});
+		{% endfor %}
+	//});		
+		
+		function showTooltip(x, y, contents)
+		{
+			$('<div id="tooltip" style="font-size:10px;">' + contents + '</div>').css( {
+				position: 'absolute',
+				display: 'none',
+				top: y-20,
+				left: x + 10,
+				border: '1px solid #595959',
+				padding: '2px',				
+				'background-color': '#DADADA',
+				opacity: 0.80
+			}).appendTo("body").fadeIn(200);
+		}
+		
+		
+	});
+	
+	function displayCalendar()
+	{
+		$("#datepicker").slideToggle();
+	}
+	
+	function changeTo(time)
+	{
+		if(time=='day'){
+			$("#selectDay").css({'background-color':'#2e75b6', 'color':'#fff' });
+			$("#selectWeek").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			$("#selectMonth").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			timeSelected='day';
+		}else if(time=='week'){ 
+			$("#selectDay").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			$("#selectWeek").css({'background-color':'#2e75b6', 'color':'#fff' });
+			$("#selectMonth").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			timeSelected='week';
+		}else if(time=='month'){
+			$("#selectDay").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			$("#selectWeek").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			$("#selectMonth").css({'background-color':'#2e75b6', 'color':'#fff' });
+			timeSelected='month';
+		}
+	}
+
+	
+</script>
+    <div id="centerRight">
+			<div id="indicators" style="background-color:#d0cece; width:100%;  overflow:hidden; border-bottom:1px solid #7f7f7f; border-top:1px solid #7f7f7f;">
+				<p style="width:847px; border-right:1px solid #7f7f7f; float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px;"><strong>Indicators</strong></p>
+				<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3;">+</p>
+			</div>	
+			
+			<div id="indicators" style="background-color:#d0cece; width:100%;  overflow:hidden; border-bottom:1px solid #7f7f7f;">
+				<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:60px; border-right:1px solid #7f7f7f;"><strong>Dates</strong></p>
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #7f7f7f; text-align:center; background-color: #e8eef8;">
+					<span id="startDate">{{ allData.startDate }}</span> / 
+					<span id="endDate">{{ allData.endDate }}</span>
+				</p>
+				<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #7f7f7f; cursor:pointer;" onclick="displayCalendar();">+</p>
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px 10px 10px 0px; margin:0px; width:160px; border-right:1px solid #7f7f7f; text-align:right;"><strong>Time scope: </strong></p>
+				
+				{% if allData.timeSelected=='day' %}
+					{% set stileDay='background-color: #2e75b6; color:#fff;' %}
+				{% else %}
+					{% set stileDay='background-color: #e8eef8; color:#44546a;' %}
+				{% endif %}
+				
+				{% if allData.timeSelected=='week' %}
+					{% set stileWeek='background-color: #2e75b6; color:#fff;' %}
+				{% else %}
+					{% set stileWeek='background-color: #e8eef8; color:#44546a;' %}
+				{% endif %}
+				
+				{% if allData.timeSelected=='month' %}
+					{% set stileMonth='background-color: #2e75b6; color:#fff; ' %}
+				{% else %}
+					{% set stileMonth='background-color: #e8eef8; color:#44546a;' %}
+				{% endif %}
+				
+				<p id="selectDay" style="float:left; margin-right:0px; height:15px; padding:10px 10px 10px 10px; margin:0px;  border-right:1px solid #7f7f7f; text-align:center; {{ stileDay }} cursor:pointer;" onclick="changeTo('day');">day</p>
+				
+				<p id="selectWeek" style="float:left; margin-right:0px; height:15px; padding:10px 10px 10px 10px; margin:0px;  border-right:1px solid #7f7f7f; text-align:center; {{ stileWeek }} cursor:pointer;" onclick="changeTo('week');">week</p>
+				
+				<p id="selectMonth" style="float:left; margin-right:0px; height:15px; padding:10px 10px 10px 10px; margin:0px;  border-right:1px solid #7f7f7f; text-align:center; {{ stileMonth }} cursor:pointer;" onclick="changeTo('month');">month</p>
+				
+				
+			</div>
+			
+			<div id="contentGraficas" style="overflow:hidden; float:left; padding-top:25px; background-color:#f2f2f2;">
+				
+				<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#d0cece;"></div>
+		
+				{% set mitad=(allData.allSensors|length) / 2 %}
+				
+				{% for sensor in allData.allSensors %}
+					
+					{% set loop_i=loop.index0 %}
+					
+					
+					{% if loop_i < (allData.allSensors|length)-1 %}
+						{% set stilo=" height:60px;" %}
+					{% else %}
+						{% set stilo="min-height:60px;" %}
+					{% endif %}
+					
+					
+					{% if loop_i ==0 or loop_i==(allData.allSensors|length)-1 %}
+						{% set stilo2="width:500px;" %}  
+					{% else %}
+						{% set stilo2="width:475px;" %} 
+					{% endif %}
+					
+					
+					<div style="float:left; {{stilo}}">
+						<p style="font-size:11px; font-weight:bold; text-transform:capitalize; float:left; width:100px; margin-right:10px;">{{ allData.allSensors[loop_i].name }}</p>
+						
+						<div id="placeholder_{{ loop_i }}" style=" height:100px; float:left; top:-20px; {{stilo2}}">	</div>
+					</div>					
+										
+				{% endfor %}
+			</div>			
+	</div>  
+
+
+
+{% endblock %}

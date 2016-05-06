@@ -1,0 +1,2814 @@
+<?xml version="1.0" encoding="UTF-8"?><results serviceId="predictradiationall">
+<example-set>
+<example>
+<radiation>61</radiation>
+<datetime role="id">123540</datetime>
+</example>
+<example>
+<radiation>250</radiation>
+<datetime role="id">123541</datetime>
+</example>
+<example>
+<radiation>271</radiation>
+<datetime role="id">123542</datetime>
+</example>
+<example>
+<radiation>170</radiation>
+<datetime role="id">123543</datetime>
+</example>
+<example>
+<radiation>7</radiation>
+<datetime role="id">123544</datetime>
+</example>
+<example>
+<radiation>469</radiation>
+<datetime role="id">123545</datetime>
+</example>
+<example>
+<radiation>119</radiation>
+<datetime role="id">123546</datetime>
+</example>
+<example>
+<radiation>443</radiation>
+<datetime role="id">123547</datetime>
+</example>
+<example>
+<radiation>480</radiation>
+<datetime role="id">123548</datetime>
+</example>
+<example>
+<radiation>25</radiation>
+<datetime role="id">123549</datetime>
+</example>
+<example>
+<radiation>106</radiation>
+<datetime role="id">1235410</datetime>
+</example>
+<example>
+<radiation>454</radiation>
+<datetime role="id">1235411</datetime>
+</example>
+<example>
+<radiation>141</radiation>
+<datetime role="id">1235412</datetime>
+</example>
+<example>
+<radiation>333</radiation>
+<datetime role="id">1235413</datetime>
+</example>
+<example>
+<radiation>294</radiation>
+<datetime role="id">1235414</datetime>
+</example>
+<example>
+<radiation>402</radiation>
+<datetime role="id">1235415</datetime>
+</example>
+<example>
+<radiation>286</radiation>
+<datetime role="id">1235416</datetime>
+</example>
+<example>
+<radiation>268</radiation>
+<datetime role="id">1235417</datetime>
+</example>
+<example>
+<radiation>274</radiation>
+<datetime role="id">1235418</datetime>
+</example>
+<example>
+<radiation>14</radiation>
+<datetime role="id">1235419</datetime>
+</example>
+<example>
+<radiation>463</radiation>
+<datetime role="id">1235420</datetime>
+</example>
+<example>
+<radiation>267</radiation>
+<datetime role="id">1235421</datetime>
+</example>
+<example>
+<radiation>204</radiation>
+<datetime role="id">1235422</datetime>
+</example>
+<example>
+<radiation>91</radiation>
+<datetime role="id">1235423</datetime>
+</example>
+<example>
+<radiation>462</radiation>
+<datetime role="id">1235424</datetime>
+</example>
+<example>
+<radiation>308</radiation>
+<datetime role="id">1235425</datetime>
+</example>
+<example>
+<radiation>389</radiation>
+<datetime role="id">1235426</datetime>
+</example>
+<example>
+<radiation>221</radiation>
+<datetime role="id">1235427</datetime>
+</example>
+<example>
+<radiation>268</radiation>
+<datetime role="id">1235428</datetime>
+</example>
+<example>
+<radiation>447</radiation>
+<datetime role="id">1235429</datetime>
+</example>
+<example>
+<radiation>241</radiation>
+<datetime role="id">1235430</datetime>
+</example>
+<example>
+<radiation>205</radiation>
+<datetime role="id">1235431</datetime>
+</example>
+<example>
+<radiation>156</radiation>
+<datetime role="id">1235432</datetime>
+</example>
+<example>
+<radiation>210</radiation>
+<datetime role="id">1235433</datetime>
+</example>
+<example>
+<radiation>471</radiation>
+<datetime role="id">1235434</datetime>
+</example>
+<example>
+<radiation>70</radiation>
+<datetime role="id">1235435</datetime>
+</example>
+<example>
+<radiation>313</radiation>
+<datetime role="id">1235436</datetime>
+</example>
+<example>
+<radiation>92</radiation>
+<datetime role="id">1235437</datetime>
+</example>
+<example>
+<radiation>441</radiation>
+<datetime role="id">1235438</datetime>
+</example>
+<example>
+<radiation>244</radiation>
+<datetime role="id">1235439</datetime>
+</example>
+<example>
+<radiation>121</radiation>
+<datetime role="id">1235440</datetime>
+</example>
+<example>
+<radiation>414</radiation>
+<datetime role="id">1235441</datetime>
+</example>
+<example>
+<radiation>317</radiation>
+<datetime role="id">1235442</datetime>
+</example>
+<example>
+<radiation>391</radiation>
+<datetime role="id">1235443</datetime>
+</example>
+<example>
+<radiation>351</radiation>
+<datetime role="id">1235444</datetime>
+</example>
+<example>
+<radiation>480</radiation>
+<datetime role="id">1235445</datetime>
+</example>
+<example>
+<radiation>6</radiation>
+<datetime role="id">1235446</datetime>
+</example>
+<example>
+<radiation>497</radiation>
+<datetime role="id">1235447</datetime>
+</example>
+<example>
+<radiation>233.598</radiation>
+<datetime role="id">123540</datetime>
+</example>
+<example>
+<radiation>769.154</radiation>
+<datetime role="id">123541</datetime>
+</example>
+<example>
+<radiation>-315.503</radiation>
+<datetime role="id">123542</datetime>
+</example>
+<example>
+<radiation>355.571</radiation>
+<datetime role="id">123543</datetime>
+</example>
+<example>
+<radiation>237.345</radiation>
+<datetime role="id">123544</datetime>
+</example>
+<example>
+<radiation>652.186</radiation>
+<datetime role="id">123545</datetime>
+</example>
+<example>
+<radiation>-397.251</radiation>
+<datetime role="id">123546</datetime>
+</example>
+<example>
+<radiation>-758.291</radiation>
+<datetime role="id">123547</datetime>
+</example>
+<example>
+<radiation>397.664</radiation>
+<datetime role="id">123548</datetime>
+</example>
+<example>
+<radiation>198.536</radiation>
+<datetime role="id">123549</datetime>
+</example>
+<example>
+<radiation>488.448</radiation>
+<datetime role="id">1235410</datetime>
+</example>
+<example>
+<radiation>-504.548</radiation>
+<datetime role="id">1235411</datetime>
+</example>
+<example>
+<radiation>-70.104</radiation>
+<datetime role="id">1235412</datetime>
+</example>
+<example>
+<radiation>-366.102</radiation>
+<datetime role="id">1235413</datetime>
+</example>
+<example>
+<radiation>-908.488</radiation>
+<datetime role="id">1235414</datetime>
+</example>
+<example>
+<radiation>1.108</radiation>
+<datetime role="id">1235415</datetime>
+</example>
+<example>
+<radiation>-120.275</radiation>
+<datetime role="id">1235416</datetime>
+</example>
+<example>
+<radiation>860.522</radiation>
+<datetime role="id">1235417</datetime>
+</example>
+<example>
+<radiation>-994.099</radiation>
+<datetime role="id">1235418</datetime>
+</example>
+<example>
+<radiation>-55.903</radiation>
+<datetime role="id">1235419</datetime>
+</example>
+<example>
+<radiation>-429.836</radiation>
+<datetime role="id">1235420</datetime>
+</example>
+<example>
+<radiation>-1426.392</radiation>
+<datetime role="id">1235421</datetime>
+</example>
+<example>
+<radiation>-687.840</radiation>
+<datetime role="id">1235422</datetime>
+</example>
+<example>
+<radiation>-1067.914</radiation>
+<datetime role="id">1235423</datetime>
+</example>
+<example>
+<radiation>153.982</radiation>
+<datetime role="id">1235424</datetime>
+</example>
+<example>
+<radiation>-122.433</radiation>
+<datetime role="id">1235425</datetime>
+</example>
+<example>
+<radiation>270.470</radiation>
+<datetime role="id">1235426</datetime>
+</example>
+<example>
+<radiation>432.659</radiation>
+<datetime role="id">1235427</datetime>
+</example>
+<example>
+<radiation>-571.979</radiation>
+<datetime role="id">1235428</datetime>
+</example>
+<example>
+<radiation>-1625.513</radiation>
+<datetime role="id">1235429</datetime>
+</example>
+<example>
+<radiation>-712.169</radiation>
+<datetime role="id">1235430</datetime>
+</example>
+<example>
+<radiation>-79.310</radiation>
+<datetime role="id">1235431</datetime>
+</example>
+<example>
+<radiation>-30.968</radiation>
+<datetime role="id">1235432</datetime>
+</example>
+<example>
+<radiation>-299.187</radiation>
+<datetime role="id">1235433</datetime>
+</example>
+<example>
+<radiation>-404.185</radiation>
+<datetime role="id">1235434</datetime>
+</example>
+<example>
+<radiation>-236.236</radiation>
+<datetime role="id">1235435</datetime>
+</example>
+<example>
+<radiation>-192.956</radiation>
+<datetime role="id">1235436</datetime>
+</example>
+<example>
+<radiation>45.293</radiation>
+<datetime role="id">1235437</datetime>
+</example>
+<example>
+<radiation>301.998</radiation>
+<datetime role="id">1235438</datetime>
+</example>
+<example>
+<radiation>704.755</radiation>
+<datetime role="id">1235439</datetime>
+</example>
+<example>
+<radiation>210.498</radiation>
+<datetime role="id">1235440</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235441</datetime>
+</example>
+<example>
+<radiation>945.191</radiation>
+<datetime role="id">1235442</datetime>
+</example>
+<example>
+<radiation>-80.864</radiation>
+<datetime role="id">1235443</datetime>
+</example>
+<example>
+<radiation>-543.060</radiation>
+<datetime role="id">1235444</datetime>
+</example>
+<example>
+<radiation>-254.484</radiation>
+<datetime role="id">1235445</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235446</datetime>
+</example>
+<example>
+<radiation>459.020</radiation>
+<datetime role="id">1235447</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235448</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235449</datetime>
+</example>
+<example>
+<radiation>406.163</radiation>
+<datetime role="id">1235450</datetime>
+</example>
+<example>
+<radiation>-131.752</radiation>
+<datetime role="id">1235451</datetime>
+</example>
+<example>
+<radiation>-931.405</radiation>
+<datetime role="id">1235452</datetime>
+</example>
+<example>
+<radiation>-719.407</radiation>
+<datetime role="id">1235453</datetime>
+</example>
+<example>
+<radiation>-706.827</radiation>
+<datetime role="id">1235454</datetime>
+</example>
+<example>
+<radiation>-460.584</radiation>
+<datetime role="id">1235455</datetime>
+</example>
+<example>
+<radiation>633.507</radiation>
+<datetime role="id">1235456</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235457</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235458</datetime>
+</example>
+<example>
+<radiation>732.497</radiation>
+<datetime role="id">1235459</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235460</datetime>
+</example>
+<example>
+<radiation>19.080</radiation>
+<datetime role="id">1235461</datetime>
+</example>
+<example>
+<radiation>133.770</radiation>
+<datetime role="id">1235462</datetime>
+</example>
+<example>
+<radiation>-5.434</radiation>
+<datetime role="id">1235463</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235464</datetime>
+</example>
+<example>
+<radiation>701.174</radiation>
+<datetime role="id">1235465</datetime>
+</example>
+<example>
+<radiation>-9.932</radiation>
+<datetime role="id">1235466</datetime>
+</example>
+<example>
+<radiation>246.995</radiation>
+<datetime role="id">1235467</datetime>
+</example>
+<example>
+<radiation>108.310</radiation>
+<datetime role="id">1235468</datetime>
+</example>
+<example>
+<radiation>-1666.695</radiation>
+<datetime role="id">1235469</datetime>
+</example>
+<example>
+<radiation>-96.304</radiation>
+<datetime role="id">1235470</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235471</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235472</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235473</datetime>
+</example>
+<example>
+<radiation>357.424</radiation>
+<datetime role="id">1235474</datetime>
+</example>
+<example>
+<radiation>507.238</radiation>
+<datetime role="id">1235475</datetime>
+</example>
+<example>
+<radiation>-432.916</radiation>
+<datetime role="id">1235476</datetime>
+</example>
+<example>
+<radiation>-1689.376</radiation>
+<datetime role="id">1235477</datetime>
+</example>
+<example>
+<radiation>198.436</radiation>
+<datetime role="id">1235478</datetime>
+</example>
+<example>
+<radiation>380.570</radiation>
+<datetime role="id">1235479</datetime>
+</example>
+<example>
+<radiation>266.035</radiation>
+<datetime role="id">1235480</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235481</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235482</datetime>
+</example>
+<example>
+<radiation>588.776</radiation>
+<datetime role="id">1235483</datetime>
+</example>
+<example>
+<radiation>-777.600</radiation>
+<datetime role="id">1235484</datetime>
+</example>
+<example>
+<radiation>263.908</radiation>
+<datetime role="id">1235485</datetime>
+</example>
+<example>
+<radiation>690.181</radiation>
+<datetime role="id">1235486</datetime>
+</example>
+<example>
+<radiation>512.295</radiation>
+<datetime role="id">1235487</datetime>
+</example>
+<example>
+<radiation>517.300</radiation>
+<datetime role="id">1235488</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235489</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235490</datetime>
+</example>
+<example>
+<radiation>-778.154</radiation>
+<datetime role="id">1235491</datetime>
+</example>
+<example>
+<radiation>-1421.707</radiation>
+<datetime role="id">1235492</datetime>
+</example>
+<example>
+<radiation>-180.557</radiation>
+<datetime role="id">1235493</datetime>
+</example>
+<example>
+<radiation>-224.281</radiation>
+<datetime role="id">1235494</datetime>
+</example>
+<example>
+<radiation>-1200.510</radiation>
+<datetime role="id">1235495</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235496</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235497</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">1235498</datetime>
+</example>
+<example>
+<radiation>257.741</radiation>
+<datetime role="id">1235499</datetime>
+</example>
+<example>
+<radiation>-159.075</radiation>
+<datetime role="id">12354100</datetime>
+</example>
+<example>
+<radiation>193.276</radiation>
+<datetime role="id">12354101</datetime>
+</example>
+<example>
+<radiation>107.090</radiation>
+<datetime role="id">12354102</datetime>
+</example>
+<example>
+<radiation>-588.152</radiation>
+<datetime role="id">12354103</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354104</datetime>
+</example>
+<example>
+<radiation>735.465</radiation>
+<datetime role="id">12354105</datetime>
+</example>
+<example>
+<radiation>316.076</radiation>
+<datetime role="id">12354106</datetime>
+</example>
+<example>
+<radiation>-861.896</radiation>
+<datetime role="id">12354107</datetime>
+</example>
+<example>
+<radiation>42.458</radiation>
+<datetime role="id">12354108</datetime>
+</example>
+<example>
+<radiation>28.300</radiation>
+<datetime role="id">12354109</datetime>
+</example>
+<example>
+<radiation>-663.726</radiation>
+<datetime role="id">12354110</datetime>
+</example>
+<example>
+<radiation>689.973</radiation>
+<datetime role="id">12354111</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354112</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354113</datetime>
+</example>
+<example>
+<radiation>226.953</radiation>
+<datetime role="id">12354114</datetime>
+</example>
+<example>
+<radiation>996.944</radiation>
+<datetime role="id">12354115</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354116</datetime>
+</example>
+<example>
+<radiation>-1638.934</radiation>
+<datetime role="id">12354117</datetime>
+</example>
+<example>
+<radiation>-170.065</radiation>
+<datetime role="id">12354118</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354119</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354120</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354121</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354122</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354123</datetime>
+</example>
+<example>
+<radiation>-170.582</radiation>
+<datetime role="id">12354124</datetime>
+</example>
+<example>
+<radiation>442.277</radiation>
+<datetime role="id">12354125</datetime>
+</example>
+<example>
+<radiation>-164.740</radiation>
+<datetime role="id">12354126</datetime>
+</example>
+<example>
+<radiation>768.513</radiation>
+<datetime role="id">12354127</datetime>
+</example>
+<example>
+<radiation>393.151</radiation>
+<datetime role="id">12354128</datetime>
+</example>
+<example>
+<radiation>378.939</radiation>
+<datetime role="id">12354129</datetime>
+</example>
+<example>
+<radiation>462.277</radiation>
+<datetime role="id">12354130</datetime>
+</example>
+<example>
+<radiation>-714.554</radiation>
+<datetime role="id">12354131</datetime>
+</example>
+<example>
+<radiation>-2033.139</radiation>
+<datetime role="id">12354132</datetime>
+</example>
+<example>
+<radiation>-254.456</radiation>
+<datetime role="id">12354133</datetime>
+</example>
+<example>
+<radiation>42.314</radiation>
+<datetime role="id">12354134</datetime>
+</example>
+<example>
+<radiation>-1728.634</radiation>
+<datetime role="id">12354135</datetime>
+</example>
+<example>
+<radiation>265.860</radiation>
+<datetime role="id">12354136</datetime>
+</example>
+<example>
+<radiation>634.227</radiation>
+<datetime role="id">12354137</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354138</datetime>
+</example>
+<example>
+<radiation>378.090</radiation>
+<datetime role="id">12354139</datetime>
+</example>
+<example>
+<radiation>778.954</radiation>
+<datetime role="id">12354140</datetime>
+</example>
+<example>
+<radiation>730.150</radiation>
+<datetime role="id">12354141</datetime>
+</example>
+<example>
+<radiation>516.730</radiation>
+<datetime role="id">12354142</datetime>
+</example>
+<example>
+<radiation>-497.459</radiation>
+<datetime role="id">12354143</datetime>
+</example>
+<example>
+<radiation>736.836</radiation>
+<datetime role="id">12354144</datetime>
+</example>
+<example>
+<radiation>-45.562</radiation>
+<datetime role="id">12354145</datetime>
+</example>
+<example>
+<radiation>-1129.550</radiation>
+<datetime role="id">12354146</datetime>
+</example>
+<example>
+<radiation>-626.151</radiation>
+<datetime role="id">12354147</datetime>
+</example>
+<example>
+<radiation>138.159</radiation>
+<datetime role="id">12354148</datetime>
+</example>
+<example>
+<radiation>-183.345</radiation>
+<datetime role="id">12354149</datetime>
+</example>
+<example>
+<radiation>-287.803</radiation>
+<datetime role="id">12354150</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354151</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354152</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354153</datetime>
+</example>
+<example>
+<radiation>538.300</radiation>
+<datetime role="id">12354154</datetime>
+</example>
+<example>
+<radiation>25.262</radiation>
+<datetime role="id">12354155</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354156</datetime>
+</example>
+<example>
+<radiation>767.839</radiation>
+<datetime role="id">12354157</datetime>
+</example>
+<example>
+<radiation>987.315</radiation>
+<datetime role="id">12354158</datetime>
+</example>
+<example>
+<radiation>628.011</radiation>
+<datetime role="id">12354159</datetime>
+</example>
+<example>
+<radiation>163.932</radiation>
+<datetime role="id">12354160</datetime>
+</example>
+<example>
+<radiation>-825.128</radiation>
+<datetime role="id">12354161</datetime>
+</example>
+<example>
+<radiation>-1133.654</radiation>
+<datetime role="id">12354162</datetime>
+</example>
+<example>
+<radiation>4.957</radiation>
+<datetime role="id">12354163</datetime>
+</example>
+<example>
+<radiation>124.321</radiation>
+<datetime role="id">12354164</datetime>
+</example>
+<example>
+<radiation>574.095</radiation>
+<datetime role="id">12354165</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354166</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<datetime role="id">12354167</datetime>
+</example>
+</example-set>
+<example-set>
+<example>
+<radiation>61</radiation>
+<tmpc>32</tmpc>
+<dwpc>-1</dwpc>
+<relh>57</relh>
+<drct>150</drct>
+<sped>23</sped>
+<datetime role="id">123540</datetime>
+</example>
+<example>
+<radiation>250</radiation>
+<tmpc>12</tmpc>
+<dwpc>3</dwpc>
+<relh>71</relh>
+<drct>209</drct>
+<sped>2</sped>
+<datetime role="id">123541</datetime>
+</example>
+<example>
+<radiation>271</radiation>
+<tmpc>7</tmpc>
+<dwpc>5</dwpc>
+<relh>67</relh>
+<drct>63</drct>
+<sped>3</sped>
+<datetime role="id">123542</datetime>
+</example>
+<example>
+<radiation>170</radiation>
+<tmpc>8</tmpc>
+<dwpc>-16</dwpc>
+<relh>53</relh>
+<drct>169</drct>
+<sped>3</sped>
+<datetime role="id">123543</datetime>
+</example>
+<example>
+<radiation>7</radiation>
+<tmpc>14</tmpc>
+<dwpc>11</dwpc>
+<relh>23</relh>
+<drct>340</drct>
+<sped>9</sped>
+<datetime role="id">123544</datetime>
+</example>
+<example>
+<radiation>469</radiation>
+<tmpc>28</tmpc>
+<dwpc>7</dwpc>
+<relh>49</relh>
+<drct>162</drct>
+<sped>0</sped>
+<datetime role="id">123545</datetime>
+</example>
+<example>
+<radiation>119</radiation>
+<tmpc>14</tmpc>
+<dwpc>-13</dwpc>
+<relh>48</relh>
+<drct>147</drct>
+<sped>0</sped>
+<datetime role="id">123546</datetime>
+</example>
+<example>
+<radiation>443</radiation>
+<tmpc>18</tmpc>
+<dwpc>2</dwpc>
+<relh>25</relh>
+<drct>162</drct>
+<sped>18</sped>
+<datetime role="id">123547</datetime>
+</example>
+<example>
+<radiation>480</radiation>
+<tmpc>13</tmpc>
+<dwpc>-13</dwpc>
+<relh>52</relh>
+<drct>339</drct>
+<sped>10</sped>
+<datetime role="id">123548</datetime>
+</example>
+<example>
+<radiation>25</radiation>
+<tmpc>19</tmpc>
+<dwpc>17</dwpc>
+<relh>99</relh>
+<drct>79</drct>
+<sped>16</sped>
+<datetime role="id">123549</datetime>
+</example>
+<example>
+<radiation>106</radiation>
+<tmpc>19</tmpc>
+<dwpc>8</dwpc>
+<relh>64</relh>
+<drct>281</drct>
+<sped>13</sped>
+<datetime role="id">1235410</datetime>
+</example>
+<example>
+<radiation>454</radiation>
+<tmpc>26</tmpc>
+<dwpc>-6</dwpc>
+<relh>34</relh>
+<drct>290</drct>
+<sped>26</sped>
+<datetime role="id">1235411</datetime>
+</example>
+<example>
+<radiation>141</radiation>
+<tmpc>19</tmpc>
+<dwpc>11</dwpc>
+<relh>26</relh>
+<drct>226</drct>
+<sped>19</sped>
+<datetime role="id">1235412</datetime>
+</example>
+<example>
+<radiation>333</radiation>
+<tmpc>32</tmpc>
+<dwpc>11</dwpc>
+<relh>73</relh>
+<drct>42</drct>
+<sped>1</sped>
+<datetime role="id">1235413</datetime>
+</example>
+<example>
+<radiation>294</radiation>
+<tmpc>5</tmpc>
+<dwpc>-13</dwpc>
+<relh>98</relh>
+<drct>24</drct>
+<sped>3</sped>
+<datetime role="id">1235414</datetime>
+</example>
+<example>
+<radiation>402</radiation>
+<tmpc>5</tmpc>
+<dwpc>-13</dwpc>
+<relh>38</relh>
+<drct>109</drct>
+<sped>22</sped>
+<datetime role="id">1235415</datetime>
+</example>
+<example>
+<radiation>286</radiation>
+<tmpc>28</tmpc>
+<dwpc>-11</dwpc>
+<relh>89</relh>
+<drct>70</drct>
+<sped>23</sped>
+<datetime role="id">1235416</datetime>
+</example>
+<example>
+<radiation>268</radiation>
+<tmpc>29</tmpc>
+<dwpc>-11</dwpc>
+<relh>95</relh>
+<drct>274</drct>
+<sped>9</sped>
+<datetime role="id">1235417</datetime>
+</example>
+<example>
+<radiation>274</radiation>
+<tmpc>28</tmpc>
+<dwpc>6</dwpc>
+<relh>66</relh>
+<drct>135</drct>
+<sped>25</sped>
+<datetime role="id">1235418</datetime>
+</example>
+<example>
+<radiation>14</radiation>
+<tmpc>14</tmpc>
+<dwpc>24</dwpc>
+<relh>71</relh>
+<drct>130</drct>
+<sped>10</sped>
+<datetime role="id">1235419</datetime>
+</example>
+<example>
+<radiation>463</radiation>
+<tmpc>11</tmpc>
+<dwpc>16</dwpc>
+<relh>59</relh>
+<drct>115</drct>
+<sped>13</sped>
+<datetime role="id">1235420</datetime>
+</example>
+<example>
+<radiation>267</radiation>
+<tmpc>1</tmpc>
+<dwpc>-9</dwpc>
+<relh>56</relh>
+<drct>227</drct>
+<sped>8</sped>
+<datetime role="id">1235421</datetime>
+</example>
+<example>
+<radiation>204</radiation>
+<tmpc>13</tmpc>
+<dwpc>17</dwpc>
+<relh>19</relh>
+<drct>0</drct>
+<sped>20</sped>
+<datetime role="id">1235422</datetime>
+</example>
+<example>
+<radiation>91</radiation>
+<tmpc>27</tmpc>
+<dwpc>-14</dwpc>
+<relh>45</relh>
+<drct>127</drct>
+<sped>0</sped>
+<datetime role="id">1235423</datetime>
+</example>
+<example>
+<radiation>462</radiation>
+<tmpc>19</tmpc>
+<dwpc>-8</dwpc>
+<relh>87</relh>
+<drct>159</drct>
+<sped>2</sped>
+<datetime role="id">1235424</datetime>
+</example>
+<example>
+<radiation>308</radiation>
+<tmpc>19</tmpc>
+<dwpc>-22</dwpc>
+<relh>95</relh>
+<drct>198</drct>
+<sped>16</sped>
+<datetime role="id">1235425</datetime>
+</example>
+<example>
+<radiation>389</radiation>
+<tmpc>0</tmpc>
+<dwpc>-1</dwpc>
+<relh>21</relh>
+<drct>150</drct>
+<sped>4</sped>
+<datetime role="id">1235426</datetime>
+</example>
+<example>
+<radiation>221</radiation>
+<tmpc>11</tmpc>
+<dwpc>-5</dwpc>
+<relh>63</relh>
+<drct>107</drct>
+<sped>15</sped>
+<datetime role="id">1235427</datetime>
+</example>
+<example>
+<radiation>268</radiation>
+<tmpc>32</tmpc>
+<dwpc>-21</dwpc>
+<relh>71</relh>
+<drct>276</drct>
+<sped>15</sped>
+<datetime role="id">1235428</datetime>
+</example>
+<example>
+<radiation>447</radiation>
+<tmpc>15</tmpc>
+<dwpc>-22</dwpc>
+<relh>33</relh>
+<drct>216</drct>
+<sped>10</sped>
+<datetime role="id">1235429</datetime>
+</example>
+<example>
+<radiation>241</radiation>
+<tmpc>14</tmpc>
+<dwpc>-15</dwpc>
+<relh>93</relh>
+<drct>26</drct>
+<sped>0</sped>
+<datetime role="id">1235430</datetime>
+</example>
+<example>
+<radiation>205</radiation>
+<tmpc>21</tmpc>
+<dwpc>-18</dwpc>
+<relh>22</relh>
+<drct>352</drct>
+<sped>14</sped>
+<datetime role="id">1235431</datetime>
+</example>
+<example>
+<radiation>156</radiation>
+<tmpc>1</tmpc>
+<dwpc>9</dwpc>
+<relh>86</relh>
+<drct>31</drct>
+<sped>22</sped>
+<datetime role="id">1235432</datetime>
+</example>
+<example>
+<radiation>210</radiation>
+<tmpc>25</tmpc>
+<dwpc>-20</dwpc>
+<relh>56</relh>
+<drct>322</drct>
+<sped>0</sped>
+<datetime role="id">1235433</datetime>
+</example>
+<example>
+<radiation>471</radiation>
+<tmpc>34</tmpc>
+<dwpc>-16</dwpc>
+<relh>100</relh>
+<drct>321</drct>
+<sped>14</sped>
+<datetime role="id">1235434</datetime>
+</example>
+<example>
+<radiation>70</radiation>
+<tmpc>2</tmpc>
+<dwpc>6</dwpc>
+<relh>21</relh>
+<drct>334</drct>
+<sped>8</sped>
+<datetime role="id">1235435</datetime>
+</example>
+<example>
+<radiation>313</radiation>
+<tmpc>33</tmpc>
+<dwpc>19</dwpc>
+<relh>86</relh>
+<drct>337</drct>
+<sped>15</sped>
+<datetime role="id">1235436</datetime>
+</example>
+<example>
+<radiation>92</radiation>
+<tmpc>13</tmpc>
+<dwpc>-21</dwpc>
+<relh>53</relh>
+<drct>319</drct>
+<sped>1</sped>
+<datetime role="id">1235437</datetime>
+</example>
+<example>
+<radiation>441</radiation>
+<tmpc>32</tmpc>
+<dwpc>-7</dwpc>
+<relh>77</relh>
+<drct>349</drct>
+<sped>3</sped>
+<datetime role="id">1235438</datetime>
+</example>
+<example>
+<radiation>244</radiation>
+<tmpc>5</tmpc>
+<dwpc>13</dwpc>
+<relh>78</relh>
+<drct>96</drct>
+<sped>26</sped>
+<datetime role="id">1235439</datetime>
+</example>
+<example>
+<radiation>121</radiation>
+<tmpc>31</tmpc>
+<dwpc>3</dwpc>
+<relh>81</relh>
+<drct>316</drct>
+<sped>15</sped>
+<datetime role="id">1235440</datetime>
+</example>
+<example>
+<radiation>414</radiation>
+<tmpc>29</tmpc>
+<dwpc>-20</dwpc>
+<relh>81</relh>
+<drct>80</drct>
+<sped>16</sped>
+<datetime role="id">1235441</datetime>
+</example>
+<example>
+<radiation>317</radiation>
+<tmpc>5</tmpc>
+<dwpc>-10</dwpc>
+<relh>28</relh>
+<drct>296</drct>
+<sped>8</sped>
+<datetime role="id">1235442</datetime>
+</example>
+<example>
+<radiation>391</radiation>
+<tmpc>26</tmpc>
+<dwpc>7</dwpc>
+<relh>25</relh>
+<drct>23</drct>
+<sped>18</sped>
+<datetime role="id">1235443</datetime>
+</example>
+<example>
+<radiation>351</radiation>
+<tmpc>32</tmpc>
+<dwpc>1</dwpc>
+<relh>65</relh>
+<drct>18</drct>
+<sped>14</sped>
+<datetime role="id">1235444</datetime>
+</example>
+<example>
+<radiation>480</radiation>
+<tmpc>28</tmpc>
+<dwpc>-2</dwpc>
+<relh>18</relh>
+<drct>291</drct>
+<sped>23</sped>
+<datetime role="id">1235445</datetime>
+</example>
+<example>
+<radiation>6</radiation>
+<tmpc>19</tmpc>
+<dwpc>-6</dwpc>
+<relh>35</relh>
+<drct>168</drct>
+<sped>23</sped>
+<datetime role="id">1235446</datetime>
+</example>
+<example>
+<radiation>497</radiation>
+<tmpc>14</tmpc>
+<dwpc>14</dwpc>
+<relh>41</relh>
+<drct>45</drct>
+<sped>14</sped>
+<datetime role="id">1235447</datetime>
+</example>
+<example>
+<radiation>233.598</radiation>
+<tmpc>30</tmpc>
+<dwpc>-15</dwpc>
+<relh>31</relh>
+<drct>64</drct>
+<sped>25</sped>
+<datetime role="id">123540</datetime>
+</example>
+<example>
+<radiation>769.154</radiation>
+<tmpc>13</tmpc>
+<dwpc>-16</dwpc>
+<relh>67</relh>
+<drct>221</drct>
+<sped>17</sped>
+<datetime role="id">123541</datetime>
+</example>
+<example>
+<radiation>-315.503</radiation>
+<tmpc>32</tmpc>
+<dwpc>18</dwpc>
+<relh>74</relh>
+<drct>166</drct>
+<sped>1</sped>
+<datetime role="id">123542</datetime>
+</example>
+<example>
+<radiation>355.571</radiation>
+<tmpc>9</tmpc>
+<dwpc>-1</dwpc>
+<relh>29</relh>
+<drct>128</drct>
+<sped>2</sped>
+<datetime role="id">123543</datetime>
+</example>
+<example>
+<radiation>237.345</radiation>
+<tmpc>30</tmpc>
+<dwpc>7</dwpc>
+<relh>84</relh>
+<drct>337</drct>
+<sped>1</sped>
+<datetime role="id">123544</datetime>
+</example>
+<example>
+<radiation>652.186</radiation>
+<tmpc>17</tmpc>
+<dwpc>-18</dwpc>
+<relh>72</relh>
+<drct>113</drct>
+<sped>27</sped>
+<datetime role="id">123545</datetime>
+</example>
+<example>
+<radiation>-397.251</radiation>
+<tmpc>2</tmpc>
+<dwpc>-9</dwpc>
+<relh>47</relh>
+<drct>126</drct>
+<sped>27</sped>
+<datetime role="id">123546</datetime>
+</example>
+<example>
+<radiation>-758.291</radiation>
+<tmpc>34</tmpc>
+<dwpc>0</dwpc>
+<relh>51</relh>
+<drct>22</drct>
+<sped>27</sped>
+<datetime role="id">123547</datetime>
+</example>
+<example>
+<radiation>397.664</radiation>
+<tmpc>14</tmpc>
+<dwpc>10</dwpc>
+<relh>42</relh>
+<drct>282</drct>
+<sped>7</sped>
+<datetime role="id">123548</datetime>
+</example>
+<example>
+<radiation>198.536</radiation>
+<tmpc>15</tmpc>
+<dwpc>14</dwpc>
+<relh>68</relh>
+<drct>255</drct>
+<sped>20</sped>
+<datetime role="id">123549</datetime>
+</example>
+<example>
+<radiation>488.448</radiation>
+<tmpc>12</tmpc>
+<dwpc>17</dwpc>
+<relh>51</relh>
+<drct>94</drct>
+<sped>7</sped>
+<datetime role="id">1235410</datetime>
+</example>
+<example>
+<radiation>-504.548</radiation>
+<tmpc>12</tmpc>
+<dwpc>-13</dwpc>
+<relh>87</relh>
+<drct>39</drct>
+<sped>27</sped>
+<datetime role="id">1235411</datetime>
+</example>
+<example>
+<radiation>-70.104</radiation>
+<tmpc>4</tmpc>
+<dwpc>0</dwpc>
+<relh>55</relh>
+<drct>243</drct>
+<sped>24</sped>
+<datetime role="id">1235412</datetime>
+</example>
+<example>
+<radiation>-366.102</radiation>
+<tmpc>17</tmpc>
+<dwpc>16</dwpc>
+<relh>55</relh>
+<drct>300</drct>
+<sped>23</sped>
+<datetime role="id">1235413</datetime>
+</example>
+<example>
+<radiation>-908.488</radiation>
+<tmpc>33</tmpc>
+<dwpc>-17</dwpc>
+<relh>13</relh>
+<drct>254</drct>
+<sped>4</sped>
+<datetime role="id">1235414</datetime>
+</example>
+<example>
+<radiation>1.108</radiation>
+<tmpc>32</tmpc>
+<dwpc>7</dwpc>
+<relh>67</relh>
+<drct>120</drct>
+<sped>18</sped>
+<datetime role="id">1235415</datetime>
+</example>
+<example>
+<radiation>-120.275</radiation>
+<tmpc>7</tmpc>
+<dwpc>-3</dwpc>
+<relh>79</relh>
+<drct>71</drct>
+<sped>3</sped>
+<datetime role="id">1235416</datetime>
+</example>
+<example>
+<radiation>860.522</radiation>
+<tmpc>10</tmpc>
+<dwpc>21</dwpc>
+<relh>100</relh>
+<drct>262</drct>
+<sped>15</sped>
+<datetime role="id">1235417</datetime>
+</example>
+<example>
+<radiation>-994.099</radiation>
+<tmpc>18</tmpc>
+<dwpc>4</dwpc>
+<relh>51</relh>
+<drct>231</drct>
+<sped>20</sped>
+<datetime role="id">1235418</datetime>
+</example>
+<example>
+<radiation>-55.903</radiation>
+<tmpc>15</tmpc>
+<dwpc>5</dwpc>
+<relh>100</relh>
+<drct>135</drct>
+<sped>22</sped>
+<datetime role="id">1235419</datetime>
+</example>
+<example>
+<radiation>-429.836</radiation>
+<tmpc>11</tmpc>
+<dwpc>22</dwpc>
+<relh>67</relh>
+<drct>10</drct>
+<sped>23</sped>
+<datetime role="id">1235420</datetime>
+</example>
+<example>
+<radiation>-1426.392</radiation>
+<tmpc>23</tmpc>
+<dwpc>16</dwpc>
+<relh>62</relh>
+<drct>140</drct>
+<sped>2</sped>
+<datetime role="id">1235421</datetime>
+</example>
+<example>
+<radiation>-687.840</radiation>
+<tmpc>1</tmpc>
+<dwpc>17</dwpc>
+<relh>52</relh>
+<drct>96</drct>
+<sped>5</sped>
+<datetime role="id">1235422</datetime>
+</example>
+<example>
+<radiation>-1067.914</radiation>
+<tmpc>25</tmpc>
+<dwpc>-21</dwpc>
+<relh>29</relh>
+<drct>230</drct>
+<sped>18</sped>
+<datetime role="id">1235423</datetime>
+</example>
+<example>
+<radiation>153.982</radiation>
+<tmpc>6</tmpc>
+<dwpc>24</dwpc>
+<relh>17</relh>
+<drct>326</drct>
+<sped>18</sped>
+<datetime role="id">1235424</datetime>
+</example>
+<example>
+<radiation>-122.433</radiation>
+<tmpc>10</tmpc>
+<dwpc>10</dwpc>
+<relh>83</relh>
+<drct>53</drct>
+<sped>7</sped>
+<datetime role="id">1235425</datetime>
+</example>
+<example>
+<radiation>270.470</radiation>
+<tmpc>20</tmpc>
+<dwpc>22</dwpc>
+<relh>11</relh>
+<drct>174</drct>
+<sped>27</sped>
+<datetime role="id">1235426</datetime>
+</example>
+<example>
+<radiation>432.659</radiation>
+<tmpc>24</tmpc>
+<dwpc>16</dwpc>
+<relh>56</relh>
+<drct>85</drct>
+<sped>1</sped>
+<datetime role="id">1235427</datetime>
+</example>
+<example>
+<radiation>-571.979</radiation>
+<tmpc>0</tmpc>
+<dwpc>-4</dwpc>
+<relh>39</relh>
+<drct>267</drct>
+<sped>21</sped>
+<datetime role="id">1235428</datetime>
+</example>
+<example>
+<radiation>-1625.513</radiation>
+<tmpc>28</tmpc>
+<dwpc>20</dwpc>
+<relh>33</relh>
+<drct>281</drct>
+<sped>27</sped>
+<datetime role="id">1235429</datetime>
+</example>
+<example>
+<radiation>-712.169</radiation>
+<tmpc>15</tmpc>
+<dwpc>-17</dwpc>
+<relh>74</relh>
+<drct>14</drct>
+<sped>18</sped>
+<datetime role="id">1235430</datetime>
+</example>
+<example>
+<radiation>-79.310</radiation>
+<tmpc>17</tmpc>
+<dwpc>-6</dwpc>
+<relh>93</relh>
+<drct>210</drct>
+<sped>7</sped>
+<datetime role="id">1235431</datetime>
+</example>
+<example>
+<radiation>-30.968</radiation>
+<tmpc>0</tmpc>
+<dwpc>14</dwpc>
+<relh>66</relh>
+<drct>32</drct>
+<sped>0</sped>
+<datetime role="id">1235432</datetime>
+</example>
+<example>
+<radiation>-299.187</radiation>
+<tmpc>18</tmpc>
+<dwpc>1</dwpc>
+<relh>85</relh>
+<drct>280</drct>
+<sped>24</sped>
+<datetime role="id">1235433</datetime>
+</example>
+<example>
+<radiation>-404.185</radiation>
+<tmpc>11</tmpc>
+<dwpc>10</dwpc>
+<relh>18</relh>
+<drct>270</drct>
+<sped>4</sped>
+<datetime role="id">1235434</datetime>
+</example>
+<example>
+<radiation>-236.236</radiation>
+<tmpc>20</tmpc>
+<dwpc>21</dwpc>
+<relh>63</relh>
+<drct>324</drct>
+<sped>3</sped>
+<datetime role="id">1235435</datetime>
+</example>
+<example>
+<radiation>-192.956</radiation>
+<tmpc>31</tmpc>
+<dwpc>1</dwpc>
+<relh>82</relh>
+<drct>271</drct>
+<sped>25</sped>
+<datetime role="id">1235436</datetime>
+</example>
+<example>
+<radiation>45.293</radiation>
+<tmpc>4</tmpc>
+<dwpc>15</dwpc>
+<relh>68</relh>
+<drct>348</drct>
+<sped>20</sped>
+<datetime role="id">1235437</datetime>
+</example>
+<example>
+<radiation>301.998</radiation>
+<tmpc>20</tmpc>
+<dwpc>9</dwpc>
+<relh>30</relh>
+<drct>147</drct>
+<sped>8</sped>
+<datetime role="id">1235438</datetime>
+</example>
+<example>
+<radiation>704.755</radiation>
+<tmpc>24</tmpc>
+<dwpc>4</dwpc>
+<relh>28</relh>
+<drct>227</drct>
+<sped>3</sped>
+<datetime role="id">1235439</datetime>
+</example>
+<example>
+<radiation>210.498</radiation>
+<tmpc>34</tmpc>
+<dwpc>-2</dwpc>
+<relh>32</relh>
+<drct>213</drct>
+<sped>18</sped>
+<datetime role="id">1235440</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>24</tmpc>
+<dwpc>10</dwpc>
+<relh>48</relh>
+<drct>27</drct>
+<sped>2</sped>
+<datetime role="id">1235441</datetime>
+</example>
+<example>
+<radiation>945.191</radiation>
+<tmpc>6</tmpc>
+<dwpc>-18</dwpc>
+<relh>11</relh>
+<drct>219</drct>
+<sped>13</sped>
+<datetime role="id">1235442</datetime>
+</example>
+<example>
+<radiation>-80.864</radiation>
+<tmpc>33</tmpc>
+<dwpc>-20</dwpc>
+<relh>57</relh>
+<drct>6</drct>
+<sped>8</sped>
+<datetime role="id">1235443</datetime>
+</example>
+<example>
+<radiation>-543.060</radiation>
+<tmpc>8</tmpc>
+<dwpc>-16</dwpc>
+<relh>42</relh>
+<drct>90</drct>
+<sped>5</sped>
+<datetime role="id">1235444</datetime>
+</example>
+<example>
+<radiation>-254.484</radiation>
+<tmpc>32</tmpc>
+<dwpc>-19</dwpc>
+<relh>97</relh>
+<drct>230</drct>
+<sped>27</sped>
+<datetime role="id">1235445</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>5</tmpc>
+<dwpc>5</dwpc>
+<relh>63</relh>
+<drct>19</drct>
+<sped>21</sped>
+<datetime role="id">1235446</datetime>
+</example>
+<example>
+<radiation>459.020</radiation>
+<tmpc>33</tmpc>
+<dwpc>13</dwpc>
+<relh>41</relh>
+<drct>116</drct>
+<sped>24</sped>
+<datetime role="id">1235447</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>5</tmpc>
+<dwpc>-11</dwpc>
+<relh>37</relh>
+<drct>185</drct>
+<sped>14</sped>
+<datetime role="id">1235448</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>7</tmpc>
+<dwpc>-6</dwpc>
+<relh>36</relh>
+<drct>284</drct>
+<sped>3</sped>
+<datetime role="id">1235449</datetime>
+</example>
+<example>
+<radiation>406.163</radiation>
+<tmpc>2</tmpc>
+<dwpc>20</dwpc>
+<relh>30</relh>
+<drct>167</drct>
+<sped>1</sped>
+<datetime role="id">1235450</datetime>
+</example>
+<example>
+<radiation>-131.752</radiation>
+<tmpc>24</tmpc>
+<dwpc>-22</dwpc>
+<relh>20</relh>
+<drct>171</drct>
+<sped>22</sped>
+<datetime role="id">1235451</datetime>
+</example>
+<example>
+<radiation>-931.405</radiation>
+<tmpc>2</tmpc>
+<dwpc>-19</dwpc>
+<relh>27</relh>
+<drct>189</drct>
+<sped>27</sped>
+<datetime role="id">1235452</datetime>
+</example>
+<example>
+<radiation>-719.407</radiation>
+<tmpc>3</tmpc>
+<dwpc>-1</dwpc>
+<relh>43</relh>
+<drct>99</drct>
+<sped>3</sped>
+<datetime role="id">1235453</datetime>
+</example>
+<example>
+<radiation>-706.827</radiation>
+<tmpc>30</tmpc>
+<dwpc>-11</dwpc>
+<relh>50</relh>
+<drct>38</drct>
+<sped>6</sped>
+<datetime role="id">1235454</datetime>
+</example>
+<example>
+<radiation>-460.584</radiation>
+<tmpc>12</tmpc>
+<dwpc>18</dwpc>
+<relh>52</relh>
+<drct>277</drct>
+<sped>0</sped>
+<datetime role="id">1235455</datetime>
+</example>
+<example>
+<radiation>633.507</radiation>
+<tmpc>3</tmpc>
+<dwpc>-11</dwpc>
+<relh>23</relh>
+<drct>160</drct>
+<sped>5</sped>
+<datetime role="id">1235456</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>6</tmpc>
+<dwpc>12</dwpc>
+<relh>33</relh>
+<drct>2</drct>
+<sped>15</sped>
+<datetime role="id">1235457</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>8</tmpc>
+<dwpc>13</dwpc>
+<relh>25</relh>
+<drct>135</drct>
+<sped>18</sped>
+<datetime role="id">1235458</datetime>
+</example>
+<example>
+<radiation>732.497</radiation>
+<tmpc>11</tmpc>
+<dwpc>-2</dwpc>
+<relh>45</relh>
+<drct>160</drct>
+<sped>0</sped>
+<datetime role="id">1235459</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>8</tmpc>
+<dwpc>15</dwpc>
+<relh>47</relh>
+<drct>329</drct>
+<sped>21</sped>
+<datetime role="id">1235460</datetime>
+</example>
+<example>
+<radiation>19.080</radiation>
+<tmpc>34</tmpc>
+<dwpc>-22</dwpc>
+<relh>21</relh>
+<drct>289</drct>
+<sped>7</sped>
+<datetime role="id">1235461</datetime>
+</example>
+<example>
+<radiation>133.770</radiation>
+<tmpc>33</tmpc>
+<dwpc>7</dwpc>
+<relh>97</relh>
+<drct>189</drct>
+<sped>6</sped>
+<datetime role="id">1235462</datetime>
+</example>
+<example>
+<radiation>-5.434</radiation>
+<tmpc>15</tmpc>
+<dwpc>-17</dwpc>
+<relh>11</relh>
+<drct>230</drct>
+<sped>25</sped>
+<datetime role="id">1235463</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>4</tmpc>
+<dwpc>-14</dwpc>
+<relh>59</relh>
+<drct>285</drct>
+<sped>8</sped>
+<datetime role="id">1235464</datetime>
+</example>
+<example>
+<radiation>701.174</radiation>
+<tmpc>18</tmpc>
+<dwpc>23</dwpc>
+<relh>22</relh>
+<drct>126</drct>
+<sped>23</sped>
+<datetime role="id">1235465</datetime>
+</example>
+<example>
+<radiation>-9.932</radiation>
+<tmpc>24</tmpc>
+<dwpc>-20</dwpc>
+<relh>96</relh>
+<drct>19</drct>
+<sped>22</sped>
+<datetime role="id">1235466</datetime>
+</example>
+<example>
+<radiation>246.995</radiation>
+<tmpc>0</tmpc>
+<dwpc>23</dwpc>
+<relh>45</relh>
+<drct>269</drct>
+<sped>24</sped>
+<datetime role="id">1235467</datetime>
+</example>
+<example>
+<radiation>108.310</radiation>
+<tmpc>19</tmpc>
+<dwpc>15</dwpc>
+<relh>70</relh>
+<drct>334</drct>
+<sped>0</sped>
+<datetime role="id">1235468</datetime>
+</example>
+<example>
+<radiation>-1666.695</radiation>
+<tmpc>19</tmpc>
+<dwpc>-8</dwpc>
+<relh>13</relh>
+<drct>285</drct>
+<sped>23</sped>
+<datetime role="id">1235469</datetime>
+</example>
+<example>
+<radiation>-96.304</radiation>
+<tmpc>1</tmpc>
+<dwpc>-19</dwpc>
+<relh>54</relh>
+<drct>86</drct>
+<sped>3</sped>
+<datetime role="id">1235470</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>25</tmpc>
+<dwpc>-14</dwpc>
+<relh>32</relh>
+<drct>143</drct>
+<sped>9</sped>
+<datetime role="id">1235471</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>3</tmpc>
+<dwpc>-14</dwpc>
+<relh>37</relh>
+<drct>262</drct>
+<sped>20</sped>
+<datetime role="id">1235472</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>26</tmpc>
+<dwpc>1</dwpc>
+<relh>29</relh>
+<drct>284</drct>
+<sped>15</sped>
+<datetime role="id">1235473</datetime>
+</example>
+<example>
+<radiation>357.424</radiation>
+<tmpc>13</tmpc>
+<dwpc>-16</dwpc>
+<relh>90</relh>
+<drct>231</drct>
+<sped>26</sped>
+<datetime role="id">1235474</datetime>
+</example>
+<example>
+<radiation>507.238</radiation>
+<tmpc>35</tmpc>
+<dwpc>21</dwpc>
+<relh>66</relh>
+<drct>11</drct>
+<sped>4</sped>
+<datetime role="id">1235475</datetime>
+</example>
+<example>
+<radiation>-432.916</radiation>
+<tmpc>0</tmpc>
+<dwpc>21</dwpc>
+<relh>75</relh>
+<drct>66</drct>
+<sped>14</sped>
+<datetime role="id">1235476</datetime>
+</example>
+<example>
+<radiation>-1689.376</radiation>
+<tmpc>19</tmpc>
+<dwpc>12</dwpc>
+<relh>37</relh>
+<drct>341</drct>
+<sped>22</sped>
+<datetime role="id">1235477</datetime>
+</example>
+<example>
+<radiation>198.436</radiation>
+<tmpc>10</tmpc>
+<dwpc>-15</dwpc>
+<relh>56</relh>
+<drct>358</drct>
+<sped>4</sped>
+<datetime role="id">1235478</datetime>
+</example>
+<example>
+<radiation>380.570</radiation>
+<tmpc>33</tmpc>
+<dwpc>19</dwpc>
+<relh>60</relh>
+<drct>89</drct>
+<sped>6</sped>
+<datetime role="id">1235479</datetime>
+</example>
+<example>
+<radiation>266.035</radiation>
+<tmpc>29</tmpc>
+<dwpc>9</dwpc>
+<relh>30</relh>
+<drct>29</drct>
+<sped>16</sped>
+<datetime role="id">1235480</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>26</tmpc>
+<dwpc>6</dwpc>
+<relh>37</relh>
+<drct>293</drct>
+<sped>23</sped>
+<datetime role="id">1235481</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>19</tmpc>
+<dwpc>-6</dwpc>
+<relh>94</relh>
+<drct>172</drct>
+<sped>6</sped>
+<datetime role="id">1235482</datetime>
+</example>
+<example>
+<radiation>588.776</radiation>
+<tmpc>15</tmpc>
+<dwpc>18</dwpc>
+<relh>94</relh>
+<drct>253</drct>
+<sped>21</sped>
+<datetime role="id">1235483</datetime>
+</example>
+<example>
+<radiation>-777.600</radiation>
+<tmpc>25</tmpc>
+<dwpc>-15</dwpc>
+<relh>80</relh>
+<drct>117</drct>
+<sped>7</sped>
+<datetime role="id">1235484</datetime>
+</example>
+<example>
+<radiation>263.908</radiation>
+<tmpc>13</tmpc>
+<dwpc>9</dwpc>
+<relh>71</relh>
+<drct>215</drct>
+<sped>20</sped>
+<datetime role="id">1235485</datetime>
+</example>
+<example>
+<radiation>690.181</radiation>
+<tmpc>3</tmpc>
+<dwpc>10</dwpc>
+<relh>98</relh>
+<drct>321</drct>
+<sped>7</sped>
+<datetime role="id">1235486</datetime>
+</example>
+<example>
+<radiation>512.295</radiation>
+<tmpc>9</tmpc>
+<dwpc>-7</dwpc>
+<relh>39</relh>
+<drct>197</drct>
+<sped>26</sped>
+<datetime role="id">1235487</datetime>
+</example>
+<example>
+<radiation>517.300</radiation>
+<tmpc>30</tmpc>
+<dwpc>8</dwpc>
+<relh>41</relh>
+<drct>319</drct>
+<sped>1</sped>
+<datetime role="id">1235488</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>13</tmpc>
+<dwpc>22</dwpc>
+<relh>59</relh>
+<drct>255</drct>
+<sped>26</sped>
+<datetime role="id">1235489</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>11</tmpc>
+<dwpc>-5</dwpc>
+<relh>10</relh>
+<drct>89</drct>
+<sped>1</sped>
+<datetime role="id">1235490</datetime>
+</example>
+<example>
+<radiation>-778.154</radiation>
+<tmpc>29</tmpc>
+<dwpc>-1</dwpc>
+<relh>96</relh>
+<drct>155</drct>
+<sped>5</sped>
+<datetime role="id">1235491</datetime>
+</example>
+<example>
+<radiation>-1421.707</radiation>
+<tmpc>25</tmpc>
+<dwpc>-18</dwpc>
+<relh>90</relh>
+<drct>203</drct>
+<sped>13</sped>
+<datetime role="id">1235492</datetime>
+</example>
+<example>
+<radiation>-180.557</radiation>
+<tmpc>14</tmpc>
+<dwpc>4</dwpc>
+<relh>67</relh>
+<drct>252</drct>
+<sped>0</sped>
+<datetime role="id">1235493</datetime>
+</example>
+<example>
+<radiation>-224.281</radiation>
+<tmpc>31</tmpc>
+<dwpc>1</dwpc>
+<relh>98</relh>
+<drct>185</drct>
+<sped>15</sped>
+<datetime role="id">1235494</datetime>
+</example>
+<example>
+<radiation>-1200.510</radiation>
+<tmpc>9</tmpc>
+<dwpc>-11</dwpc>
+<relh>37</relh>
+<drct>5</drct>
+<sped>4</sped>
+<datetime role="id">1235495</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>9</tmpc>
+<dwpc>-2</dwpc>
+<relh>27</relh>
+<drct>318</drct>
+<sped>2</sped>
+<datetime role="id">1235496</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>17</tmpc>
+<dwpc>-18</dwpc>
+<relh>95</relh>
+<drct>99</drct>
+<sped>17</sped>
+<datetime role="id">1235497</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>22</tmpc>
+<dwpc>-19</dwpc>
+<relh>80</relh>
+<drct>277</drct>
+<sped>18</sped>
+<datetime role="id">1235498</datetime>
+</example>
+<example>
+<radiation>257.741</radiation>
+<tmpc>10</tmpc>
+<dwpc>-21</dwpc>
+<relh>29</relh>
+<drct>140</drct>
+<sped>8</sped>
+<datetime role="id">1235499</datetime>
+</example>
+<example>
+<radiation>-159.075</radiation>
+<tmpc>0</tmpc>
+<dwpc>-21</dwpc>
+<relh>85</relh>
+<drct>313</drct>
+<sped>3</sped>
+<datetime role="id">12354100</datetime>
+</example>
+<example>
+<radiation>193.276</radiation>
+<tmpc>2</tmpc>
+<dwpc>-7</dwpc>
+<relh>36</relh>
+<drct>81</drct>
+<sped>17</sped>
+<datetime role="id">12354101</datetime>
+</example>
+<example>
+<radiation>107.090</radiation>
+<tmpc>8</tmpc>
+<dwpc>-7</dwpc>
+<relh>15</relh>
+<drct>130</drct>
+<sped>14</sped>
+<datetime role="id">12354102</datetime>
+</example>
+<example>
+<radiation>-588.152</radiation>
+<tmpc>18</tmpc>
+<dwpc>-2</dwpc>
+<relh>70</relh>
+<drct>87</drct>
+<sped>14</sped>
+<datetime role="id">12354103</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>2</tmpc>
+<dwpc>-22</dwpc>
+<relh>28</relh>
+<drct>254</drct>
+<sped>12</sped>
+<datetime role="id">12354104</datetime>
+</example>
+<example>
+<radiation>735.465</radiation>
+<tmpc>24</tmpc>
+<dwpc>7</dwpc>
+<relh>32</relh>
+<drct>332</drct>
+<sped>8</sped>
+<datetime role="id">12354105</datetime>
+</example>
+<example>
+<radiation>316.076</radiation>
+<tmpc>22</tmpc>
+<dwpc>-3</dwpc>
+<relh>25</relh>
+<drct>282</drct>
+<sped>17</sped>
+<datetime role="id">12354106</datetime>
+</example>
+<example>
+<radiation>-861.896</radiation>
+<tmpc>4</tmpc>
+<dwpc>20</dwpc>
+<relh>88</relh>
+<drct>57</drct>
+<sped>4</sped>
+<datetime role="id">12354107</datetime>
+</example>
+<example>
+<radiation>42.458</radiation>
+<tmpc>15</tmpc>
+<dwpc>-5</dwpc>
+<relh>55</relh>
+<drct>352</drct>
+<sped>19</sped>
+<datetime role="id">12354108</datetime>
+</example>
+<example>
+<radiation>28.300</radiation>
+<tmpc>25</tmpc>
+<dwpc>4</dwpc>
+<relh>25</relh>
+<drct>198</drct>
+<sped>27</sped>
+<datetime role="id">12354109</datetime>
+</example>
+<example>
+<radiation>-663.726</radiation>
+<tmpc>16</tmpc>
+<dwpc>-17</dwpc>
+<relh>26</relh>
+<drct>350</drct>
+<sped>10</sped>
+<datetime role="id">12354110</datetime>
+</example>
+<example>
+<radiation>689.973</radiation>
+<tmpc>9</tmpc>
+<dwpc>10</dwpc>
+<relh>40</relh>
+<drct>107</drct>
+<sped>12</sped>
+<datetime role="id">12354111</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>11</tmpc>
+<dwpc>20</dwpc>
+<relh>44</relh>
+<drct>230</drct>
+<sped>17</sped>
+<datetime role="id">12354112</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>30</tmpc>
+<dwpc>20</dwpc>
+<relh>36</relh>
+<drct>175</drct>
+<sped>6</sped>
+<datetime role="id">12354113</datetime>
+</example>
+<example>
+<radiation>226.953</radiation>
+<tmpc>24</tmpc>
+<dwpc>18</dwpc>
+<relh>58</relh>
+<drct>288</drct>
+<sped>8</sped>
+<datetime role="id">12354114</datetime>
+</example>
+<example>
+<radiation>996.944</radiation>
+<tmpc>1</tmpc>
+<dwpc>-11</dwpc>
+<relh>56</relh>
+<drct>30</drct>
+<sped>4</sped>
+<datetime role="id">12354115</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>3</tmpc>
+<dwpc>15</dwpc>
+<relh>57</relh>
+<drct>91</drct>
+<sped>14</sped>
+<datetime role="id">12354116</datetime>
+</example>
+<example>
+<radiation>-1638.934</radiation>
+<tmpc>16</tmpc>
+<dwpc>-20</dwpc>
+<relh>64</relh>
+<drct>222</drct>
+<sped>24</sped>
+<datetime role="id">12354117</datetime>
+</example>
+<example>
+<radiation>-170.065</radiation>
+<tmpc>15</tmpc>
+<dwpc>2</dwpc>
+<relh>70</relh>
+<drct>16</drct>
+<sped>1</sped>
+<datetime role="id">12354118</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>9</tmpc>
+<dwpc>-17</dwpc>
+<relh>34</relh>
+<drct>125</drct>
+<sped>16</sped>
+<datetime role="id">12354119</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>35</tmpc>
+<dwpc>24</dwpc>
+<relh>39</relh>
+<drct>168</drct>
+<sped>21</sped>
+<datetime role="id">12354120</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>26</tmpc>
+<dwpc>4</dwpc>
+<relh>94</relh>
+<drct>306</drct>
+<sped>23</sped>
+<datetime role="id">12354121</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>33</tmpc>
+<dwpc>20</dwpc>
+<relh>45</relh>
+<drct>16</drct>
+<sped>4</sped>
+<datetime role="id">12354122</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>27</tmpc>
+<dwpc>23</dwpc>
+<relh>91</relh>
+<drct>66</drct>
+<sped>23</sped>
+<datetime role="id">12354123</datetime>
+</example>
+<example>
+<radiation>-170.582</radiation>
+<tmpc>8</tmpc>
+<dwpc>-21</dwpc>
+<relh>43</relh>
+<drct>284</drct>
+<sped>20</sped>
+<datetime role="id">12354124</datetime>
+</example>
+<example>
+<radiation>442.277</radiation>
+<tmpc>24</tmpc>
+<dwpc>-12</dwpc>
+<relh>99</relh>
+<drct>82</drct>
+<sped>25</sped>
+<datetime role="id">12354125</datetime>
+</example>
+<example>
+<radiation>-164.740</radiation>
+<tmpc>10</tmpc>
+<dwpc>10</dwpc>
+<relh>47</relh>
+<drct>156</drct>
+<sped>8</sped>
+<datetime role="id">12354126</datetime>
+</example>
+<example>
+<radiation>768.513</radiation>
+<tmpc>1</tmpc>
+<dwpc>-8</dwpc>
+<relh>14</relh>
+<drct>97</drct>
+<sped>18</sped>
+<datetime role="id">12354127</datetime>
+</example>
+<example>
+<radiation>393.151</radiation>
+<tmpc>10</tmpc>
+<dwpc>18</dwpc>
+<relh>90</relh>
+<drct>162</drct>
+<sped>24</sped>
+<datetime role="id">12354128</datetime>
+</example>
+<example>
+<radiation>378.939</radiation>
+<tmpc>22</tmpc>
+<dwpc>3</dwpc>
+<relh>20</relh>
+<drct>248</drct>
+<sped>22</sped>
+<datetime role="id">12354129</datetime>
+</example>
+<example>
+<radiation>462.277</radiation>
+<tmpc>34</tmpc>
+<dwpc>-16</dwpc>
+<relh>96</relh>
+<drct>82</drct>
+<sped>21</sped>
+<datetime role="id">12354130</datetime>
+</example>
+<example>
+<radiation>-714.554</radiation>
+<tmpc>12</tmpc>
+<dwpc>21</dwpc>
+<relh>96</relh>
+<drct>208</drct>
+<sped>18</sped>
+<datetime role="id">12354131</datetime>
+</example>
+<example>
+<radiation>-2033.139</radiation>
+<tmpc>34</tmpc>
+<dwpc>11</dwpc>
+<relh>57</relh>
+<drct>334</drct>
+<sped>26</sped>
+<datetime role="id">12354132</datetime>
+</example>
+<example>
+<radiation>-254.456</radiation>
+<tmpc>29</tmpc>
+<dwpc>19</dwpc>
+<relh>32</relh>
+<drct>319</drct>
+<sped>20</sped>
+<datetime role="id">12354133</datetime>
+</example>
+<example>
+<radiation>42.314</radiation>
+<tmpc>33</tmpc>
+<dwpc>13</dwpc>
+<relh>39</relh>
+<drct>360</drct>
+<sped>4</sped>
+<datetime role="id">12354134</datetime>
+</example>
+<example>
+<radiation>-1728.634</radiation>
+<tmpc>7</tmpc>
+<dwpc>-17</dwpc>
+<relh>87</relh>
+<drct>342</drct>
+<sped>5</sped>
+<datetime role="id">12354135</datetime>
+</example>
+<example>
+<radiation>265.860</radiation>
+<tmpc>20</tmpc>
+<dwpc>19</dwpc>
+<relh>98</relh>
+<drct>253</drct>
+<sped>21</sped>
+<datetime role="id">12354136</datetime>
+</example>
+<example>
+<radiation>634.227</radiation>
+<tmpc>28</tmpc>
+<dwpc>14</dwpc>
+<relh>72</relh>
+<drct>29</drct>
+<sped>14</sped>
+<datetime role="id">12354137</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>11</tmpc>
+<dwpc>-17</dwpc>
+<relh>50</relh>
+<drct>181</drct>
+<sped>27</sped>
+<datetime role="id">12354138</datetime>
+</example>
+<example>
+<radiation>378.090</radiation>
+<tmpc>4</tmpc>
+<dwpc>-8</dwpc>
+<relh>59</relh>
+<drct>23</drct>
+<sped>3</sped>
+<datetime role="id">12354139</datetime>
+</example>
+<example>
+<radiation>778.954</radiation>
+<tmpc>0</tmpc>
+<dwpc>5</dwpc>
+<relh>24</relh>
+<drct>210</drct>
+<sped>22</sped>
+<datetime role="id">12354140</datetime>
+</example>
+<example>
+<radiation>730.150</radiation>
+<tmpc>8</tmpc>
+<dwpc>6</dwpc>
+<relh>46</relh>
+<drct>53</drct>
+<sped>14</sped>
+<datetime role="id">12354141</datetime>
+</example>
+<example>
+<radiation>516.730</radiation>
+<tmpc>25</tmpc>
+<dwpc>-4</dwpc>
+<relh>49</relh>
+<drct>221</drct>
+<sped>4</sped>
+<datetime role="id">12354142</datetime>
+</example>
+<example>
+<radiation>-497.459</radiation>
+<tmpc>28</tmpc>
+<dwpc>5</dwpc>
+<relh>33</relh>
+<drct>267</drct>
+<sped>11</sped>
+<datetime role="id">12354143</datetime>
+</example>
+<example>
+<radiation>736.836</radiation>
+<tmpc>23</tmpc>
+<dwpc>-10</dwpc>
+<relh>85</relh>
+<drct>348</drct>
+<sped>11</sped>
+<datetime role="id">12354144</datetime>
+</example>
+<example>
+<radiation>-45.562</radiation>
+<tmpc>24</tmpc>
+<dwpc>6</dwpc>
+<relh>27</relh>
+<drct>249</drct>
+<sped>1</sped>
+<datetime role="id">12354145</datetime>
+</example>
+<example>
+<radiation>-1129.550</radiation>
+<tmpc>17</tmpc>
+<dwpc>-4</dwpc>
+<relh>54</relh>
+<drct>110</drct>
+<sped>6</sped>
+<datetime role="id">12354146</datetime>
+</example>
+<example>
+<radiation>-626.151</radiation>
+<tmpc>25</tmpc>
+<dwpc>10</dwpc>
+<relh>54</relh>
+<drct>150</drct>
+<sped>8</sped>
+<datetime role="id">12354147</datetime>
+</example>
+<example>
+<radiation>138.159</radiation>
+<tmpc>25</tmpc>
+<dwpc>10</dwpc>
+<relh>89</relh>
+<drct>221</drct>
+<sped>1</sped>
+<datetime role="id">12354148</datetime>
+</example>
+<example>
+<radiation>-183.345</radiation>
+<tmpc>21</tmpc>
+<dwpc>-14</dwpc>
+<relh>38</relh>
+<drct>114</drct>
+<sped>19</sped>
+<datetime role="id">12354149</datetime>
+</example>
+<example>
+<radiation>-287.803</radiation>
+<tmpc>34</tmpc>
+<dwpc>1</dwpc>
+<relh>21</relh>
+<drct>360</drct>
+<sped>5</sped>
+<datetime role="id">12354150</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>35</tmpc>
+<dwpc>14</dwpc>
+<relh>10</relh>
+<drct>237</drct>
+<sped>16</sped>
+<datetime role="id">12354151</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>11</tmpc>
+<dwpc>-17</dwpc>
+<relh>73</relh>
+<drct>140</drct>
+<sped>0</sped>
+<datetime role="id">12354152</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>4</tmpc>
+<dwpc>-20</dwpc>
+<relh>71</relh>
+<drct>106</drct>
+<sped>26</sped>
+<datetime role="id">12354153</datetime>
+</example>
+<example>
+<radiation>538.300</radiation>
+<tmpc>17</tmpc>
+<dwpc>19</dwpc>
+<relh>50</relh>
+<drct>250</drct>
+<sped>13</sped>
+<datetime role="id">12354154</datetime>
+</example>
+<example>
+<radiation>25.262</radiation>
+<tmpc>3</tmpc>
+<dwpc>8</dwpc>
+<relh>23</relh>
+<drct>183</drct>
+<sped>5</sped>
+<datetime role="id">12354155</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>6</tmpc>
+<dwpc>-1</dwpc>
+<relh>15</relh>
+<drct>143</drct>
+<sped>22</sped>
+<datetime role="id">12354156</datetime>
+</example>
+<example>
+<radiation>767.839</radiation>
+<tmpc>32</tmpc>
+<dwpc>17</dwpc>
+<relh>99</relh>
+<drct>351</drct>
+<sped>20</sped>
+<datetime role="id">12354157</datetime>
+</example>
+<example>
+<radiation>987.315</radiation>
+<tmpc>28</tmpc>
+<dwpc>-21</dwpc>
+<relh>55</relh>
+<drct>202</drct>
+<sped>21</sped>
+<datetime role="id">12354158</datetime>
+</example>
+<example>
+<radiation>628.011</radiation>
+<tmpc>2</tmpc>
+<dwpc>-8</dwpc>
+<relh>79</relh>
+<drct>2</drct>
+<sped>3</sped>
+<datetime role="id">12354159</datetime>
+</example>
+<example>
+<radiation>163.932</radiation>
+<tmpc>1</tmpc>
+<dwpc>20</dwpc>
+<relh>27</relh>
+<drct>57</drct>
+<sped>19</sped>
+<datetime role="id">12354160</datetime>
+</example>
+<example>
+<radiation>-825.128</radiation>
+<tmpc>12</tmpc>
+<dwpc>9</dwpc>
+<relh>25</relh>
+<drct>296</drct>
+<sped>18</sped>
+<datetime role="id">12354161</datetime>
+</example>
+<example>
+<radiation>-1133.654</radiation>
+<tmpc>14</tmpc>
+<dwpc>6</dwpc>
+<relh>69</relh>
+<drct>328</drct>
+<sped>3</sped>
+<datetime role="id">12354162</datetime>
+</example>
+<example>
+<radiation>4.957</radiation>
+<tmpc>8</tmpc>
+<dwpc>21</dwpc>
+<relh>93</relh>
+<drct>304</drct>
+<sped>7</sped>
+<datetime role="id">12354163</datetime>
+</example>
+<example>
+<radiation>124.321</radiation>
+<tmpc>27</tmpc>
+<dwpc>-15</dwpc>
+<relh>13</relh>
+<drct>232</drct>
+<sped>26</sped>
+<datetime role="id">12354164</datetime>
+</example>
+<example>
+<radiation>574.095</radiation>
+<tmpc>31</tmpc>
+<dwpc>14</dwpc>
+<relh>10</relh>
+<drct>6</drct>
+<sped>25</sped>
+<datetime role="id">12354165</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>28</tmpc>
+<dwpc>-11</dwpc>
+<relh>40</relh>
+<drct>86</drct>
+<sped>21</sped>
+<datetime role="id">12354166</datetime>
+</example>
+<example>
+<radiation>1000</radiation>
+<tmpc>14</tmpc>
+<dwpc>9</dwpc>
+<relh>78</relh>
+<drct>306</drct>
+<sped>13</sped>
+<datetime role="id">12354167</datetime>
+</example>
+</example-set>
+</results>

@@ -1,0 +1,175 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('bundles/optimus/js/jsTree/themes/default/style.min.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jsTree/jstree.min.js') }}"></script>
+{% endblock %}
+
+{% block content %} 		
+	<div id="left" style="">
+		
+		<p class="titleContentDescription"><strong>{{ optimus_instance }} </strong></p>				
+		<div id="attributesContentDescription">
+			<p><span>Buildings:</span>2</p>
+			<p><span>Total surface:</span> 18.593m2 </p>
+			<p><span>Renewable generation:</span> PV plant (23 MWh)</p>
+			<p><span>Thermal power:</span> 850 kW </p>
+			<p><span>Electrical power:</span> 440 kW</p>
+			<p><span>Total energy consumption:</span> 2157kWh/m2</p>
+			<p><span>CO2 emissions:</span> PV plant (23 MWh)</p>
+		</div>
+	</div>
+	
+	<div id="right">
+		<div id="topRight">
+			<p><strong><a href="{{ path('adminBuilding') }}">{{ optimus_instance }}</a> > {{ nameBuilding}} > {%trans%}Zones {%endtrans%}</strong></p>					
+		</div>
+		<div id="centerRight">	
+			
+			<div>
+				<div style="overflow:hidden;">
+					<div id="contentTitleSection" style="background-color:#ddd; overflow:hidden; cursor:pointer;">
+						<p class="titleContentDescription" style="float:left;"><strong>{%trans%} Zones {%endtrans%}</strong></p>
+					</div>
+					
+					<div id="contentJSTree">
+						<div id="jstree_demo_div" style="padding: 10px 10px 10px 5px; font-size:12px;">
+
+						</div>										
+					</div>
+				</div>				
+				
+				<button class="buttonBig"  onclick="sendTree();">{%trans%} SAVE ZONE {%endtrans%}</button>
+				
+			</div>
+		</div>
+	</div>
+		
+	<script>
+	$(function () {
+		var str="{{ tree }}";
+		console.log(str.replace(/&quot;/g,'"'));
+		var tree= JSON.parse(str.replace(/&quot;/g,'"'));
+		console.log(tree);
+		
+		$('#jstree_demo_div').jstree({
+			"core" : {
+			"animation" : 0,
+			"check_callback" : true,
+			"themes" : { "stripes" : false, "icons":false },
+			'data' : /*{
+				'url' : function (node) {
+					return node.id === '#' ?
+						'/./optimus/web/bundles/optimus/files/ajax_demo_roots.json' : '/./optimus/web/bundles/optimus/files/ajax_demo_children.json';
+				},
+				'data' : function (node) {
+					return { 'id' : node.id };
+				}
+				
+			}*/
+				 tree
+			 },
+			"types" : {
+				"#" : {
+					"max_children" : 1, 
+					"max_depth" : 4, 
+					"valid_children" : ["root"]
+				},
+				"root" : {
+					"icon" : "/static/3.1.0/assets/images/tree_icon.png",
+					"valid_children" : ["default"]
+				},
+				"default" : {
+					"valid_children" : ["default","file"]
+				},
+				"file" : {
+					"icon" : "glyphicon glyphicon-file",
+					"valid_children" : []
+				}
+			},
+			"plugins" : [
+				"contextmenu", "dnd", "search",
+				"state", "types", "wholerow"
+			]				
+		})
+		/*.on('changed.jstree', function (e, data) {				
+			var content=$.jstree.reference('#jstree_demo_div').get_json('#', { 'flat': true });
+			//console.log(content);
+			
+			console.log(JSON.stringify(content));
+			$.ajax({
+				type:'POST',			
+				dataType:'json',			
+				url: "{{path('createPartition')}}",
+				data: { content: JSON.stringify(content) },
+				success:function(){
+					
+				}
+			});
+		})*/
+		
+		/*.on('create_node.jstree', function (e, data) {
+			$.get('?operation=create_node', { 'type' : data.node.type, 'id' : data.node.parent, 'text' : data.node.text })
+				.done(function (d) {
+					console.log(data.node.text);
+					data.instance.set_id(data.node, d.id);
+				})
+				.fail(function () {
+					data.instance.refresh();
+				});
+		})*/
+		.on('loaded.jstree', function() {
+			$('#jstree_demo_div').jstree('open_all');
+		})
+		.on('delete_node.jstree', function (e, data) {
+			
+			$.ajax({
+				type:'POST',					
+				url: "{{path('deletePartition')}}",
+				data: { idBuilding:{{idBuilding}}, partition:data.node.id },
+				success:function(){
+					//data.instance.refresh();
+					location.reload(); 
+				}
+			});
+			
+			/*$.get('?operation=delete_node', { 'id' : data.node.id })
+				.fail(function () {
+					data.instance.refresh();
+				});*/
+		}); 
+		
+		//var content=$.jstree.reference('#jstree_demo_div').get_container_ul(); 
+		//
+		//var xmlString = $("#jstree_demo_div").jstree(true).get_json('#', { 'flat': true }); 
+		
+		$(".buttonBig").button();
+		
+	});
+	
+	function sendTree()
+	{
+		var content=$.jstree.reference('#jstree_demo_div').get_json('#', { 'flat': true });
+		//console.log(content);
+		
+		console.log(JSON.stringify(content));
+		$.ajax({
+			type:'POST',			
+			dataType:'json',			
+			url: "{{path('createPartition')}}",
+			data: { content: JSON.stringify(content), idBuilding:{{idBuilding}} },
+			success:function(){
+				location.reload(); 
+			}
+		});
+	}
+	
+	</script>
+    
+{% endblock %}

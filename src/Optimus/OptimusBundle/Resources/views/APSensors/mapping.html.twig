@@ -1,0 +1,215 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('bundles/optimus/js/jsTree/themes/default/style.min.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jsTree/jstree.min.js') }}"></script>
+{% endblock %}
+
+{% block content %}  			
+	<div id="left" style="">
+		
+		<p class="titleContentDescription"><strong>{{ optimus_instance }} </strong></p>				
+		<div id="attributesContentDescription">
+			<p><span>Buildings:</span>2</p>
+			<p><span>Total surface:</span> 18.593m2 </p>
+			<p><span>Renewable generation:</span> PV plant (23 MWh)</p>
+			<p><span>Thermal power:</span> 850 kW </p>
+			<p><span>Electrical power:</span> 440 kW</p>
+			<p><span>Total energy consumption:</span> 2157kWh/m2</p>
+			<p><span>CO2 emissions:</span> PV plant (23 MWh)</p>
+		</div>
+	</div>
+	
+	<div id="right" style="border:0px;">
+		<div id="topRight" style="background-color:#e8eef8; margin-bottom:20px;">
+			<p><strong><a href="{{ path('adminBuilding') }}">{{ optimus_instance }}</a>  > {{ nameBuilding}} > <a href="{{ path('adminActionPlans', {'idBuilding':idBuilding} ) }}">{%trans%} Actions Plans {%endtrans%}</a> > {{nameActionPlan}} - {%trans%} Mappings {%endtrans%}</strong></p>					
+		</div>
+		<div id="centerRight">	
+			
+			<div>
+				<div style="overflow:hidden;">
+					<div style="background-color:#ddd; overflow:hidden; cursor:pointer;">
+						<p class="titleContentDescription" style="float:left;"><strong>{%trans%} Mappings {%endtrans%}</strong></p>
+					</div>
+					
+					<div style="background-color:#f8f8f8; overflow:auto; display:inline-block; margin-bottom:10px; width:100%; height:auto;">
+						<div id="jstree_demo_div" style="float:left; width:878px; font-size: 14px; font-weight: bold; padding:20px 0 0 20px;">		
+
+						</div>						
+					</div>
+				</div>
+				
+				<div id="addSensorPartitionForm">
+					<form action="{{ path('sensorPartition_create',{'idBuilding':idBuilding, 'idActionPlan':idActionPlan}) }}" method="post">
+						{{ form_errors(form) }} 
+						{{ form_rest(form) }}
+						<input type="hidden" value="" name="idPartition" id="idPartition" />
+						<input type="hidden" value="" name="order" id="order" />
+						<button type="submit" class='buttonBig'> {%trans%} Add sensor {%endtrans%}</button>
+					</form>
+				</div>
+				
+				{% for mapping in aMappings %}
+					{% for sensor in mapping.sensorsPartition %}
+						<div id="editSensorPartitionForm_{{sensor.id}}">
+							{{ render(controller('OptimusOptimusBundle:APSensors:editSensorPartition', {'idBuilding': idBuilding, 'idActionPlan':idActionPlan, 'idSensorPartition':sensor.id, 'orderSensor':sensor.orderSensor})) }}
+						</div>
+					{% endfor %}
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+
+    <script>
+	$(function () {
+		var str="{{ strTree }}";
+		console.log(str.replace(/&quot;/g,'"'));
+		var tree= JSON.parse(str.replace(/&quot;/g,'"'));
+		console.log(tree);
+		
+		$('#jstree_demo_div').jstree({
+			"core" : {
+			"animation" : false,
+			"check_callback" : false,
+			"themes" : { "stripes" : false, "icons":false, "dots":false },
+			'data' : 
+				tree
+			 },
+			"types" : {
+				"#" : {
+					"max_children" : 1, 
+					"max_depth" : 4, 
+					"valid_children" : ["root"]
+				},
+				"root" : {
+					"icon" : "/static/3.1.0/assets/images/tree_icon.png",
+					"valid_children" : ["default"]
+				},
+				"default" : {
+					"valid_children" : ["default","file"]
+				},
+				"file" : {
+					"icon" : "glyphicon glyphicon-file",
+					"valid_children" : []
+				}
+			},
+			"plugins" : [
+				"contextmenu", "dnd", "search",
+				"state", "types", "wholerow"
+			]
+			
+		}).on('loaded.jstree', function() {
+			$('#jstree_demo_div').jstree('open_all');
+			$('#jstree_demo_div').jstree().unbind();
+			addSensors();
+			
+		});
+		//$("#jstree_demo_div").jstree("open_all");		
+		
+		$('.buttonBig').button();
+		$( "#addSensorPartitionForm" ).dialog({
+			autoOpen: false,
+			//height: 300,
+			width: 400,
+			modal: true,
+			buttons: {					
+				/*Cancel: function() {
+					$( "#addSensorPartitionForm" ).dialog( "close" );
+				}*/
+			},
+			close: function() {					
+				//allFields.removeClass( "ui-state-error" );
+			}
+		});
+		
+		{% for mapping in aMappings %}
+			{% for sensor in mapping.sensorsPartition %}
+				$( "#editSensorPartitionForm_{{sensor.id}}" ).dialog({
+					autoOpen: false,
+					//height: 300,
+					width: 400,
+					modal: true,
+					buttons: {					
+						/*Cancel: function() {
+							$( "#editSensorPartitionForm_{{sensor.id}}" ).dialog( "close" );
+						}*/
+					},
+					close: function() {					
+						//allFields.removeClass( "ui-state-error" );
+					}
+				});
+				
+				$( "#editSensorPartition_{{sensor.id}}").click( function() {
+					console.log("arrive");
+					$( "#editSensorPartitionForm_{{sensor.id}}" ).dialog( "open" );
+				});
+				
+				
+			{% endfor %}
+		{% endfor %}
+			
+	});
+	
+	function addSensors()
+	{
+		{% for mapping in aMappings %}			
+			{% if mapping.sensorsPartition|length >0 %}
+				var str='';
+				
+				{% set order=0 %}
+				{% for variable in aVariablesInput %}
+					{% set order=loop.index0 %}
+					{% set variableActual= false %}
+					{% for sensor in mapping.sensorsPartition %}					
+						{% if sensor.name==variable %} 
+							str =str +"<div style='overflow:hidden; margin-right:20px; margin-left:24px;'><p style='float:left; margin:0; margin:0 10 0 0; width: 550px;'><span style='font-weight:bold;color:#888;'>{{variable}}</span> - {{sensor.getFkSensor().getName()|trans}}</p><p style='cursor:pointer;float:left; margin:0; margin:0 0 0 10px; text-decoration:underline;' onclick='deleteSensorPartition({{sensor.id}},{{order}})'>{%trans%} Delete {%endtrans%}</p> <p style='cursor:pointer; float:left; margin:0; margin:0 0 0 10px; text-decoration:underline;' onclick='openEditSensorPartition({{sensor.id}})'>{%trans%} Edit {%endtrans%}</p></div>";
+							{% set variableActual= true %}																	
+						{% endif %}						
+					{% endfor %}
+					
+					{% if variableActual==false %}
+						str =str +"<div style='overflow:hidden; margin-right:20px;margin-left:24px;'><p style='float:left; margin:0; margin:0 10 0 0; width: 550px;'><span style='font-weight:bold;color:#888;'>{{variable}}</span></p><p style='text-decoration:underline; cursor:pointer;float:left; margin:0; margin:0 0 0 10px;'  onclick='openFormAddSensor(\"{{ mapping.partition.getId()}}\", \"{{variable}}\", {{order}});'>{%trans%} Add sensor {%endtrans%}</p></div>";
+					{% endif %}					
+				{% endfor %}
+				$("#{{ mapping.partition.getId() }}_anchor").after(str);
+			{%else %}
+				{% set order=0 %}
+				{% for variable in aVariablesInput %}
+					{% set order=loop.index0 %}
+					
+					$("#{{ mapping.partition.getId() }}_anchor").after("<div style='overflow:hidden; margin-right:20px;margin-left:24px;'><p style='float:left; margin:0; margin:0 10 0 0; width: 550px;'><span style='font-weight:bold;color:#888;'>{{variable}}</span></p><p style='cursor:pointer;float:left; margin:0; margin:0 0 0 10px; text-decoration:underline;'  onclick='openFormAddSensor(\"{{ mapping.partition.getId()}}\", \"{{variable}}\", {{order}});'>{%trans%} Add sensor {%endtrans%}</p></div>");
+				{% endfor %}			
+			{% endif %}			
+		{% endfor %}
+	}
+	
+	function openFormAddSensor(idPartition, type, order)
+	{
+		$("#idPartition").val(idPartition);
+		$("#order").val(order);
+		$("#optimus_optimusbundle_apsensorstype_name").val(type);
+		$( "#addSensorPartitionForm" ).dialog( "open" );
+	}
+	
+	function openEditSensorPartition(idSensorPartition)
+	{
+		$( "#editSensorPartitionForm_"+idSensorPartition ).dialog( "open" );
+	}
+	
+	function deleteSensorPartition(idSensorPartition, order)
+	{
+		var url="{{ path('sensorPartition_delete', {'idBuilding':idBuilding, 'idActionPlan':idActionPlan, 'idSensorPartition':'id', 'orderSensor':'order' }) }}";
+		url = url.replace("id", idSensorPartition);
+		url = url.replace("order", order);
+		
+		location.href=url;
+	}
+	
+	</script>
+{% endblock %}

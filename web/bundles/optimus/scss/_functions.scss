@@ -1,0 +1,12 @@
+@mixin sizeBotones($w, $h, $p) {
+	width: $w; 
+	height: $h;
+	padding: $p; 
+}
+
+@mixin propertiesColumn($w){
+	width:$w; 
+	float:left; 
+	border:1px solid #ddd; 
+	margin-top:20px;
+}

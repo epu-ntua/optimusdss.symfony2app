@@ -1,0 +1,208 @@
+.tcv-sensation {
+    font-size: 0;
+}
+
+/* Feedback classes */
+.tcv-feedback-index {
+    margin: 10px 0;
+    float: left;
+}
+
+.tcv-feedback-index .tcv-sensation-label {
+    margin-right: 10px;
+    vertical-align: top;
+    margin-top: 2px;
+    display: inline-block;
+}
+
+.tcv-feedback-index .tcv-sensation {
+    padding: 8px;
+    display: inline-block;
+}
+
+
+.tcv-sensation-minus3 {
+    background-color: #163758;
+}
+
+.tcv-sensation-minus2 {
+    background-color: #00517e;
+}
+
+.tcv-sensation-minus1 {
+    background-color: #0088CC;
+}
+
+.tcv-sensation-minus0 {
+    background-color: #00733e;
+}
+
+.tcv-sensation-0 {
+    background-color: #00733e;
+}
+
+.tcv-sensation-1 {
+    background-color: #aacd4e;
+}
+
+.tcv-sensation-2 {
+    background-color: #c77405;
+}
+
+.tcv-sensation-3 {
+    background-color: #8b0000;
+}
+
+.hidden {
+    display:none;
+}
+
+.week-picker-container {
+    display: inline-block;
+    float: left;
+}
+
+.week-picker-info {
+    color: #777;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.week-picker .ui-datepicker-header {
+    background: #CFD4D1;
+    border: #2e75b6;
+    border-radius: 3px;
+    color: #555;
+    font-size: 18px;
+    font-family:Arial;
+}
+
+
+.week-picker .ui-datepicker-calendar {
+    color: #44546a;
+}
+
+
+.week-picker .ui-state-hover {
+    background: #E1EDED;
+    border: 1px solid #ccc;
+}
+
+.week-picker .ui-state-active.ui-state-hover {
+    background: #E1EDED;
+    border: 1px solid #F5D362;
+}
+
+.week-picker .ui-state-default {
+    color: #555;
+    font-size: 16px;
+    font-family: Arial;
+}
+
+.week-picker .ui-datepicker-calendar {
+    border: none;
+}
+
+.section_container {
+    cursor:pointer;
+    width: 90%;
+    padding: 5%;
+    text-align:center;
+}
+
+.table_container {
+    width:100%;
+    float:right;
+    cursor:default;
+}
+
+.row {
+    margin:-20px 5px;
+    line-height:2px;
+}
+
+.first_col {
+    width:17%;
+    border: 1px solid #333;
+}
+
+.second_col {
+    width:17.8%;
+    border: 1px solid #333;
+}
+
+.important_info {
+    text-align:center;
+}
+
+.next_cols {
+    width:9.33%;
+    border: 1px solid #333;
+}
+
+.cells {
+    text-align:center;
+}
+
+.full_col {
+    width:83%;
+    background-color: white;
+    border: 1px solid #333;
+}
+
+.non_working_cols {
+    background-color:#e0e0e0;
+    width:9.33%;
+    border: 1px solid #333;
+}
+
+.sections {
+    color:#555;
+    text-align:left;
+    cursor: pointer;
+}
+
+table {
+    border: 0px;
+    border-collapse: collapse;
+}
+
+.clicked {
+    background-color : #9CC987;
+}
+
+.special {
+    border-bottom-style: none;
+}
+
+.floor {
+    border-top: 1px solid #333;
+}
+
+.references {
+    cursor:pointer;
+    text-decoration: underline;
+}
+
+#container #main #right #centerRight #indicators {
+    background-color: #d0cece;
+    width: 99.8%;
+    overflow: hidden;
+    border: 1px solid #7f7f7f;
+}
+
+.float_left {
+    float: left;
+    width: 650px;
+}
+
+.infosPanel {
+    float:left;
+    height:15px;
+    padding:10px;
+    margin:0;
+    width:50px;
+    border-right:1px solid #7f7f7f;
+    text-align: right;"
+}
+

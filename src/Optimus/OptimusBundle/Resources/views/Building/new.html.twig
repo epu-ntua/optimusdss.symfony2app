@@ -1,0 +1,9 @@
+<div class="nuevo_building">
+    <form action="{{ path('building_create') }}" method="post" {{ form_enctype(form) }}>
+		{{ form_errors(form) }}       
+        {{ form_rest(form) }}
+        <p>
+            <button type="submit" class="buttonBig" style="">{%trans%}Create Building{%endtrans%}</button>
+        </p>
+    </form>
+</div>

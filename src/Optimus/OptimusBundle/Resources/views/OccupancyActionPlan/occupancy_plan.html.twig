@@ -1,0 +1,470 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/optimus/js/jsTree/themes/default/style.min.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/ui-lightness/jquery-ui-1.10.3.mine.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/occupancy.css') }}"/>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+    <script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery.jeditable.min.js') }}"></script>
+{% endblock %}
+
+{% block clase_ActionPlanData %}activo{% endblock %}
+
+{% block content %}
+
+    <script type="text/javascript">
+
+        $(function(){
+
+            $("#datepicker").hide();
+            $(".showDiv").slideToggle();
+
+            $('.more_info').on('click', function() {
+                var content=$(this).attr('data-content');
+                $('#'+content).removeClass('hidden');
+                var hidden = $(this).attr('data-hidden');
+                $('#'+hidden).addClass('hidden');
+            });
+
+            $('.less_info').on('click', function() {
+                var content=$(this).attr('data-content');
+                $('#'+content).removeClass('hidden');
+                var hidden=$(this).attr('data-hidden');
+                $('#'+hidden).addClass('hidden');
+            });
+
+            var start_date = $('#startDate').html();
+            var idBuilding = $('#idBuilding').html();
+            var idAPType = $('#idAPType').html();
+
+            var startDate;
+            var endDate;
+
+            var text = {};
+
+            var selectCurrentWeek = function() {
+                window.setTimeout(function () {
+                    $('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+                }, 1);
+            }
+
+            $('#datepicker').datepicker( {
+                showOtherMonths: true,
+                selectOtherMonths: true,
+                onSelect: function(dateText, inst)
+                {
+                    var date = $(this).datepicker('getDate');
+                    startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); //diaSelected
+                    endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 6); //diaSelected +6
+
+                    var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+                    $('#startDate').text($.datepicker.formatDate("yy-mm-dd" , startDate, inst.settings )); //dateFormat
+                    $('#endDate').text($.datepicker.formatDate( "yy-mm-dd", endDate, inst.settings ));
+
+                    selectCurrentWeek();
+                },
+                beforeShowDay: function(date) {
+                    var cssClass = '';
+                    if((date >= startDate && date <= endDate) || (date>=new Date('{{ startDate }}') && date <=new Date('{{ endDate }}')))
+                        cssClass = 'ui-datepicker-current-day';
+                    return [true, cssClass];
+                },
+                onChangeMonthYear: function(year, month, inst) {
+                    selectCurrentWeek();
+                }
+            });
+
+            $(document).on('mousemove', '#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').addClass('ui-state-hover');    });
+            $(document).on('mouseleave','#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').removeClass('ui-state-hover'); });
+
+            /* forms */
+			{% for i in 0..6 %}
+				$("#form_{{i}} ").change (function( event ) { //> input[name*=filter]
+					console.log($("#form_{{i}}").serialize());
+					//$("#form_{{i}}").submit(function() {
+						console.log({{statusWeek[i].status}});
+						var url = "{{ path('changeOStatusDay' ,{'idOutputDay':statusWeek[i].idOutputDay} ) }}"; // the script where you handle the form input.
+						$.ajax({
+							type: "POST",
+							url: url,
+							data:{ 'data':$("#form_{{i}}").serialize(), idBuilding:{{idBuilding}} }, // serializes the form's elements.
+							success: function(data)
+							{
+								//alert(data); // show response from the php script.
+							}
+						});
+
+						return false;					
+					//});
+				});
+			{% endfor %}
+			
+			/* ----- */
+
+
+            //double-clik on table
+            $("#showSchedule").click(function(){
+                $(".showDiv").slideToggle();
+            });
+
+        });
+
+        //Show/hide el calendario
+        function displayCalendar()
+        {
+            $("#datepicker").slideToggle();
+        }
+
+        function createURLView()
+        {
+            dateI=$("#startDate").html();
+
+            var url = "{{ path('getOccupancyPlan', {'idBuilding':idBuilding, 'idAPType':idAPType, 'start_date':'dateI'}) }}";
+            url = url.replace("dateI", $("#startDate").html());
+
+            location.href=url;
+        }
+
+        function changeSchedule()
+        {
+            text = '';
+            $('select').each( function(index, value) {
+                text = text + ';' + $(this).find('option:selected').text();
+            });
+
+            text = text.substring(1);
+            dateI=$("#startDate").html();
+
+            var url = "{{  path('getOccupancyPlan', {'idBuilding':idBuilding, 'idAPType':idAPType, 'start_date':'dateI','constraints':'text'}) }}";
+            url = url.replace("text", text);
+            url = url.replace("dateI", $("#startDate").html());
+
+            location.href=url;
+        }
+		
+		$(function(){
+		$(".constraintInput").change(function() {
+			changeSchedule();
+		});
+	});
+    </script>
+    <style>
+
+        #menuStrategies
+        {
+            width:100px;
+            height:70px;
+            position:absolute;
+            left: 984px;
+            border: 1px solid;
+            display:none;
+            z-index:9999;
+            background-color:#d0cece;
+            top: 212px;
+        }
+
+        .selectedDayCell
+        {
+            border-left: 3px solid #00D !Important;
+            border-right: 3px solid #00D !Important;
+        }
+
+    </style>
+    <div id="left">
+        {{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}
+        {{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding, 'idActionPlan':idActionPlan})) }}
+    </div>
+    <div id="right">
+        <div id="topRight">
+            <p>
+                <strong>
+                    <span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> >
+                    <span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> >
+                    {{ dataActionPlan_name }}
+                </strong>
+            </p>
+        </div>
+
+        <div id="centerRight">
+            <div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
+                <div style="float:left;">
+                    <p class="titleContentDescription"><strong>{%trans%} Action Plan {%endtrans%}:</strong> <span>{{ dataActionPlan_name }}</span></p>
+                    <p class="titleContentDescription"><strong>{%trans%} Description {%endtrans%}:</strong> <span style="font-size:12px;">{{ dataActionPlan_description }}</span></p>
+                </div>
+                <div style="float:left; text-align:right;">
+                    <p style="margin:10px 10px;"><span style="color:#2e75b6">{%trans%} Last forecast calculated {%endtrans%}:</span> <span><strong>{{ dataActionPlan_lastCalculation }}</strong></span></p>
+                </div>
+            </div>
+
+            <div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;  border-top:0px;">
+                <p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #aaa; text-align: right;"><strong>{%trans%} Dates {%endtrans%}:</strong></p>
+
+                <p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #aaa; text-align:center; background-color: #e8eef8;">
+                    <span id="startDate">{{ startDate }}</span> /
+                    <span id="endDate">{{ endDate }}</span>
+                </p>
+                <p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #aaa; cursor:pointer;" onclick="displayCalendar();">+</p>
+
+                <p class="buttonIndicator" onclick="createURLView();">{%trans%} View {%endtrans%}</p>
+                <!-- <p class="buttonIndicator" onclick="changeSchedule();">{%trans%} Update {%endtrans%}</p> -->
+            </div>
+            <div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
+
+            <div id="contentGraficas">
+                <!-- Filtros -->
+                <div class="contentTableResults" style="margin:2% 0 17% 0; font-size=12;">
+                    <p>a : Number of people to be located</p>
+                    <p>b : On <span style="display:inline-block;background-color:#79F29F;border:1px solid #333;">&nbsp;&nbsp;&nbsp;&nbsp;</span> with set-point temperature (<sup>o</sup>C) / Off <span style="display:inline-block; background-color: #FA96AF;border:1px solid #333;">&nbsp;&nbsp;&nbsp;&nbsp;</span> of the HVAC system</p>
+                    <p>c : Constraints Yes/No</p>
+                    <table class="table_container">
+                        <tr style="margin:0; line-height:0px;">
+                            <td class="first_col" style="background:#b0b0b0; width: 17.8%" colspan="6">
+                            </td>
+                            {% for i in 0..6 %}
+                                <td colspan="2" class="next_col" style="background:#b0b0b0; width:">
+                                    <p class="cells" style="color:#111; text-align:center; font-size: 85%;">{{ dates[i] }}</p>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="row" style="line-height: 6px;">
+                            <td class="first_col" colspan="6">
+                                <p style="color: #111; text-align: right;">Building Partitioning</p>
+                            </td>
+                            {% for i in 0..6 %}
+                                <td class="next_col">
+                                    <p class="cells" style="color:#111;">a</p>
+                                </td>
+                                <td class="next_col">
+                                    <p class="cells" style="color:#111;">b</p>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="row" style="line-height:6px;">
+                            <td class="first_col clicked" colspan="6">
+                                <p style="color:#555; text-align:left;">Building</p>
+                            </td>
+                            <td colspan="14" class="full_col" style="background:white;">
+                            </td>
+                        </tr>
+                        <tr class="row" style="line-height:10px;">
+                            <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                <p style="float:right;font-size:70%;">Early morning 1 </br>(6:00-7:00)</p>
+                            </td>
+                            {% for i in 0..6 %}
+                                {% set date = dates[i] %}
+                                <td class="next_col">
+                                    <p class="cells" style="color:#111; font-size: 80%;">{{ estimated_occupancy[(date)]['Early morning 1'] }}</p>
+                                </td>
+                                <td class="next_col" style="background-color: #DAEBEB;">
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="row" style="line-height:10px;">
+                            <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                <p style="float:right;font-size:70%;">Early morning 2 </br>(7:00-8:00)</p>
+                            </td>
+                            {% for i in 0..6 %}
+                                {% set date = dates[i] %}
+                                <td class="next_col">
+                                    <p class="cells" style="color:#111; font-size: 80%;">{{ estimated_occupancy[(date)]['Early morning 2'] }}</p>
+                                </td>
+                                <td class="next_col" style="background-color: #DAEBEB;">
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="row" style="line-height:9px;">
+                            <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                <p style="float:right;font-size:70%;">Early morning 3 </br>(8:00-9:00)</p>
+                            </td>
+                            {% for i in 0..6 %}
+                                {% set date = dates[i] %}
+                                <td class="next_col">
+                                    <p class="cells" style="color:#111; font-size: 80%;">{{ estimated_occupancy[(date)]['Early morning 3'] }}</p>
+                                </td>
+                                <td class="next_col" style="background-color: #DAEBEB;">
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="row" style="line-height:9px;">
+                            <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                <p style="float:right;font-size:70%;">Morning - afternoon </br>(9:00-17:00)</p>
+                            </td>
+                            {% for i in 0..6 %}
+                                {% set date = dates[i] %}
+                                <td class="next_col">
+                                    <p class="cells" style="color:#111; font-size: 80%;">{{ estimated_occupancy[(date)]['Morning-afternoon'] }}</p>
+                                </td>
+                                <td class="next_col" style="background-color: #DAEBEB;">
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="row" style="line-height:9px;">
+                            <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                <p style="float:right;font-size:70%;">Late afternoon 1 </br>(17:00-18:00)</p>
+                            </td>
+                            {% for i in 0..6 %}
+                                {% set date = dates[i] %}
+                                <td class="next_col">
+                                    <p class="cells" style="color:#111; font-size: 80%;">{{ estimated_occupancy[(date)]['Late afternoon 1'] }}</p>
+                                </td>
+                                <td class="next_col" style="background-color: #DAEBEB;">
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="row" style="line-height:9px;">
+                            <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                <p style="float:right;font-size:70%;">Late afternoon 2 </br>(18:00-19:00)</p>
+                            </td>
+                            {% for i in 0..6 %}
+                                {% set date = dates[i] %}
+                                <td class="next_col">
+                                    <p class="cells" style="color:#111; font-size: 80%;">{{ estimated_occupancy[(date)]['Late afternoon 2'] }}</p>
+                                </td>
+                                <td class="next_col" style="background-color: #DAEBEB;">
+                                </td>
+                            {% endfor %}
+                        </tr>
+                            {% for section in building_sections|keys %}
+                                <tr class="row" style="line-height:3px;">
+                                    <td class="first_col clicked" colspan="6">
+                                        <p class="sections">{% for i in 1..building_sections[(section)] %}&nbsp;&nbsp;{% endfor %}{{ section }}<span style="float:right;">-c</span></p>
+                                    </td>
+                                    {% set curr_date = date(startDate) %}
+                                    {% for i in 0..6 %}
+                                        {% set date = dates[i] %}
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background:#e0e0e0; {% endif %}" colspan="2">
+                                            {% if curr_date < date()|date_modify('-1 day') %}
+                                                <p class="cells" style="color:#111;">{% if 'S' not in dates[i] %}{{ partitions[(section)][(date)].constraints }}{% endif %}</p>
+                                            {% else %}
+                                                <select class="constraintInput {% if 'S' in date %}hidden{% endif %}" data-section="{{ section }}" data-date="{{ date }}" style="width:100%; height:110%;margin:0;">
+                                                    <option value="no" {% if partitions[(section)][(date)].constraints == 'No' %}selected{% endif %}>No</option>
+                                                    <option value="yes" {% if partitions[(section)][(date)].constraints == 'Yes' %}selected{% endif %}>Yes</option>
+                                                </select>
+                                            {% endif %}
+                                            {% set curr_date = curr_date|date_modify('+1 day') %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="row" style="line-height:9px;">
+                                <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                    <p style="float:right;font-size:70%;">Early morning 1 </br>(6:00-7:00)</p>
+                                </td>
+                                {% for i in 0..6 %}
+                                    {% set date = dates[i] %}
+                                    <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0;{% endif %}">
+                                        <p class="cells" style="color:#111; font-size: 80%;">{% if 'S' not in dates[i] %}{{ partitions[(section)][(date)]['Early morning 1'].no_people }}{% endif %}</p>
+                                    </td>
+                                    <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0; {% else %}{% if building_sections[(section)] == 1 %}{% if partitions[(section)][(date)]['Early morning 1'].on_off != 'Off' %}background-color:#79F29F;{% else %}background-color:#FA96AF;{% endif %}{% endif %} {% endif %}  ">
+                                        <p class="cells" style="color:#111; font-size: 80%; ">{% if (building_sections[(section)] == 1) and ('S' not in dates[i]) %}<strong>{{ partitions[(section)][(date)]['Early morning 1'].on_off }}</strong>{% endif %}</p>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                                <tr class="row" style="line-height:9px;">
+                                    <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                        <p style="float:right;font-size:70%;">Early morning 2 </br>(7:00-8:00)</p>
+                                    </td>
+                                    {% for i in 0..6 %}
+                                        {% set date = dates[i] %}
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0;{% endif %}">
+                                            <p class="cells" style="color:#111; font-size: 80%;">{% if 'S' not in dates[i] %}{{ partitions[(section)][(date)]['Early morning 2'].no_people }}{% endif %}</p>
+                                        </td>
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0; {% else %}{% if building_sections[(section)] == 1 %}{% if partitions[(section)][(date)]['Early morning 2'].on_off != 'Off' %}background-color:#79F29F;{% else %}background-color:#FA96AF;{% endif %}{% endif %} {% endif %}  ">
+                                            <p class="cells" style="color:#111; font-size: 80%; ">{% if (building_sections[(section)] == 1) and ('S' not in dates[i]) %}<strong>{{ partitions[(section)][(date)]['Early morning 2'].on_off }}</strong>{% endif %}</p>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="row" style="line-height:9px;">
+                                    <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                        <p style="float:right;font-size:70%;">Early morning 3 </br>(8:00-9:00)</p>
+                                    </td>
+                                    {% for i in 0..6 %}
+                                        {% set date = dates[i] %}
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0;{% endif %}">
+                                            <p class="cells" style="color:#111; font-size: 80%;">{% if 'S' not in dates[i] %}{{ partitions[(section)][(date)]['Early morning 3'].no_people }}{% endif %}</p>
+                                        </td>
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0; {% else %}{% if building_sections[(section)] == 1 %}{% if partitions[(section)][(date)]['Early morning 3'].on_off != 'Off' %}background-color:#79F29F;{% else %}background-color:#FA96AF;{% endif %}{% endif %} {% endif %}  ">
+                                            <p class="cells" style="color:#111; font-size: 80%; ">{% if (building_sections[(section)] == 1) and ('S' not in dates[i]) %}<strong>{{ partitions[(section)][(date)]['Early morning 3'].on_off }}</strong>{% endif %}</p>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="row" style="line-height:9px;">
+                                    <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                        <p style="float:right;font-size:70%;">Morning - afternoon </br>(9:00-17:00)</p>
+                                    </td>
+                                    {% for i in 0..6 %}
+                                        {% set date = dates[i] %}
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0;{% endif %}">
+                                            <p class="cells" style="color:#111; font-size: 80%;">{% if 'S' not in dates[i] %}{{ partitions[(section)][(date)]['Morning-afternoon'].no_people }}{% endif %}</p>
+                                        </td>
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0; {% else %}{% if building_sections[(section)] == 1 %}{% if partitions[(section)][(date)]['Morning-afternoon'].on_off != 'Off' %}background-color:#79F29F;{% else %}background-color:#FA96AF;{% endif %}{% endif %} {% endif %}  ">
+                                            <p class="cells" style="color:#111; font-size: 80%; ">{% if (building_sections[(section)] == 1) and ('S' not in dates[i]) %}<strong>{{ partitions[(section)][(date)]['Morning-afternoon'].on_off }}</strong>{% endif %}</p>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="row" style="line-height:9px;">
+                                    <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                        <p style="float:right;font-size:70%;">Late afternoon 1 </br>(17:00-18:00)</p>
+                                    </td>
+                                    {% for i in 0..6 %}
+                                        {% set date = dates[i] %}
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0;{% endif %}">
+                                            <p class="cells" style="color:#111; font-size: 80%;">{% if 'S' not in dates[i] %}{{ partitions[(section)][(date)]['Late afternoon 1'].no_people }}{% endif %}</p>
+                                        </td>
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0; {% else %}{% if building_sections[(section)] == 1 %}{% if partitions[(section)][(date)]['Late afternoon 1'].on_off != 'Off' %}background-color:#79F29F;{% else %}background-color:#FA96AF;{% endif %}{% endif %} {% endif %}  ">
+                                            <p class="cells" style="color:#111; font-size: 80%; ">{% if (building_sections[(section)] == 1) and ('S' not in dates[i]) %}<strong>{{ partitions[(section)][(date)]['Late afternoon 1'].on_off }}</strong>{% endif %}</p>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="row" style="line-height:9px;">
+                                    <td class="first_col clicked2" style="border-top-style: none;" colspan="6">
+                                        <p style="float:right;font-size:70%;">Late afternoon 2 </br>(18:00-19:00)</p>
+                                    </td>
+                                    {% for i in 0..6 %}
+                                        {% set date = dates[i] %}
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0;{% endif %}">
+                                            <p class="cells" style="color:#111; font-size: 80%;">{% if 'S' not in dates[i] %}{{ partitions[(section)][(date)]['Late afternoon 2'].no_people }}{% endif %}</p>
+                                        </td>
+                                        <td class="next_col" style="{% if 'S' in dates[i] %}background-color:#e0e0e0; {% else %}{% if building_sections[(section)] == 1 %}{% if partitions[(section)][(date)]['Late afternoon 2'].on_off != 'Off' %}background-color:#79F29F;{% else %}background-color:#FA96AF;{% endif %}{% endif %} {% endif %}  ">
+                                            <p class="cells" style="color:#111; font-size: 80%; ">{% if (building_sections[(section)] == 1) and ('S' not in dates[i]) %}<strong>{{ partitions[(section)][(date)]['Late afternoon 2'].on_off }}</strong>{% endif %}</p>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        <tr style="margin:5px -20px; line-height: 20px;">
+                            <td class="first_col" style="background:#DAEBEB; border-bottom-style:solid;" colspan="6">
+                                <p style="color:#111; text-align:right;">Please confirm the action plan:</p>
+                            </td>
+                            {% set curr_date = date(startDate) %}
+                            {% for i in 0..6 %}
+                                <td colspan="2" class="next_cols" style="{% if ('S' in dates[i]) or (curr_date < date()|date_modify('-1 day')) %}background:#e0e0e0;{% else %}background:white;{% endif %}">
+                                    <form id="form_{{i}}" method="post">
+                                        <p class="cells" style="margin:0;">
+                                            <input type="radio" name="filter" value="0" {% if ('S' in dates[i]) or (curr_date < date()|date_modify('-1 day')) %} disabled="disabled" {% endif %} {% if(statusWeek[i].status==0) %} checked="checked" {% endif %}>Unknown
+                                        </p>
+                                        <p class="cells" style="margin:0;">
+                                            <input type="radio" name="filter" value="1" {% if ('S' in dates[i]) or (curr_date < date()|date_modify('-1 day')) %} disabled="disabled" {% endif %} {% if(statusWeek[i].status==1) %} checked="checked" {% endif %}>Accepted
+                                        </p>
+                                        <p class="cells" style="margin:0;">
+                                           <input type="radio" name="filter" value="2" {% if ('S' in dates[i]) or (curr_date < date()|date_modify('-1 day')) %} disabled="disabled" {% endif %} {% if(statusWeek[i].status==2) %} checked="checked" {% endif %}>Declined
+                                        </p>
+                                        {% set interval='+'~i~' day' %}
+										{% set dateOfDay=date()|date_modify(interval) %}
+                                        <input type="hidden" value="{{ dateOfDay|date('Y-m-d') }}" name="day" id="day" />
+                                        <input type="hidden" value="{{idActionPlan}}" name="idActionPlan" id="idActionPlan" />
+                                    </form>
+                                    {% set curr_date = curr_date|date_modify('+1 day') %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

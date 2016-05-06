@@ -1,0 +1,121 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block content %}
+   
+	<div id="left" style="">
+		{% include 'OptimusOptimusBundle:Login:logged.html.twig' %}
+		
+		<br/>
+		<p class="titleContentDescription"><strong>{{ optimus_instance }} </strong></p>				
+		<div id="attributesContentDescription">
+			<p><span>Buildings:</span>2</p>
+			<p><span>Total surface:</span> 18.593m2 </p>
+			<p><span>Renewable generation:</span> PV plant (23 MWh)</p>
+			<p><span>Thermal power:</span> 850 kW </p>
+			<p><span>Electrical power:</span> 440 kW</p>
+			<p><span>Total energy consumption:</span> 2157kWh/m2</p>
+			<p><span>CO2 emissions:</span> PV plant (23 MWh)</p>
+		</div>
+	</div>
+
+	<div id="right">
+		<div id="topRight">
+			<p><strong>{{ optimus_instance }} > List of buildings</strong></p>					
+		</div>
+		<div id="centerRight">	
+			<div style="overflow:hidden; margin-bottom:20px;">
+				<img   src="{{ asset('bundles/optimus/img/mapOptimus.png') }}"/>
+			</div>
+			<div class="contentAllBuildings">
+			{% for building in buildings %}	
+				<div class="contentBuilding" style="overflow:hidden;">
+					<div class="headerBuilding" onclick="location.href='{{ path('selectGraph',{'idBuilding':building.id}) }}';">
+						<p class="titleContentDescription" style="float:left;"><strong>{{ building.name }}</strong></p>
+						<p style="float:right; margin-left:10px;"><span style="color:#2e75b6">Last action:</span> 15 / 04 / 2014 8:00</p>
+						<p style="float:right; margin-left:50px;"><span style="color:#2e75b6">Status:</span> No action required</p>
+					</div>
+				
+					<div class="propertiesBuilding">
+						<div class="columnBuilding">
+							<p class="columnTitle"><strong> Building description</strong></p>
+
+							<p><span>	Building use:</span> {{ building.useBuilding }}</p>
+							<p><span>	Address: </span>{{ building.street }}</p>
+							<p><span>	Year of construction:</span> {{ building.yearOfConstruction }}</p>
+							<p><span>	Surface: </span>{{ building.surface }}  </p>
+							<p><span>	Floors:</span> 6</p>
+							<p><span>	Occupation:</span> {{ building.occupation }}</p>
+
+						</div>
+						<div class="columnBuilding middleColumn">
+							<p class="columnTitle"><strong> Global indicators</strong></p>
+
+							<p><span>Energy rating:</span> D</p>
+							<p><span>Renewable generation:</span> PV plant (23 MWh)</p>
+							<p><span>Thermal power:</span> 850 kW</p>
+							<p><span>Electrical power:</span> 440 kW</p>
+							<p><span>Energy consumption:</span> 357kWh/m2</p>
+							<p><span>CO2 emissions:</span> 86kgCO2/m2 </p>
+
+						</div>
+						<div class="columnBuilding">
+							<p class="columnTitle"><strong> Real time indicators</strong></p>
+
+							<p><span>Outdoor temperature:</span> 23º</p>
+							<p><span>Indoor temperature:</span> 25º</p>
+							<p><span>Renewable generation:</span> 23 kWh</p>
+							<p><span>Energy consumption:</span> 157kWh/m2</p>
+							<p><span>CO2 emissions:</span> 26kgCO2/m2 </p>
+
+						</div>
+					</div>
+				</div>
+				<!--
+				<div style="background-color:#ddd; overflow:hidden;">
+					<p class="titleContentDescription" style="float:left;"><strong>Theatre</strong></p>
+					<p style="float:right; margin-left:10px;"><span style="color:#2e75b6">Last action:</span> <span style="color:#C00000"> <strong>15 / 04 / 2014 8:00</strong> </span></p>
+					<p style="float:right; margin-left:50px;"><span style="color:#2e75b6">Status:</span> <span style="color:#C00000"><strong> No action required</strong></span></p>
+				</div>
+				
+				<div style="background-color:#eee; overflow:hidden;">
+					<div style="float:left; width:290px;">
+						<p style="font-size:11px;"><strong> Building description</strong></p>
+
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">	Building use:</span> Cultural</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">	Address: </span>Plaça de la Vila, 1</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">	Year of construction:</span> 2010</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">	Surface: </span>9.593m2  </p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">	Floors:</span> 6</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">	Occupation:</span> 35 employees, 800 visitors</p>
+
+					</div>
+					<div style="float:left; width:290px; border-right:1px solid #ddd; border-left:1px solid #ddd;">
+						<p style="font-size:11px;"><strong> Global indicators</strong></p>
+
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">Energy rating:</span> D</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">Renewable generation:</span> - </p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">Thermal power:</span> 650 kW</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">Electrical power:</span> 340 kW</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">Energy consumption:</span> 257kWh/m2</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">CO2 emissions:</span> 66kgCO2/m2 </p>
+
+					</div>
+					<div style="float:left; width:290px;">
+						<p style="font-size:11px;"><strong> Real time indicators</strong></p>
+
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">Outdoor temperature:</span> 23º</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">Indoor temperature:</span> 25º</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">Renewable generation:</span> 23 kWh</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">Energy consumption:</span> 157kWh/m2</p>
+						<p style="margin:5px 10px; font-size:11px;"><span style="color:#2e75b6">CO2 emissions:</span> 26kgCO2/m2 </p>
+
+					</div>
+				</div>-->
+			{% endfor %}	
+			</div>
+		</div>
+	</div>
+		
+    
+{% endblock %}

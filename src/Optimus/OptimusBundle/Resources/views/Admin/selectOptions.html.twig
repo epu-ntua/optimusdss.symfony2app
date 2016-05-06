@@ -1,0 +1,32 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block content %}
+	
+	<div style="margin:20px auto 0 auto; width:80%; overflow:hidden;">
+		<div style="width:468px; height:330px; float:left;  margin-top:100px; border:1px solid rgb(168, 184, 206); color: rgb(68, 84, 106); background-color:rgb(232,238,248); margin-right:20px; padding-top:34px; cursor:pointer;" onclick="location.href='{{ path('init') }}';">
+			<img src="{{ asset('bundles/optimus/img/optimus-user_400_1.png') }}" style="margin-bottom:20px; margin-left:34px;"/>
+			<p style="height:85px; font:14px; padding: 20px 24px 20px 0; float:left; margin-left:34px;"><strong>{%trans%}Go to the END-USER interface{%endtrans%}</strong><br/>
+			<br/>
+			
+			- Visualize monitoring data <br/>
+			- Explore action plans <br />
+			- <br/>
+			</p>
+		</div>
+		
+		<div style="width:468px; height:330px; float:left; margin-top:100px; border:1px solid rgb(168, 184, 206); color: rgb(68, 84, 106); background-color:rgb(232,238,248); padding-top:34px; cursor:pointer;" onclick="location.href='{{ path('adminBuilding') }}';">
+			<img src="{{ asset('bundles/optimus/img/optimus-admin_400_1.png') }}" style="margin-bottom:20px; margin-left:34px;"/>
+			<p style="font:14px; padding: 20px 24px 20px 0;  float:left; margin-left:34px;"><strong>{%trans%}Go to the ADMIN interface{%endtrans%}</strong><br />
+			<br/>
+			
+			 - Add, edit, delete buildings, sensors, zones<br/>
+			 - Setup action plans for a specific building<br/>
+			 - Map sensors to a zone<br/>			
+			</p>
+		</div>
+	</div>
+	
+	
+		
+{% endblock %}

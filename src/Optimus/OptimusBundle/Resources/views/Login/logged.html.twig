@@ -1,0 +1,7 @@
+<div style="margin:7px 10px 0 0; overflow:hidden; float:right; font-size: 12px;  color: #fff;">
+	<p class="titleContentDescription" style="float:left; padding: 5px 0px;">
+		<strong>{%trans%} Logged as {%endtrans%}:</strong> 
+		<span style="padding-left:5px;"> {{ app.user.lastname }} </span> 
+	</p>
+	<p style="float:right; background-color:#ddd; padding:5px 15px; font-size: 12px; margin-left:30px; cursor:pointer; font-weight: bold; color: #626262;" onclick="location.href='{{ path('logout') }}';">{%trans%} Log out {%endtrans%}</p>
+</div>

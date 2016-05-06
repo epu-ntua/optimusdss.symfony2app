@@ -1,0 +1,309 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.pie.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.dashes.js') }}"></script>
+{% endblock %}
+
+{% block clase_ActionPlanData %}activo{% endblock %}
+
+
+{% block content %}
+
+<script type="text/javascript">
+		
+	$(function(){		
+		$("#datepicker").hide();
+		$(".showDiv").slideToggle();
+		
+		var startDate;
+		var endDate;
+		
+		var selectCurrentWeek = function() {
+			window.setTimeout(function () {
+				$('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+			}, 1);
+		}
+		
+		$('#datepicker').datepicker( {
+			/*showWeek: true,
+			firstDay: 1,*/
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			onSelect: function(dateText, inst) { 
+				var date = $(this).datepicker('getDate');
+								
+				/*startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);*/
+				startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); //diaSelected
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 6); //diaSelected +6
+														
+				var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+				$('#startDate').text($.datepicker.formatDate("yy-mm-dd" , startDate, inst.settings )); //dateFormat
+				$('#endDate').text($.datepicker.formatDate( "yy-mm-dd", endDate, inst.settings ));
+				
+				selectCurrentWeek();
+				
+				//location.href='<?php //echo base_url(); ?>index.php/main_controller/index/'+$('#startDate').html()+'/'+$('#endDate').html()+'/'+timeSelected;
+			},
+			beforeShowDay: function(date) {
+				var cssClass = '';
+				if((date >= startDate && date <= endDate) || (date>=new Date('{{ startDate }}') && date <=new Date('{{ endDate }}')))
+					cssClass = 'ui-datepicker-current-day';
+				return [true, cssClass];
+			},
+			onChangeMonthYear: function(year, month, inst) {
+				selectCurrentWeek();
+			}
+		});
+		
+		$(document).on('mousemove', '#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').addClass('ui-state-hover');    });
+		$(document).on('mouseleave','#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').removeClass('ui-state-hover'); });
+		
+		
+		/*-----------------------------------------------------------------------------------*/
+		
+		//Función compartida por todas las gráficas
+		function showTooltip(x, y, contents)
+		{
+			$('<div id="tooltip" style="font-size:10px;">' + contents + '</div>').css( {
+				position: 'absolute',
+				display: 'none',
+				top: y-20,
+				left: x + 10,
+				border: '1px solid #595959',
+				padding: '2px',				
+				'background-color': '#DADADA',
+				opacity: 0.80
+			}).appendTo("body").fadeIn(200);
+		}		
+		
+		//double-clik on table
+		$("table").dblclick(function(){
+			$(".showDiv").slideToggle();
+		});
+			
+	});
+	
+	//Show/hide el calendario
+	function displayCalendar()
+	{
+		$("#datepicker").slideToggle();
+	}
+	
+	function createURLView()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('actionPlan', {'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+		//location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+	}
+	
+	function createURLPredictor()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('newCalculate', {'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+		//location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+	}
+
+	
+</script>
+    
+	<div id="topRight" style="background-color:#e8eef8; margin-bottom:20px;">
+		<p><strong>
+			<span style="cursor:pointer;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
+			<span style="cursor:pointer;" onclick="location.href='{{ path('selectGraph') }}';">Town Hall</span> > 
+			Action Plan: Sale/consumption of the electricity produced through the PV system 
+			</strong></p>					
+	</div>
+	
+	<div id="centerRight">
+			<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;">
+				<div style="width:650px;float:left;">
+					<p class="titleContentDescription"><strong>Action Plan:</strong> <span>Sale/consumption of the electricity produced through the PV system </span></p>
+					<p class="titleContentDescription"><strong>Description:</strong> <span style="font-size:11px;">Schedule the switching on/off of production energy for auto-consume or selling according to the energy prices</span></p>
+				</div>
+				<div style="float:left; text-align:right;">
+					<p style="margin:10px 10px;"><span style="color:#2e75b6">Last forecast calculated:</span> <span><strong>15/04/2014 8:00</strong></span></p>					
+				</div>
+			</div>
+			<!--<div id="indicators" style="background-color:#d0cece; width:100%;  overflow:hidden; border-bottom:1px solid #7f7f7f; border-top:1px solid #7f7f7f;">
+				<p style="width:847px; border-right:1px solid #7f7f7f; float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px;"><strong>Indicators</strong></p>
+				<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3;">+</p>
+			</div>-->	
+			
+			<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f; border-top:0px;">				
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #7f7f7f;  text-align: right;"><strong>Profile:</strong></p>
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:150px; border-right:1px solid #7f7f7f;  text-align: right;">Summer profile</p>
+				
+				<p style="float:left; margin: 0 0 0 120px; height:15px; padding:10px; width:201px; border-right:1px solid #7f7f7f;  text-align: right;"><strong>Num. panels:</strong></p><p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right;">25</p>	
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #7f7f7f;  text-align: right;"><strong>Visualization:</strong></p><p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right;">Daily</p>				
+				
+			</div>
+			
+			<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;  border-top:0px;">
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #7f7f7f; text-align: right;"><strong>Dates:</strong></p>
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #7f7f7f; text-align:center; background-color: #e8eef8;">
+					<span id="startDate">{{ startDate }}</span> / 
+					<span id="endDate">{{ endDate }}</span>
+				</p>
+				<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #7f7f7f; cursor:pointer;" onclick="displayCalendar();">+</p>
+				
+				<p class="buttonIndicator" onclick="createURLView();">View</p>
+				
+				<p class="buttonIndicator" onclick="createURLPredictor();">Calculate</p>
+			</div>
+			<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#d0cece;"></div>
+			
+			<div id="contentGraficas">
+				<!-- tabla de valores -->
+				<div class="contentTableResults">
+					<table border="0">
+						<thead>
+							<tr class="headerTemp">
+								<th class="firstColumnHeaderTemp" colspan="2">Ext. Temp</th>
+								<th>12º C</th>
+								<th>13º C</th>
+								<th>14º C</th>
+								<th>15º C</th>
+								<th>16º C</th>
+								<th>17º C</th>
+								<th>18º C</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="headerDays">
+								<td colspan="2"></td>
+								<td>Mon</td>
+								<td>Tue</td>
+								<td>Wed</td>
+								<td>Thu</td>
+								<td>Fri</td>
+								<td>Sat</td>
+								<td>Sunday</td>								
+							</tr>
+							<tr>
+								<td colspan="2">Production capacity (KW)</td>
+								{% for i in 0..6 %}
+									<td>{{ dataActionPlan[i].production|round(1, 'floor') }}</td>				
+								{% endfor %}
+							</tr>
+							<tr>
+								<td colspan="2">Average consume (KW)</td>
+								{% for i in 0..6 %}
+									<td>{{ dataActionPlan[i].averageDay|round(1, 'floor') }}</td>				
+								{% endfor %}							
+							</tr>
+							<tr>
+								<td colspan="2">Purchase energy price (€/KWh)</td>
+								{% for i in 0..6 %}
+									<td>{{ dataActionPlan[i].purchase|round(1, 'floor') }}</td>				
+								{% endfor %}								
+							</tr>
+							<tr>
+								<td class="lastFirstBlock" colspan="2">Selling energy price (€/KWh)</td>
+								{% for i in 0..6 %}
+									<td>{{ dataActionPlan[i].selling|round(1, 'floor') }}</td>				
+								{% endfor %}							
+							</tr>
+							
+						<!--</tbody>
+					</table>
+				</div>
+				<div style="width:100%; font-size:11px;" onclick="$(this).hide();">
+					<table style="width:100%; border-collapse: collapse; border:1px solid;" border="0">
+						<tbody>-->
+						{% for i in 0..23 %}
+							<tr class="showDiv">
+								{%if( i==0)%}<td class="firstCellShowDiv" rowspan="24">Daily Energy Cost</td>
+								{% endif %}
+								<td class="secondCellShowDiv" style="">{{ i }}:00 - {{ i+1}}:00 h</td>
+								
+								{% for j in 0..6 %}
+									{% if(dataActionPlan[j].calculation[i] is defined) %}
+										<td>{{ (dataActionPlan[j].calculation[i].energy_production*dataActionPlan[j].calculation[i].energy_price)|round(1, 'floor') }}</td>
+									{% else %}
+										<td> no data </td>
+									{% endif %}
+								{% endfor %}
+								
+							</tr>
+						{% endfor %}
+					<!--	</tbody>
+					</table>
+				</div>
+				<div style="width:100%; font-size:11px;">
+					<table style="width:100%;">
+						<tbody>	-->						
+							<tr>
+								<td class="scheduleStart" colspan="2">Schedule start</td>
+								<td class="value"></td>
+								<td class="value"></td>
+								<td class="value"></td>
+								<td class="value"></td>
+								<td class="value">13:00</td>
+								<td class="value">8:00</td>
+								<td class="value">8:00</td>
+							</tr>
+							<tr>
+								<td class="scheduleEnd" colspan="2">Schedule end</td>
+								<td class="value"></td>
+								<td class="value"></td>
+								<td class="value"></td>
+								<td class="value"></td>
+								<td class="value">18:00</td>
+								<td class="value">18:00</td>
+								<td class="value">18:00</td>
+							</tr>
+							<tr>
+								<td class="value" colspan="2">Daily accumulated gain</td>
+								{% for i in 0..6 %}
+									<td class="value">{{ dataActionPlan[i].dailyAcumulated|round(1, 'floor') }}</td>			
+								{% endfor %}								
+							</tr>
+							<tr>
+								<td class="value" colspan="2">Total week accumulated gain</td>
+								<td colspan="7" class="finalValue">
+								{% set totalWeek=0 %}
+								{% for i in 0..6 %}
+									{% set totalWeek=totalWeek+dataActionPlan[i].dailyAcumulated %}	
+								{% endfor %}
+								{{ totalWeek }}	
+								</td>						
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>			
+	</div>  
+
+
+
+{% endblock %}

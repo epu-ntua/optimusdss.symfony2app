@@ -1,0 +1,11 @@
+<div class="edit_sensor">	
+	
+	<form action="{{ path('sensor_save',{'idBuilding':idBuilding, 'idSensor':idSensor}) }}" method="post" {{ form_enctype(form) }} >
+		{{ form_errors(form) }}       
+        {{ form_rest(form) }}
+        <p>
+            <button type="submit" class="buttonBig">{%trans%}Edit Sensor{%endtrans%}</button>
+        </p>
+    </form>
+ 
+</div>

@@ -1,0 +1,478 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+			
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.stack.js') }}"></script>
+{% endblock %}
+
+{% block content %}  
+<script type="text/javascript">
+	$(function(){
+		/* Graph Stack RTime Indicators */
+		var stack1 = true,	bars1 = false,	lines1 = true,	steps1 = false;
+			
+		var stackSensors=["Energy production", "Total consumption", "CO2"];
+	
+		{% set maxY=0 %}
+		{% set minY=0 %}
+		{% set startPredictor=startDate | date('F j, Y H:i:s') %}
+		{% set endPredictor=endDate | date('F j, Y H:i:s') %}
+		{% set initPred = true %}
+		var datasetStackRT=[];
+		var aHeight = [];
+		aHeight["Energy cost"] = 70;
+		aHeight["CO2"] = 70;
+		aHeight["Energy consumption"] = 260;
+		aHeight["Produced renewable energy"] = 50;
+			
+		{% for z in mappingVariable %}
+			{% set lp_z=loop.index0 %}				
+
+			var dataVariable=[];			
+			
+			{% if mappingVariable[lp_z].data is not empty %}
+				{% for j in mappingVariable[lp_z].data %}
+					{% set lp_j=loop.index0 %}							
+					
+					
+					{% set date = mappingVariable[lp_z].data[lp_j].date | date("F j, Y H:i:s") %}
+					
+					var value = 0;
+					{% if mappingVariable[lp_z].maxValue != 0 %}
+						value = {{mappingVariable[lp_z].data[lp_j].value}} * aHeight["{{mappingVariable[lp_z].name}}"] / {{mappingVariable[lp_z].maxValue}}
+
+					{% endif %}					 
+					
+					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(2)+" {{mappingVariable[lp_z].units}}"]);	
+				
+				{% endfor %}		
+			{% endif %}
+			
+			datasetStackRT.push({data:dataVariable, label: "{{mappingVariable[lp_z].name}}", color:"{{mappingVariable[lp_z].color}}", dashes: { show: false, dashLength:[3, 3], lineWidth: 1, color:"{{mappingVariable[lp_z].color}}"}, shadowSize: 0, stack: {{mappingVariable[lp_z].stack}}});
+		
+		{% endfor %}	
+			
+		var plotStackRT = $.plot("#placeholder_stackRTimeIndicators", datasetStackRT,{
+			series: {
+				stack: stack1,
+				lines: {
+					show: lines1,
+					fill: true,
+					steps: steps1,
+					lineWidth: 1.1,
+					strokeStyle: "#eee"
+				},
+				points: {
+					show: false
+				},
+				shadowSize: 1
+			}, 
+			 
+			grid: {
+				canvasText:{show:true},
+				hoverable: true,
+				backgroundColor: { colors: [ "#fff", "#fff" ] },
+				borderColor: "#bbb",
+				borderWidth: {
+					top: 1,
+					right: 1,
+					bottom: 1,
+					left: 1
+				},
+			},
+			legend: {
+				show: false
+			},
+			crosshair: {
+				mode: "x"
+			},				
+			xaxis:{					
+					mode: "time", min: new Date("{{ startDate | date('F j, Y') }}"), max: new Date("{{ endDate | date('F j, Y') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					show:true,
+					timeformat: "%a <br/> %d.%m", //<br/>
+					//labelWidth: 50,
+					//minTickSize: [1, "day"], reserveSpace:true						
+				},
+			yaxis:{min:{{ minY }}, max: 400, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false},			
+		});	
+		
+		$("#placeholder_stackRTimeIndicators").bind("plothover", function (event, pos, item) {
+			if (item) {					
+				document.body.style.cursor = 'pointer';
+				if (previousPoint != item.dataIndex) {
+					previousPoint = item.dataIndex;
+					
+					//console.log(item);
+					$("#tooltip").remove();
+					var x = item.datapoint[0],
+						y = item.datapoint[1];
+						z = item.series.data[item.dataIndex+1][2];
+					showTooltip(item.pageX, item.pageY, z);
+				}
+			}else{
+				document.body.style.cursor = 'default';
+				$("#tooltip").remove();
+				previousPoint = null;
+			}
+		});
+	
+		/* Graph Stack BARS User Activity */
+		var stack = true,	bars = true,	lines = false,	steps = false;
+			
+		var stackSensors=["Energy production", "Total consumption", "CO2"];
+		
+		var dataset=[];
+		var dAccepts = [];	
+		var dDeclines = [];	
+		var dUnknows = [];	
+		
+		{% set maxY=0 %}		
+		
+		{% for z in dataDashboard[0].valuesDay %}
+			
+			{% set lp_z=loop.index0 %}
+			
+			{% set date = dataDashboard[0].valuesDay[lp_z].date | date("F j, Y") %}
+			
+			{% set sumDay=dataDashboard[0].valuesDay[lp_z].accepts + dataDashboard[0].valuesDay[lp_z].declines + dataDashboard[0].valuesDay[lp_z].unknows %}
+			
+			{% if maxY < sumDay %}
+				{% set maxY=sumDay %}
+			{% endif %}
+			
+			dAccepts.push([new Date("{{date}}"), {{dataDashboard[0].valuesDay[lp_z].accepts}}, "Accepts "+({{dataDashboard[0].valuesDay[lp_z].accepts}})+" "]);
+			
+			dDeclines.push([new Date("{{date}}"), {{dataDashboard[0].valuesDay[lp_z].declines}}, "Declines "+({{dataDashboard[0].valuesDay[lp_z].declines}})+" "]);
+			
+			dUnknows.push([new Date("{{date}}"), {{dataDashboard[0].valuesDay[lp_z].unknows}}, "Unknows "+({{dataDashboard[0].valuesDay[lp_z].unknows}})+" "]);
+			
+		{% endfor %}
+		
+		dataset.push({data:dAccepts, label: "Accepts", color:"#00ff00",  shadowSize: 0, stack: 0 });
+		dataset.push({data:dDeclines, label: "Declines", color:"#ff0000",  shadowSize: 0, stack: 0 });
+		dataset.push({data:dUnknows, label: "Unknows", color:"#ffff00",  shadowSize: 0, stack: 0 });
+		
+		console.log(dataset);
+			
+		var plot2 = $.plot("#placeholder_stackPila", dataset,{
+			series: {
+				stack: stack,
+				
+				bars: {
+					lineWidth: 0.5,
+					show: bars,
+					barWidth: 24 * 60 * 60 * 600
+				},				
+			}, 			 
+			grid: {
+				canvasText:{show:true},
+				hoverable: true,
+				backgroundColor: { colors: [ "#fff", "#fff" ] },
+				borderColor: "#bbb",
+				borderWidth: {
+					top: 1,
+					right: 1,
+					bottom: 1,
+					left: 1
+				},				
+			},
+			legend: {
+				show: false
+			},							
+			xaxis:{					
+					mode: "time", min: new Date("{{dataDashboard[0].valuesDay[0].date | date('F j, Y')}}"), 
+					max: new Date("{{ endDate | date('F j, Y') }}"), 
+					//tickLength: 5, 
+					font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					show:true,
+					timeformat: "%a <br/> %d.%m", //\n
+					//minTickSize: [1, "day"],
+					//labelWidth: 50, reserveSpace:true						
+				},
+			yaxis:{min:0, max: {{maxY}}, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[0, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false},			
+			
+		});	
+		
+		$("#placeholder_stackPila").bind("plothover", function (event, pos, item) {
+			if (item) {					
+				document.body.style.cursor = 'pointer';
+				if (previousPoint != item.dataIndex) {
+					previousPoint = item.dataIndex;
+					
+					//console.log(item);
+					$("#tooltip").remove();
+					var x = item.datapoint[0],
+						y = item.datapoint[1];
+						z = item.series.data[item.dataIndex][2];
+					showTooltip(item.pageX, item.pageY, z);
+				}
+			}else{
+				document.body.style.cursor = 'default';
+				$("#tooltip").remove();
+				previousPoint = null;
+			}
+		});
+			
+		function showTooltip(x, y, contents)
+		{
+			$('<div id="tooltip" style="font-size:10px;">' + contents + '</div>').css( {
+				position: 'absolute',
+				display: 'none',
+				top: y-20,
+				left: x + 10,
+				border: '1px solid #595959',
+				padding: '2px',				
+				'background-color': '#DADADA',
+				opacity: 0.80
+			}).appendTo("body").fadeIn(200);
+		}
+	});
+</script>
+   
+ 
+	<div id="left">		
+		<p class="titleContentDescription"><strong>{{ optimus_instance }} </strong></p>				
+		<div id="attributesContentDescription">
+			<p><span>Buildings:</span>2</p>
+			<p><span>Total surface:</span> 18.593m2 </p>
+			<p><span>Renewable generation:</span> PV plant (23 MWh)</p>
+			<p><span>Thermal power:</span> 850 kW </p>
+			<p><span>Electrical power:</span> 440 kW</p>
+			<p><span>Total energy consumption:</span> 2157kWh/m2</p>
+			<p><span>CO2 emissions:</span> PV plant (23 MWh)</p>
+		</div>
+	</div>
+
+	<div id="right">
+		<div id="topRight">
+			<p><strong>{{ optimus_instance }} >  {%trans%} List of buildings {%endtrans%}</strong></p>					
+		</div>
+		<div id="centerRight">	
+			
+			<div class="contentDashboard" style="overflow:hidden;">
+				<div style="overflow:hidden; background-color: #ddd;">
+					<div style="float:left; width:600px;">
+						<p class="titleContentDescription" style="float:left; "><strong>Dashboard of {{ optimus_instance }} buildings </strong></p>
+					</div>
+					<div style="float:right;">						
+						<p><span style="color:#2e75b6">{%trans%} Last action {%endtrans%}:</span> <span> {{startDate | date('Y-m-d')}} to {{endDate | date('Y-m-d')}} </span></p>
+					</div>
+					
+				</div>
+				
+				<!-- Graph Stack -->
+				<div class="propertiesBuilding" style="margin-bottom:0px; border-bottom:1px solid #ddd;">
+					<div style="float:left; width:400px;">
+						<p style="font-size: 11px; font-weight:bold;">DSS indicators</p>
+						{% for key,indicator in globalRTime %}
+							{% if indicator[0] < indicator[1] %}
+								{% set arrow='&#9660;' %}								
+							{% elseif indicator[0] > indicator[1] %}
+								{% set arrow='&#9650;' %}							
+							{% else%}
+								{% set arrow="=" %}						
+							{% endif %}
+							
+							{% if indicator[2] > 0 %}
+								{% set color="#00ff00;" %}
+								
+							{% elseif indicator[2] < 0 %}
+								{% set color="#ff0000;" %}
+							{% else%}
+								{% set color="#44546a;" %}
+							{% endif %}
+							
+							<div style="margin: 5px 10px; overflow: hidden;">
+								<p style="font-size:11px; float:left; margin:0; width:220px;">
+									{% set colorVariable="#fff" %}
+									{% for z in mappingVariable %}
+										{% set lp_z=loop.index0 %}
+										{% if mappingVariable[lp_z].name==key %}
+											{% set colorVariable=mappingVariable[lp_z].color %}
+										{% endif %}
+									{% endfor %}
+									<span style="margin:2px 5px 2px 0; width:10px; height:10px; background-color:{{colorVariable}}; float:left; "></span>
+									<span style="color:#2e75b6; margin-right:15px;">{{key}} ({{unitsRTime[key]}})</span>
+								</p>
+								<p style="float:left; margin:0; width:160px; text-align:right;">
+									{{indicator[0]|round(1, 'floor')}} 
+									<span style="color:{{color}}; width:5px;"> {{arrow|raw}}</span>
+									{{indicator[1] |round(1, 'floor')}}
+								</p>
+							</div>
+						{% endfor %}
+					</div>
+					
+					<div style="float:left; width:470px;">					
+						<!--<div style="float:left; margin-left:30px; width:100%;">
+							{% for z in mappingVariable %}
+								{% set lp_z=loop.index0 %}
+								<div style="float:left;"><p style="width:14px; height:14px; background-color:{{mappingVariable[lp_z].color}}; float:left; "></p><p style="float:left; margin-left:0; font-size:11px;"> {{mappingVariable[lp_z].name |trans}} </p></div>
+							{% endfor %}							
+						</div>-->						
+						<div id="placeholder_stackRTimeIndicators" style="height:120px; float:left; width: 470px; margin-bottom:10px;">	</div>
+					</div>		
+					
+				</div>
+					
+			
+				
+				<!-- Graph Stack User activity -->
+				<div class="propertiesBuilding">
+					<div style="float:left; width:400px;">
+						<p style="font-size: 11px; font-weight:bold;">User activities</p>
+						{% if dataDashboard[0].aWeek['accepts'] < dataDashboard[0].aMonth['accepts'] %}
+							{% set arrowA='&#9660;' %}
+							{% set colorA="#ff0000;" %}							
+						{% elseif dataDashboard[0].aWeek['accepts'] > dataDashboard[0].aMonth['accepts'] %}
+							{% set arrowA='&#9650;' %}
+							{% set colorA="#00ff00;" %}							
+						{% else%}
+							{% set arrowA="=" %}
+							{% set colorA="#44546a;" %}							
+						{% endif %}
+						
+						{% if dataDashboard[0].aWeek['declines'] < dataDashboard[0].aMonth['declines'] %}
+							{% set arrowD='&#9660;' %}
+							{% set colorD="#00ff00;" %}							
+						{% elseif dataDashboard[0].aWeek['declines'] > dataDashboard[0].aMonth['declines'] %}
+							{% set arrowD='&#9650;' %}
+							{% set colorD="#ff0000;" %}							
+						{% else%}
+							{% set arrowD="=" %}
+							{% set colorD="#44546a;" %}							
+						{% endif %}
+						
+						{% if dataDashboard[0].aWeek['unknows'] < dataDashboard[0].aMonth['unknows'] %}
+							{% set arrowU='&#9660;' %}
+							{% set colorU="#00ff00;" %}							
+						{% elseif dataDashboard[0].aWeek['unknows'] > dataDashboard[0].aMonth['unknows'] %}
+							{% set arrowU='&#9650;' %}
+							{% set colorU="#ff0000;" %}							
+						{% else%}
+							{% set arrowU="=" %}
+							{% set colorU="#44546a;" %}							
+						{% endif %}
+						
+						
+						<div style=" font-size:11px; margin: 5px 10px; overflow: hidden;">
+							<p style="font-size:11px; float:left; margin:0; width:220px;">
+								<span style="margin:2px 5px 2px 0; width:10px; height:10px;  background-color:#00ff00; float:left; "></span>
+								<span style="color:#2e75b6; margin-right:15px;">Accepted action plans</span>
+							</p>
+							<p style="float:left; margin:0; width:160px; text-align:right;">
+								{{dataDashboard[0].aWeek['accepts']}} 
+								<span style="color:{{colorA}}; width:5px; font-size:12px;"> {{arrowA|raw}} </span> 
+								{{dataDashboard[0].aMonth['accepts']}}
+							</p>
+						</div>
+						<div style=" font-size:11px; margin: 5px 10px; overflow: hidden;">
+							<p style="font-size:11px; float:left; margin:0; width:220px;">
+								<span style="margin:2px 5px 2px 0; width:10px; height:10px;  background-color:#ff0000; float:left; "></span>
+								<span style="color:#2e75b6; margin-right:15px;">Declined action plans</span>
+							</p>
+							<p style="float:left; margin:0; width:160px; text-align:right;">	
+								{{dataDashboard[0].aWeek['declines']}} 
+								<span style="color:{{colorD}}; width:5px; font-size:12px;"> {{arrowD|raw}} </span> 
+								{{dataDashboard[0].aMonth['declines']}}
+							</p>
+						</div>
+						<div style=" font-size:11px; margin: 5px 10px; overflow: hidden;">
+							<p style="font-size:11px; float:left; margin:0; width:220px;">
+								<span style="margin:2px 5px 2px 0; width:10px; height:10px;  background-color:#ffff00; float:left; "></span>
+								<span style="color:#2e75b6; margin-right:15px;">Inactivity</span>
+							</p>
+							<p style="float:left; margin:0; width:160px; text-align:right;">
+								{{dataDashboard[0].aWeek['unknows']}} 
+								<span style="color:{{colorU}}; width:5px; font-size:12px;"> {{arrowU|raw}} </span> 
+								{{dataDashboard[0].aMonth['unknows']}}
+							</p>
+						</div>
+					</div>
+					
+					<div style="float:left; width:470px;">
+						<!--<div style="float:left; margin-left:30px; width:100%;">								
+							<div style="float:left;">
+								<p style="width:14px; height:14px; background-color:#00ff00; float:left; "></p>
+								<p style="float:left; margin-left:0; font-size:11px;"> Accepts </p>										
+							</div>
+							<div style="float:left;">
+								<p style="width:14px; height:14px; background-color:#ffff00; float:left; "></p>
+								<p style="float:left; margin-left:0; font-size:11px;"> Declines </p>										
+							</div>
+							<div style="float:left;">
+								<p style="width:14px; height:14px; background-color:#ff0000; float:left; "></p>
+								<p style="float:left; margin-left:0; font-size:11px;"> Inactivity </p>										
+							</div>
+						</div>-->
+						<div  id="placeholder_stackPila" style="float:left; width:470px; height:120px; margin-bottom:10px;"></div>
+					</div>
+					
+				</div>				
+			</div>
+			
+			<!-- List of buildings-->
+			<div class="contentAllBuildings">
+			{% set i=0 %}
+			{% for building in buildings %}	
+				<div class="contentBuilding" style="overflow:hidden;">
+					<div class="headerBuilding" onclick="location.href='{{ path('selectGraph',{'idBuilding':building.id}) }}';">
+						<p class="titleContentDescription" style="float:left; text-decoration:underline;"><strong>{{ building.name }}</strong></p>
+						<p style="float:right; margin-left:10px;"><span style="color:#2e75b6"> {%trans%} Last action {%endtrans%}:</span> {{ datesBuildings[i] |trans}}</p>
+						<!--<p style="float:right; margin-left:50px;"><span style="color:#2e75b6">Status:</span> No action required</p>-->
+					</div>
+				
+					<div class="propertiesBuilding">
+						<div class="columnBuilding">
+							<p class="columnTitle"><strong> {%trans%} Building description {%endtrans%}</strong></p>
+
+							<p><span>	{%trans%} Building use {%endtrans%}:</span> {{ building.useBuilding }}</p>
+							<p><span>	{%trans%} Address {%endtrans%}: </span>{{ building.street }}</p>
+							<p><span>	{%trans%} Year of construction {%endtrans%}:</span> {{ building.yearOfConstruction }}</p>
+							<p><span>	{%trans%} Surface {%endtrans%}: </span>{{ building.surface }}  </p>
+							<p><span>	{%trans%} Floors {%endtrans%}:</span> 6</p>
+							<p><span>	{%trans%} Occupancy {%endtrans%}:</span> {{ building.occupation }}</p>
+
+						</div>
+						<div class="columnBuilding middleColumn">
+							<p class="columnTitle"><strong> {%trans%} Global indicators {%endtrans%}</strong></p>
+
+							<p><span> {%trans%} Energy rating {%endtrans%}:</span>{{ building.energyRating }} </p>
+							<p><span> {%trans%} Electricity consumption {%endtrans%}:</span> {{ building.electricityConsumption }}</p>
+							<p><span> {%trans%} Gas consumption {%endtrans%}</span> {{ building.gasConsumption }}</p>
+							<p><span> {%trans%} Energy production from RES {%endtrans%}:</span> {{ building.energyProductionFromRES }} </p>
+							<p><span> {%trans%} Electricity energy cost {%endtrans%}:</span> {{ building.electricityEnergyCost }}</p>
+							<p><span> {%trans%} Gas energy cost {%endtrans%}:</span> {{ building.gasEnergyCost }}</p>
+
+						</div>
+						<div class="columnBuilding">
+							<p class="columnTitle"><strong> {%trans%} Real time indicators {%endtrans%}</strong></p>
+
+							<p><span>Outdoor temperature:</span> 14º</p>
+							<p><span>Indoor temperature:</span> 21º</p>
+							<p><span>Produced renewable energy:</span> 23 kWh</p>
+							<p><span>Energy consumption:</span> 157kWh/m2</p>
+							<p><span>CO2 emissions:</span> 26kgCO2/m2 </p>
+
+						</div>
+					</div>
+				</div>
+				{% set i=i+1 %}
+			{% endfor %}	
+			</div>
+		</div>
+	</div>
+		
+    
+{% endblock %}

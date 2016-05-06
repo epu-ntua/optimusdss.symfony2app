@@ -1,0 +1,11 @@
+<div class="edit_actionPlan">	
+	
+	<form action="{{ path('actionPlan_save',{'idBuilding':idBuilding, 'idActionPlan':idActionPlan}) }}" method="post" {{ form_enctype(form) }} >
+		{{ form_errors(form) }}       
+        {{ form_rest(form) }}
+        <p>
+            <button type="submit" class="buttonBig">{%trans%} Edit Action Plan {%endtrans%}</button>
+        </p>
+    </form>
+ 
+</div>

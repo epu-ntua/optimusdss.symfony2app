@@ -1,0 +1,566 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block stylesheets %}
+	<!--<link rel="stylesheet" href="{{ asset('bundles/optimus/js/jsTree/themes/default/styleTableTree.css') }}" />-->
+	<link rel="stylesheet" href="{{ asset('bundles/optimus/js/jsTree/themes/default/style.min.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+	
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jsTree/jstree.min.js') }}"></script>
+		
+{% endblock %}
+
+{% block clase_ActionPlanData %}activo{% endblock %}
+
+
+{% block content %}
+
+<script type="text/javascript">
+	var controlBefore=false;
+	var controlOpen=false;
+	
+	$(function(){		
+		$("#datepicker").hide();
+		$(".showDiv").slideToggle();
+		
+		var startDate;
+		var endDate;
+		
+		var selectCurrentWeek = function() {
+			window.setTimeout(function () {
+				$('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+			}, 1);
+		}
+		
+		$('#datepicker').datepicker( {
+			/*showWeek: true,
+			firstDay: 1,*/
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			onSelect: function(dateText, inst) { 
+				var date = $(this).datepicker('getDate');
+								
+				/*startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);*/
+				startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); //diaSelected
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 6); //diaSelected +6
+														
+				var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+				$('#startDate').text($.datepicker.formatDate("yy-mm-dd" , startDate, inst.settings )); //dateFormat
+				$('#endDate').text($.datepicker.formatDate( "yy-mm-dd", endDate, inst.settings ));
+				
+				selectCurrentWeek();
+				
+				//location.href='<?php //echo base_url(); ?>index.php/main_controller/index/'+$('#startDate').html()+'/'+$('#endDate').html()+'/'+timeSelected;
+			},
+			beforeShowDay: function(date) {
+				var cssClass = '';
+				if((date >= startDate && date <= endDate) || (date>=new Date('{{ startDate }}') && date <=new Date('{{ endDate }}')))
+					cssClass = 'ui-datepicker-current-day';
+				return [true, cssClass];
+			},
+			onChangeMonthYear: function(year, month, inst) {
+				selectCurrentWeek();
+			}
+		});
+		
+		$(document).on('mousemove', '#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').addClass('ui-state-hover');    });
+		$(document).on('mouseleave','#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').removeClass('ui-state-hover'); });
+			
+		/*-----------------------------------------------------------------------------------*/
+					
+		$("#button_heating").attr("checked", "checked");
+		//$("#button_cooling").attr("checked", "checked");
+		
+		/* TREE */
+		var str="{{ tree }}";		
+		var tree= JSON.parse(str.replace(/&quot;/g,'"'));
+				
+		$('#jstree_demo_div').jstree({
+			"core" : {
+			"animation" : false,
+			"check_callback" : false,
+			"themes" : { "stripes" : false, "icons":false, "dots":false },
+			'data' : 
+				tree
+			 },
+			"types" : {
+				"#" : {
+					"max_children" : 1, 
+					"max_depth" : 4, 
+					"valid_children" : ["root"]
+				},
+				"root" : {
+					"icon" : "/static/3.1.0/assets/images/tree_icon.png",
+					"valid_children" : ["default"]
+				},
+				"default" : {
+					"valid_children" : ["default","file"]
+				},
+				"file" : {
+					"icon" : "glyphicon glyphicon-file",
+					"valid_children" : []
+				}
+			},
+			"plugins" : [
+				"dnd", "search",
+				"state", "types" /*,"wholerow"*/
+			]
+			
+		}).on('ready.jstree', function() {
+			$('#jstree_demo_div').jstree('open_all');
+			//$('#jstree_demo_div').jstree().unbind();
+			createTable();
+			controlBefore=true;			
+			console.log("ready");
+			heightRows();
+			
+		}).on('open_node.jstree', function() {
+			
+			console.log("open");
+			if(controlBefore!=false){
+				
+				//controlBefore=true;
+			//}else{
+				if(controlOpen==false)
+				{
+					
+					createTable();
+					heightRows();
+					//controlOpen=true;
+				}
+			}
+		}).on('close_node.jstree', function() {
+			//$('#jstree_demo_div').jstree('open_all');
+			//$('#jstree_demo_div').jstree().unbind();
+			
+			createTable();
+			heightRows();
+		});
+				
+		/*--------------------------------------------------------------*/
+		
+		//double-clik on table
+		$("#showSchedule").click(function(){
+			$(".showDiv").slideToggle();
+		});
+		
+		//double-clik on table
+		$("#arrowStrategy").click(function(){
+			$("#menuStrategies").slideToggle();
+		});
+		
+		$("#button_heating").click(function(){
+			if($("#button_heating").is(':checked'))
+			{
+				$(".heating").css('display','table');
+				heightRows();
+			}else{
+				$(".heating").css('display','none');
+				heightRows();
+				
+			}
+		});
+		
+		$("#button_cooling").click(function(){
+			if($("#button_cooling").is(':checked'))
+			{
+				$(".cooling").css('display','table');
+				heightRows();
+			}else{
+				$(".cooling").css('display','none');
+				heightRows();
+			}
+		});
+		
+		$("#button_baseline").click(function(){
+			if($("#button_baseline").is(':checked'))
+			{
+				$(".row_baseline").css('display','');
+				createTable();
+				heightRows();
+				
+			}else{
+				createTable();
+				$(".row_baseline").css('display','none');
+				heightRows();
+			}
+		});
+		
+		heightRows();
+				
+	});
+	
+	function heightRows()
+	{
+		if(($("#button_heating").is(':checked')) && ($("#button_cooling").is(':checked')))
+		{
+			$('.heating').css('height','12px');
+			$('.cooling').css('height','12px');
+		}else if(($("#button_heating").is(':checked')) && (!$("#button_cooling").is(':checked'))){
+			$('.heating').css('height','24px');
+		}else if((!$("#button_heating").is(':checked')) && ($("#button_cooling").is(':checked'))){
+			$('.cooling').css('height','24px');
+		}
+	}
+	
+	function createTable()
+	{	
+		var tables=[];
+		var str="";
+		$("#tableSwitch").html("");	
+		
+		str+="<table border='0' style='font-size: 12px; cursor: auto;'>";
+		
+		str+="<tr class='headerDays' ><td></td><td colspan='3'>{{ (dataActionPlan[0].nameAbbreviatedDay) }} {{ (dataActionPlan[0].abbreviatedDay) }}</td><td colspan='3'>{{ (dataActionPlan[1].nameAbbreviatedDay) }} {{ (dataActionPlan[1].abbreviatedDay) }}</td><td  colspan='3'>{{ (dataActionPlan[2].nameAbbreviatedDay) }} {{ (dataActionPlan[2].abbreviatedDay) }}</td><td colspan='3'>{{ (dataActionPlan[3].nameAbbreviatedDay) }} {{ (dataActionPlan[3].abbreviatedDay) }}</td><td colspan='3'>{{ (dataActionPlan[4].nameAbbreviatedDay) }} {{ (dataActionPlan[4].abbreviatedDay) }}</td><td colspan='3'>{{ (dataActionPlan[5].nameAbbreviatedDay) }} {{ (dataActionPlan[5].abbreviatedDay) }}</td><td colspan='3'>{{ (dataActionPlan[6].nameAbbreviatedDay) }} {{ (dataActionPlan[6].abbreviatedDay) }}</td></tr>";//<td>Total</td>
+		
+		str+="<tr style='text-align:center; line-height: 3px; height:24px;'><td style='border-left:1px solid'>Partitions</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td></tr>"; //<td>Total</td>
+		
+		$( ".jstree-anchor" ).each(function() {
+			var attrId=$(this).attr("id");
+			id=attrId.split("_");
+			
+			console.log($(this));
+			
+			{% for partition in allPartitions %}
+				//str="";
+				if (id[0]=={{partition.id}})
+				{
+					var level=4;
+					{% set max=partition.level %}
+					{% for i in 1..max %}
+						level+=8
+					{% endfor %}
+					
+					{% if  partition.sensors==false %}		{#partition.partition.getFkBuildingPartitioning()!=null#} //partition.childs==true or				
+						str+="<tr style='border:1px solid; height:24px;'> <td style='min-width:200px;text-align:left;'><p style='margin:0; margin-left:"+level+"px;'> {{partition.partition.getPartitionName()}}</p></td><td colspan='21'></td></tr>";	//<td style='border-bottom:0px; height:22px;'>Total</td>		
+					{% else %}
+						console.log({{partition.id}});
+						//check baseline
+						if($("#button_baseline").is(':checked')) 	$("#"+id[0]+"_anchor").css("height","48px");
+						else 										$("#"+id[0]+"_anchor").css("height","24px");
+						
+						//Selected
+						str+="<tr style='border:1px solid;'><td rowspan='1' width='10%' style='text-align:left;height:24px; background-color:#A9D08E; min-width:200px;'><p style='margin:0; margin-left:"+level+"px;'>  {{partition.partition.getPartitionName()}}</p></td>";
+							//Heating
+							str+="<td colspan='21' width='80%' style='padding-right:0px; border-bottom: 1px ;'><table style='line-height: 3px; height:12px; border:0px; font-size:10px; ' class='heating' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'> <tr width='100%' id='{{partition.id}}_heating' border='0'>  ";
+						
+							{% for i in 0..6 %}
+								{% if i==6 %}
+									{%if dataActionPlan[i].dataCalculation is not empty %}
+										{% for j in dataActionPlan[i].dataCalculation %}
+											{% set lp_j=loop.index0 %}
+											{% if dataActionPlan[i].dataCalculation[lp_j] is defined %}
+												{% if dataActionPlan[i].dataCalculation[lp_j].partition==partition.id %}
+													{% set boldStart="cursor: auto;" %}
+													{% set titleStart="" %}
+													{% set boldStop="cursor: auto;" %}
+													{% set titleStop="" %}
+													
+													{% if dataActionPlan[i].dataCalculation[lp_j].startDifferent=="different" %}
+														{% set boldStart="font-weight:bold; cursor:pointer; background-color:#FF7C80;" %}
+														{% set titleStart='This value has change since last calculation ('~dataActionPlan[i].dateCalculationBefore~'). The value was: '~dataActionPlan[i].dataCalculation[lp_j].numStartBefore~ ':00' %}
+													{% endif %}
+													
+													{% if dataActionPlan[i].dataCalculation[lp_j].stopDifferent=="different" %}
+														{% set boldStop="font-weight:bold; cursor:pointer; background-color:#FF7C80;" %}
+														{% set titleStop='This value has change since last calculation ('~dataActionPlan[i].dateCalculationBefore~'). The value was: '~dataActionPlan[i].dataCalculation[lp_j].numStopBefore~ ':00' %}
+													{% endif %}
+													
+													str+="<td style='width:27px;{{boldStart}}' title='{{titleStart}}'>{{dataActionPlan[i].dataCalculation[lp_j].start}}:00</td><td style='width:27px;{{boldStop}}' title='{{titleStop}}'>{{dataActionPlan[i].dataCalculation[lp_j].stop}}:00</td><td style='border-right:0;width:27px;cursor: auto;'>{{dataActionPlan[i].dataCalculation[lp_j].setpoint|round(1, 'floor')}}º</td>";
+												{% endif %}
+											{% else %}
+												str+="<td style='width:27px;cursor: auto;'>--</td><td style='width:27px;cursor: auto;'>--</td><td style='background-color:#fff;border-right:0;width:27px;cursor: auto;'>--</td>";	
+											{% endif %}	
+										{% endfor %}
+									{% else %}	
+										str+="<td style='width:27px;cursor: auto;'>--</td><td style='width:27px;cursor: auto;'>--</td><td style='background-color:#fff;border-right:0;width:27px;cursor: auto;'>--</td>";	
+									{% endif %}
+								{% else %}
+									{%if dataActionPlan[i].dataCalculation is not empty %}
+										{% for j in dataActionPlan[i].dataCalculation %}
+											{% set lp_j=loop.index0 %}
+											{% if dataActionPlan[i].dataCalculation[lp_j] is defined %}
+												
+												{% if dataActionPlan[i].dataCalculation[lp_j].partition==partition.id %}
+													
+													{% set boldStart="cursor: auto;" %}
+													{% set titleStart="" %}
+													{% set boldStop="cursor: auto;" %}
+													{% set titleStop="" %}
+													
+													{% if dataActionPlan[i].dataCalculation[lp_j].startDifferent=="different" %}
+														{% set boldStart="font-weight:bold; cursor:pointer; background-color:#FF7C80;" %}
+														
+														{% set titleStart='This value has change since last calculation ('~dataActionPlan[i].dateCalculationBefore~'). The value was: '~dataActionPlan[i].dataCalculation[lp_j].numStartBefore~ ':00' %}
+														
+													{% endif %}
+													
+													{% if dataActionPlan[i].dataCalculation[lp_j].stopDifferent=="different" %}
+														{% set boldStop="font-weight:bold; cursor:pointer; background-color:#FF7C80;" %}
+														{% set titleStop='This value has change since last calculation ('~dataActionPlan[i].dateCalculationBefore~'). The value was: '~dataActionPlan[i].dataCalculation[lp_j].numStopBefore~ ':00' %}
+													{% endif %}
+													str+="<td style='width:27px;{{boldStart}}'  title='{{titleStart}}'>{{dataActionPlan[i].dataCalculation[lp_j].start}}:00</td><td style='width:27px;{{boldStop}}' title='{{titleStop}}'>{{dataActionPlan[i].dataCalculation[lp_j].stop}}:00</td><td style='width:27px;cursor: auto;'>{{dataActionPlan[i].dataCalculation[lp_j].setpoint|round(1, 'floor')}}º</td>";
+												{% endif %}
+											{% else %}
+												str+="<td style='width:27px;cursor: auto;'>--</td><td style='width:27px;cursor: auto;'>--</td><td style='background-color:#fff;width:27px;cursor: auto;'>--</td>";	
+												
+											{% endif %}
+										{% endfor %}
+									{% else %}	
+										str+="<td style='width:27px;cursor: auto;'>--</td><td style='width:27px;cursor: auto;'>--</td><td style='background-color:#fff;width:27px;cursor: auto;'>--</td>";	
+									{% endif %}	
+								{% endif %}
+							{% endfor %}
+							
+							str+="</tr></table>";
+							
+							//Cooling
+							str+="<table style='line-height: 3px; height:12px; border:0px; font-size:10px; background-color:#BDD7EE;' class='cooling' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'><tr id='{{partition.id}}_cooling'   border='0'>";
+						
+							{% for i in 0..6 %}
+								{% if i==6 %} 	str+="<td style='width:27px;'>0"+Math.round(Math.random(1, 100))+":00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;border-right:0;'>22º</td>";
+								{% else %}  	str+="<td style='width:27px;'>0"+Math.round(Math.random(1, 100))+":00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;'>22º</td>";
+								{% endif %}
+							{% endfor %}
+							
+							str+="</tr></table>";
+						
+							str+="</td>";
+						
+						str+="</tr>"; //<td rowspan='1' width='10%' style='background-color:#A9D08E;'>2888 KW</td>
+						
+						//Baseline
+						str+="<tr style='border:1px solid;' class='row_baseline'><td rowspan='1' width='10%' style='height:24px; background-color:#F8CBAD;'>Baseline</td>";
+							//Heating
+							str+="<td colspan='21' width='80%' style='padding-right:0px; border-bottom:1px;'><table style='line-height: 3px; height:12px; border:0px; font-size:10px; background-color:#FCD8D8;' class='heating' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'> <tr width='100%' id='{{partition.id}}_heating' border='0'>  ";
+						
+							{% for i in 0..6 %}
+								{% if i==6 %} 	str+="<td style='width:27px;'>11:00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;border-right:0;'>22º</td>";
+								{% else %} 		str+="<td style='width:27px;'>11:00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;'>22º</td>";
+								{% endif %}
+							{% endfor %}
+							
+							str+="</tr></table>";
+							
+							//Cooling
+							str+="<table style='line-height: 3px; height:12px; border:0px; font-size:10px; background-color:#DDEBF7;' class='cooling' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'><tr id='{{partition.id}}_cooling'   border='0'>";
+							
+							{% for i in 0..6 %}
+								{% if i==6 %} 		str+="<td style='width:27px;'>0"+Math.round(Math.random(1, 100))+":00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff; border-right:0;'>22º</td>";
+								{% else %}  		str+="<td style='width:27px;'>0"+Math.round(Math.random(1, 100))+":00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;'>22º</td>";
+								{% endif %}
+							{% endfor %}
+							
+							str+="</tr></table>";						
+							str+="</td>";
+						
+						str+="</tr>"; //<td rowspan='1' width='10%' style='background-color:#F8CBAD;'>2888 KW</td>
+						//$("#tableSwitch").append(str);						
+					{% endif %}
+					
+					//tables.push( {id:{{partition.id}}, str:str} );
+					
+				}
+			{% endfor %}
+			
+			//$("#tableSwitch").append("<table><tr>"+str+"</tr></table>");
+		});
+		
+		str+="<tr style='text-align:center; line-height: 3px; '><td class='value' rowspan='3' style='background-color: #d9e1f2; line-height: 1.5;'>{%trans%} Please confirm the action plan {%endtrans%}</td>"+printStatus()+"</tr>"; //<td></td>
+		
+		str+="</table>";
+		$("#tableSwitch").append(str);
+		
+		if($("#button_baseline").is(':checked')) 	$(".row_baseline").css("display","");
+		else 										$(".row_baseline").css("display","none");
+		if($("#button_cooling").is(':checked')) 	$(".cooling").css("display","table");
+		else 										$(".cooling").css("display","none");
+		if($("#button_heating").is(':checked')) 	$(".heating").css("display","table");
+		else 										$(".heating").css("display","none");
+	}
+	
+	
+	function printStatus()
+	{
+		str="";
+		{% for i in 0..6 %}
+			str+="	<td colspan='3' style='text-align: left; {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} background-color:#d9d9d9; {% endif %}'>		<form id='form_{{i}}' method='post'><div class='inputsFilters' style=' float:left; margin-right:3px;'><p style='font-size:11px; margin:0;'>	<input onclick='sendFormStatus({{i}}, {{dataActionPlan[i].idOutputDay}});' type='radio' name='filter' value='0' {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} disabled='disabled'{% endif %} {% if(dataActionPlan[i].status==0) %} checked='checked' {% endif %} >{%trans%} Unknown {%endtrans%}</p><p style='font-size:11px; margin:0;'>							<input onclick='sendFormStatus({{i}}, {{dataActionPlan[i].idOutputDay}});' type='radio' name='filter' value='1' {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} disabled='disabled'{% endif %} {% if(dataActionPlan[i].status==1) %} checked='checked' {% endif %} >{%trans%} Accepted {%endtrans%}		</p>	<p style='font-size:11px; margin:0;'>		<input onclick='sendFormStatus({{i}}, {{dataActionPlan[i].idOutputDay}});' type='radio' name='filter' value='2' {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} disabled='disabled'{% endif %} {% if(dataActionPlan[i].status==2) %} checked='checked' {% endif %} >{%trans%} Declined {%endtrans%}	</p>	<input type='hidden' value='{{dataActionPlan[i].day|date('Y-m-d') }}' name='day' id='day' />	<input type='hidden' value='{{idActionPlan}}' name='idActionPlan' id='idActionPlan' />		</div>	</form>			</td>";
+		{% endfor %}
+		
+		return str;
+	}
+	
+	function sendFormStatus(idForm, idODay)
+	{
+		var url = "{{ path('changeSwitchStatusDay' ,{'idOutputDay':0} ) }}"; 
+		url = url.replace(0, idODay);
+
+		var form=$("#form_"+idForm+"").serialize();
+		console.log(form);
+		
+		$.ajax({
+			type: "POST",
+			url: url,
+			data:{ 'data':$("#form_"+idForm+"").serialize(), idBuilding:{{idBuilding}}}, // serializes the form's elements.
+			success: function(data)
+			{
+				
+			}
+		});
+	}
+	
+	//Show/hide el calendario
+	function displayCalendar()
+	{
+		$("#datepicker").slideToggle();
+	}
+	
+	function createURLView()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('view_switchOnOff', {'idBuilding':idBuilding, 'idAPType':idAPType, 'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+		//location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+	}
+	
+	function createURLPredictor()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('newCalculatePV', {'idBuilding':idBuilding, 'idAPType':idAPType, 'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		//location.href=url;
+		//location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+	}
+	
+	function changeStrategy(type)
+	{
+		$("#menuStrategies").css('display','none');
+		$(".textStrategyActual").html(type.toUpperCase());
+		
+		if(type=='finance')
+		{
+			$("#menuStrategies").html("<p style='cursor:pointer;' onclick='changeStrategy(\"Green\");'>GREEN</p> <p style='cursor:pointer;' onclick='changeStrategy(\"Intermediate\");'>INTERMEDIATE</p>");
+		}else if(type=='green')
+		{
+			$("#menuStrategies").html("<p style='cursor:pointer;' onclick='changeStrategy(\"Finance\");'>FINANCE</p> <p style='cursor:pointer;' onclick='changeStrategy(\"Intermediate\");'>INTERMEDIATE</p>");
+		}else{
+			$("#menuStrategies").html("<p style='cursor:pointer;' onclick='changeStrategy(\"Finance\");'>FINANCE</p><p style='cursor:pointer;' onclick='changeStrategy(\"Green\");'>GREEN</p> ");
+		}
+		//var url="";
+		{% for i in 0..6 %}
+			{% if dataActionPlan[i] is defined %}
+				{% set idOutputDay=dataActionPlan[i].idOutputDay %}
+			{% else %}
+				{% set idOutputDay=0 %}
+			{% endif %}
+			//AJAX
+			$.ajax({
+				type:'POST',					
+				url: "{{path('changeSwitchStrategy')}}",
+				data: { idOutputDay:{{ idOutputDay }}, type:type },
+				success:function(){
+					//data.instance.refresh();
+					//location.reload(); 
+				}
+			});
+		{% endfor %}
+	}
+
+	
+</script>
+    
+	<div id="left">	
+		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}
+		{{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding, 'idActionPlan':idActionPlan})) }}
+	</div>
+	<div id="right">
+		<div id="topRight">
+			<p><strong>
+				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
+				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> > 
+				{{ dataActionPlan_name }} 
+				</strong></p>					
+		</div>
+	
+		<div id="centerRight">
+			<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
+				<div style="float:left;">
+					<p class="titleContentDescription"><strong>{%trans%} Action Plan {%endtrans%}:</strong> <span>{{ dataActionPlan_name }} </span></p>
+					<p class="titleContentDescription"><strong>{%trans%}Description{%endtrans%}:</strong> <span style="font-size:12px;">{{ dataActionPlan_description }}</span></p>
+				</div>
+				<div style="float:left; text-align:right;">
+					<p style="margin:10px 10px;"><span style="color:#2e75b6">{%trans%} Last forecast calculated {%endtrans%}:</span> <span><strong>{{ dataActionPlan_lastCalculation }}</strong></span></p>					
+				</div>
+			</div>
+			<!--<div id="indicators" style="background-color:#d0cece; width:100%;  overflow:hidden; border-bottom:1px solid #7f7f7f; border-top:1px solid #7f7f7f;">
+				<p style="width:847px; border-right:1px solid #7f7f7f; float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px;"><strong>Indicators</strong></p>
+				<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3;">+</p>
+			</div>-->	
+				
+			<!--<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa; border-top:0px;">		
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #aaa;  text-align: right;"><strong>Profile:</strong></p>
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:150px; border-right:1px solid #aaa;  text-align: right;">Summer profile</p>
+				
+				<p style="float:left; margin: 0 0 0 120px; height:15px; padding:10px; width:201px; border-right:1px solid #7f7f7f;  text-align: right;"><strong>Num. panels:</strong></p><p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right;">25</p>
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #aaa;  text-align: right;"><strong>Visualization:</strong></p><p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #aaa;  text-align: right;">Daily</p>
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #aaa;  text-align: right;">Strategy selected</p><p class="strategyActual" style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #aaa;  text-align: right; cursor:pointer;"><span class="textStrategyActual">FINANCE</span> <span id="arrowStrategy">&#9660;</span></p>					
+			</div>-->	
+				
+			<div id="menuStrategies" style="width:100px; position:absolute; height:70px; left: 984px; border: 1px solid; display:none; z-index:9999; background-color:#ddd; top: 212px;">
+				<p style="cursor:pointer;" onclick="changeStrategy('green');">{%trans%} GREEN {%endtrans%}</p>
+				<p style="cursor:pointer;" onclick="changeStrategy('intermediate');">{%trans%} INTERMEDIATE {%endtrans%}</p>
+			</div>
+				
+			<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;  border-top:0px;">
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #aaa; text-align: right;"><strong>{%trans%} Dates {%endtrans%}:</strong></p>
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #aaa; text-align:center; background-color: #e8eef8;">
+					<span id="startDate">{{ startDate }}</span> / 
+					<span id="endDate">{{ endDate }}</span>
+				</p>
+				<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #aaa; cursor:pointer;" onclick="displayCalendar();">+</p>
+				
+				<p class="buttonIndicator" onclick="createURLView();">{%trans%} View {%endtrans%}</p>
+				
+				<!--<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">{%trans%} Calculate {%endtrans%}</p>-->
+				<!--<p>Selected Day: {{  "now"|date("Y-m-d")  }}</p>-->
+			</div>
+			
+			<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
+			
+			<div id="contentGraficas">
+				<p style="float:left; margin:0 20px 0 20px;display:none;"> <input type="checkbox" id="button_heating"/>Heating</p>
+				<p style="float:left; margin:0 20px 0 0;display:none;"> <input type="checkbox" id="button_cooling"/>Cooling</p>
+				<!--<p style="float:left; margin:0 20px 0 0;"> <input type="checkbox" id="button_baseline"/>Baseline</p>-->
+										
+				<div style="width:100%; float:left; display:block; margin-top: 20px;">
+					<!-- Tree -->
+					<div id="jstree_demo_div" style="float:left; width:16%; font-size: 12px; font-weight: bold; padding:47px 0 0 20px; margin-bottom:30px; display:none;">	</div>
+					<!-- Table-->
+					<div id="tableSwitch" style="margin-bottom: 20px; float:left; width:100%;  display:block; padding:0; line-height: 24px; border-bottom:1px solid;">
+					
+					</div>
+					
+				</div>
+				
+			</div>			
+		</div> 
+	</div>
+
+{% endblock %}
+

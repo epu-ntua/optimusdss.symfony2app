@@ -1,0 +1,245 @@
+
+body{font:$font; background:$backgroundColorBody; }
+
+#container{
+	text-align:left; 
+	min-height: 600px; 
+	overflow:hidden; 
+	margin:0px auto; 
+	width:1200px;
+
+	#header {
+		height:40px; 
+		width:100%; 
+		background:$backgroundColorHeader; 
+		overflow:hidden;
+
+		h3 {
+			color:$fontColorWhite; 
+			margin-top:10px; 
+			margin-left:10px;
+		}
+	}
+
+	#main {
+		width:100%; 
+		overflow:hidden;
+		min-height:700px;
+
+		#left { 
+			@include propertiesColumn(258px);			 
+			padding:10px; 			
+			margin-right:20px; 
+			background:$backgroundColorLeft; 
+			p {
+				&.titleContentDescription {
+					font-size:12px; 
+					color:$fontColor2; 
+					margin-bottom:10px;
+				}	
+			}
+			#imagesContentDescription{
+			 	float:left; 
+			 	margin-bottom:10px;
+
+			 	img { 
+			 		float:left; 
+			 		width:48%; 
+			 		border:1px solid #ddd;
+
+			 		&.marginImgRight{
+			 			margin-right:5px;
+			 		}
+			 	}
+			}
+			#attributesContentDescription{
+				float:left; 
+				width:100%;
+				p {
+					font-size:11px; 
+					color: $fontColor3; 
+					span { 
+						color:$fontColor4; 
+					}
+					&.marginBContentDescription { 
+						margin-bottom:10px; 
+					}
+				}
+			}
+			
+		}
+
+		#right {			
+			@include propertiesColumn(898px);
+			border:0;
+
+			#topRight {
+				float:left; 
+				width:100%;
+				margin-bottom:20px;
+				background-color:$backgroundColorTopRight;
+				
+				& span{
+					cursor:pointer;
+				}
+			}
+
+			p { 
+				font-size:12px; 
+				color:$fontColor2; 
+				/*margin:16px 10px;*/
+				margin:10px;
+				
+				&.buttonFuncionality{
+					border:1px solid #d6dce5; 
+					text-align:center; 
+					font-size:11px; 
+					float:left; 
+					cursor:pointer;
+					background-color:$backgroundColorButtonDesactive;  
+					color:$fontColor4;
+					
+					&.activo{
+						background-color:$backgroundColorButtonActive;
+						color:$fontColorWhite;
+					}
+				}
+				
+				&.buttonAnalyze{
+					@include sizeBotones(48px, 43px, 7px 20px);
+					margin-right:10px;
+				}	
+				&.buttonForecasted{
+					@include sizeBotones(65px, 56px, 7px 20px);
+				}	
+				&.buttonAction{ 
+					@include sizeBotones(48px, 29px, 20px);
+					line-height: 1.5;
+				}												
+				
+			}
+			#centerRight{
+				overflow:hidden; 
+				width:100%;
+				
+				#indicators{
+					background-color:#d0cece; 
+					width:100%;  
+					overflow:hidden; 
+					border-bottom:1px solid #aaa;
+				}
+				
+				.buttonIndicator{
+					float:left; 
+					height:15px; 
+					padding:10px 10px 10px 10px; 				
+					margin:0 0 0 30px;  
+					border-right:1px solid #aaa; 
+					border-left:1px solid #aaa; 
+					text-align:center; 
+					cursor:pointer;
+					background-color:#e8eef8;
+					
+					&:hover{
+						opacity:0.5;
+					}
+				}
+				
+				#contentGraficas{
+					overflow:hidden; 
+					float:left; 
+					padding-top:25px; 
+					background-color:#f8f8f8; 
+					width:100%; 
+					margin-bottom:20px;
+					
+					.contentTableResults{
+						width:100%; 
+						font-size:14px;	
+					}
+				}
+				
+				#contentFilterTable{
+					overflow:hidden; 
+					padding-bottom:10px; 
+					padding-top:10px;
+					
+					#headerFilter{
+						width:390px; 
+						float:left; 
+						text-align: right;
+					}
+					#filters{
+						width:505px; 
+						float:left;
+					}
+				}
+				
+				.contentAllBuildings{
+					overflow:hidden;
+					
+					.contentBuilding{
+						overflow:hidden;
+						
+						.headerBuilding{
+							background-color:#ddd; 
+							overflow:hidden; 
+							cursor:pointer;
+						}
+						
+					}
+				}
+			}
+			
+			.propertiesBuilding{
+				background-color:#eee; 
+				overflow:hidden; 
+				margin-bottom:10px;
+				font-size:10px;
+				
+				.columnBuilding{
+					float:left; 
+					width:290px;
+					& p{
+						margin:5px 10px;
+						font-size:10px;
+						& span{
+							color:#2e75b6;
+						}
+						&.columnTitle{
+							font-size:11px;
+						}
+					}
+					
+					&.middleColumn{
+						border-right:1px solid #ddd; 
+						border-left:1px solid #ddd;
+					}
+				}
+			}
+			
+			#contentJSTree{
+				background-color:#eee; 
+				overflow:hidden; 
+				margin-bottom:10px;
+				
+				#jstree_demo_div{
+					float:left; 
+					border-right:1px solid #ddd;
+				}
+			}
+			
+			.buttonBig{
+				border:1px solid #ddd; 
+				float:left; 
+				margin:30px 0 20px 350px; 
+				padding:15px; 
+				cursor:pointer; 
+				color:#626262;
+			}
+			
+			
+		}
+	}
+}
+

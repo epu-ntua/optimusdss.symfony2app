@@ -1,0 +1,11 @@
+<div class="edit_sensorpartition">	
+	
+	<form action="{{ path('sensorPartition_save',{'idBuilding':idBuilding, 'idActionPlan':idActionPlan, 'idSensorPartition':idSensorPartition, 'orderSensor':orderSensor}) }}" method="post" {{ form_enctype(form) }}>
+		{{ form_errors(form) }}       
+        {{ form_rest(form) }}
+        <p>
+            <button type="submit" class="buttonBig">{%trans%}Edit Sensor Partition{%endtrans%}</button>
+        </p>
+    </form>
+ 
+</div>

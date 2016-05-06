@@ -1,0 +1,377 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block javascripts %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/ui-lightness/jquery-ui-1.10.3.custom.min.css') }}"/>
+<!--	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/source.css') }}"/> -->
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+    <script src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  
+{% endblock %}
+
+
+{% block content %}
+<script type="text/javascript">
+		
+	$(function(){		
+		$("#datepicker").hide();
+		
+		
+		var startDate;
+		var endDate;
+		
+		var selectCurrentWeek = function() {
+			window.setTimeout(function () {
+				$('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+			}, 1);
+		}
+		
+		$('#datepicker').datepicker( {
+			/*showWeek: true,
+			firstDay: 1,*/
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			onSelect: function(dateText, inst) { 
+				var date = $(this).datepicker('getDate');
+								
+				/*startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);*/
+				startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); //diaSelected
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 6); //diaSelected +6
+														
+				var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+				$('#startDate').text($.datepicker.formatDate("yy-mm-dd" , startDate, inst.settings )); //dateFormat
+				$('#endDate').text($.datepicker.formatDate( "yy-mm-dd", endDate, inst.settings ));
+				
+				selectCurrentWeek();
+				
+				//location.href='<?php //echo base_url(); ?>index.php/main_controller/index/'+$('#startDate').html()+'/'+$('#endDate').html()+'/'+timeSelected;
+			},
+			beforeShowDay: function(date) {
+				var cssClass = '';
+				if((date >= startDate && date <= endDate) || (date>=new Date('{{ startDate }}') && date <=new Date('{{ endDate }}')))
+					cssClass = 'ui-datepicker-current-day';
+				return [true, cssClass];
+			},
+			onChangeMonthYear: function(year, month, inst) {
+				selectCurrentWeek();
+			}
+		});
+		
+		$(document).on('mousemove', '#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').addClass('ui-state-hover');    });
+		$(document).on('mouseleave','#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').removeClass('ui-state-hover'); });
+		
+		
+	});
+	
+	//Show/hide el calendario
+	function displayCalendar()
+	{
+		$("#datepicker").slideToggle();
+	}
+	
+	function createURLView()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		methodSelected = $("#method").val();
+		
+		var url = "{{ path('economizerPlan', {'idBuilding':idBuilding,'idAPType':idAPType, 'from':'dateI', 'to':'dateF', 'method':'methodSelected'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		url = url.replace("methodSelected", $("#method").val());
+		
+		location.href=url;
+		//location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+	}
+	
+	function createURLPredictor()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('newCalculateEconomizer', {'idBuilding':idBuilding, 'idAPType':idAPType, 'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+	}
+	
+	/* forms */
+	{% for i in 0..6 %}
+	$(function(){
+		$("#form_{{i}} ").change (function( event ) { //> input[name*=filter]
+			console.log($("#form_{{i}}").serialize());
+			//$("#form_{{i}}").submit(function() {
+				console.log({{dataActionPlan[i].statusDay}});
+				var url = "{{ path('changeEconomizerStatusDay' ,{'idOutputDay':dataActionPlan[i].idOutputDay} ) }}"; // the script where you handle the form input.
+				$.ajax({
+					type: "POST",
+					url: url,
+					data:{ 'data':$("#form_{{i}}").serialize(), idBuilding:{{idBuilding}} }, // serializes the form's elements.
+					success: function(data)
+					{
+						//alert(data); // show response from the php script.
+					}
+				});
+
+				return false;					
+			//});
+		});
+	});
+	{% endfor %}
+	
+	/* ----- */
+	$(function(){
+		$("#updateSuggestions").click(function() {
+				changeInputs();
+		});
+	});
+	
+	
+	function changeInputs() {
+		{% set text = "text" %}
+		var url = "{{ path('changeEconomizerInternalDay') }}"; 
+		
+		var temp_internal="";
+		$( ".temp_internal" ).each(function() {
+		  temp_internal += $( this ).val();
+		  temp_internal += " ";
+		});
+		
+		var enth_internal="";
+		$( ".enth_internal" ).each(function() {
+		  enth_internal += $( this ).val();
+		  enth_internal += " ";
+		});
+		
+		var idOutputDay="";
+		$( ".idOutputDay" ).each(function() {
+		  idOutputDay += $( this ).val();
+		  idOutputDay += " ";
+		});
+		
+		$.ajax({
+			type: "POST",
+			url: url,
+			data:{ 'temp_internal':temp_internal, 'enth_internal':enth_internal, 'idOutputDay':idOutputDay, idBuilding:{{idBuilding}} }, 
+			success: function(response)
+			{
+				createURLView();
+			},
+			error: function(response)
+			{
+				alert('Sorry, we could not change all internal temperatures and enthalpies');
+				createURLView();
+			}
+		});
+	}
+	
+	
+	
+	{% for i in 0..6 %}
+		$(function(){
+			$("#enth_internal_{{i}}").change(function() {
+					var url = "{{ path('changeEconomizerInternalDay' ,{'idOutputDay':dataActionPlan[i].idOutputDay} ) }}"; 
+					$.ajax({
+						type: "POST",
+						url: url,
+						data:{ 'temp_internal':$("#temp_internal_{{i}}").val(), 'enth_internal':$("#enth_internal_{{i}}").val(), idBuilding:{{idBuilding}} }, 
+						success: function()
+						{
+							createURLView();
+						},
+						error: function()
+						{
+							alert('Sorry, we could not change internal temperature');
+							createURLView();
+						}
+					});
+			});
+		});
+	{% endfor %}
+	
+	$(function(){
+		$("#method").change(function() {
+			createURLView();
+		});
+	});
+	
+</script>
+
+
+	
+	<div id="left">	
+		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}		
+	</div>
+	<div id="right">
+		<div id="topRight">
+			<p>
+				<strong>
+				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
+				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> > 
+				{{ dataActionPlan_name }}
+				</strong>
+			</p>				
+		</div>
+		
+		<div id="centerRight">
+				<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;">
+					<div style="width:650px;float:left;">
+						<p class="titleContentDescription"><strong>Action Plan:</strong> <span>{{ dataActionPlan_name }}</span></p>
+						<p class="titleContentDescription"><strong>Description:</strong> <span style="font-size:12px;">{{ dataActionPlan_description }}</span></p>
+					</div>
+					<div style="float:left; text-align:right;">
+						<p style="margin:10px 10px;"><span style="color:#2e75b6">Last forecast calculated:</span> <span style="font-size:12px;">{{ dataActionPlan_lastCalculation }}</span></span></p>					
+					</div>
+				</div>
+				
+				
+				<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;  border-top:0px;">
+					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #7f7f7f; text-align: right;"><strong>Dates:</strong></p>
+					
+					<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #7f7f7f; text-align:center; background-color: #e8eef8;">
+						<span id="startDate">{{ startDate }}</span> / 
+						<span id="endDate">{{ endDate }}</span>
+					</p>
+					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #7f7f7f; cursor:pointer;" onclick="displayCalendar();">+</p>
+					
+					<p class="buttonIndicator" onclick="createURLView();" style="margin-right:20px;">View</p>
+					<!--
+					<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">{%trans%} Calculate {%endtrans%}</p>
+					-->
+					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #7f7f7f;  text-align: right;">Method:</p> 
+					<p class="strategyActual" style="float:left; margin-right:0px; height:35px; padding:0px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right; cursor:pointer;"> 
+						<select id="method" name="method" style="background-color: #d0cece; border: none; height:20px; margin-top: 7px;">
+							<option value="temp" style="background-color: #e8eef8; border: none; " {% if dataActionPlan is defined %} {% if dataActionPlan[0].method == 'temp' %} selected {% endif %} {% endif %} >Temperature</option>
+							<option value="enth" style="background-color: #e8eef8; border: none; " {% if dataActionPlan is defined %} {% if dataActionPlan[0].method == 'enth' %} selected {% endif %} {% endif %} >Enthalpy</option>
+						</select> 
+					</p>		
+				</div>
+				<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#d0cece;"></div>
+				
+				<div id="contentGraficas">
+					<!-- tabla de valores -->
+					<div style="float: right;">
+						<!-- <label for="temperature" style="font-size: 13px;">Internal Temperature (°C)</label> -->
+						<!-- <input type="number" class="temperature_internal"  name="temperature" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[0].temperature_internal}}" {% endif %} {% endif %} {% endif %} />-->
+					</div>
+					<div class="contentTableResults">
+						{% if( dataActionPlan != null) %}
+						<button id="updateSuggestions" style="float: right;">Update Suggestions</button>
+						<table id="tablaActionPlan" border="0" style="font-size: 12px;">
+							<tbody>
+								<tr class="headerDays">
+									<td colspan="2" style="border-right: 2px solid;"></td>
+									{% for i in 0..6 %}
+									<td>
+										{% if dataActionPlan is defined %}	
+											{% if dataActionPlan[i] is defined %}	
+												{{ (dataActionPlan[i].nameAbbreviatedDay) }}
+												{{ (dataActionPlan[i].abbreviatedDay) }}
+											{% endif %}
+										{% endif %}
+									</td>
+									{% endfor %}
+								</tr>
+								
+								<!-- Top values --> 
+								<tr>
+									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Internal Temperature {%endtrans%}(°C) </td>
+									{% for i in 0..6 %}									
+										<td style="background-color: #d9e1f2;"><input type="number" class="temp_internal"  name="temp_internal_{{i}}" step="0.5" style="width: 50px; background-color: #d9e1f2; border-style:none; margin: 2px;" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].temperature_internal}}" {% endif %} {% endif %} {% endif %} /></td>				
+									{% endfor %}
+								</tr>	
+								<tr>
+									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Internal Enthalpy {%endtrans%}(°C) </td>
+									{% for i in 0..6 %}									
+										<td style="background-color: #d9e1f2;"><input type="number" class="enth_internal"  name="enth_internal_{{i}}" step="0.5" style="width: 50px; background-color: #d9e1f2; border-style:none; margin: 2px;" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].enthalpy_internal}}" {% endif %} {% endif %} {% endif %} /></td>				
+									{% endfor %}
+								</tr>	
+								<tr style="display: none;">
+									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;"> idOutputDay </td>
+									{% for i in 0..6 %}									
+										<td style="background-color: #d9e1f2;"><input type="number" class="idOutputDay"  name="idOutputDay_{{i}}" style="width: 50px; background-color: #d9e1f2; border-style:none; margin: 2px;" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].idOutputDay}}" {% endif %} {% endif %} {% endif %} /></td>				
+									{% endfor %}
+								</tr>	
+								
+								<tr id="showSchedule">
+									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9">{%trans%} schedule (per hours) {%endtrans%}</td>
+								</tr>
+								
+								<!-- FIRST COLUMN -->
+								<tr class="showDiv">
+									<td class="firstCellShowDiv" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Free cooling options {%endtrans%}</td>
+								</tr>
+								
+								{% for i in 0..23 %}
+								<tr class="showDiv" style="height: 30px;">
+								
+									<!-- TIME COLUMN -->
+									<td class="secondCellShowDiv" style="background-color: #d9e1f2; border-right: 2px solid; {%if(i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
+															
+									<!-- WEEK DAYS COLUMNS -->
+									{% for j in 0..6 %}
+									
+										<!-- DAILY COLUMNS -->
+									
+										{% if dataActionPlan[j].rule_result[i] is defined %}		
+											<td {% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
+													class="selectedDayCell" 
+												{% endif %}
+												style=" width: 92px; text-align:center; background-color:
+												{% if dataActionPlan[j].rule_result[i] == 'Total free cooling' %} 
+													#AAEEAA;
+												{% elseif dataActionPlan[j].rule_result[i] == 'Partial free cooling' %}
+													#FF7F50;	
+												{% elseif dataActionPlan[j].rule_result[i] == 'Minimum outside air' %}
+													#FFAAAA;	
+												{% else %}
+													#777777;	
+												{% endif %}
+												 {%if(i==23)%} border-bottom: 2px solid; {% endif %}" >
+												{{ (dataActionPlan[j].rule_result[i]) }}													
+											</td>
+											
+										{% else %}	
+											<td style="background-color:#777777;{%if(i==23)%} border-bottom: 2px solid; {% endif %}"> no data </td>
+										{% endif %}									
+										
+									{% endfor %}
+								</tr>
+								{% endfor %}
+								
+								<tr>
+									<td class="value" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
+									
+									{% for i in 0..6 %}
+										<td style="text-align: left; {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} background-color:#d9d9d9; {% endif %}">
+											<form id="form_{{i}}" method="post">
+									 
+												<div class="inputsFilters" style=" float:left; margin-right:3px;">
+													<p style="font-size:11px; margin:0;">
+														<input type="radio" name="filter" value="0" {%if( dataActionPlan[i].day >'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
+													</p>
+													<p style="font-size:11px; margin:0;">
+														<input type="radio" name="filter" value="1" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
+													</p>
+													<p style="font-size:11px; margin:0;">
+														<input type="radio" name="filter" value="2" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
+													</p>
+													<input type="hidden" value="{{dataActionPlan[i].day|date('Y-m-d') }}" name="day" id="day" />
+													<input type="hidden" value="{{idActionPlan}}" name="idActionPlan" id="idActionPlan" />
+												</div>
+												
+											</form>
+										</td>
+									{% endfor %}
+								</tr>
+							</tbody>
+						</table>
+						{% endif %}
+					</div>
+				</div>
+		</div>		
+		
+	</div>
+{% endblock %}

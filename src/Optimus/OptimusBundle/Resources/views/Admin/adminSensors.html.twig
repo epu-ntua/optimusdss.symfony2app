@@ -1,0 +1,139 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+{% endblock %}
+
+{% block content %} 			
+	<div id="left" style="">		
+		
+		<p class="titleContentDescription"><strong>{{ optimus_instance }} </strong></p>				
+		<div id="attributesContentDescription">
+			<p><span>Buildings:</span>2</p>
+			<p><span>Total surface:</span> 18.593m2 </p>
+			<p><span>Renewable generation:</span> PV plant (23 MWh)</p>
+			<p><span>Thermal power:</span> 850 kW </p>
+			<p><span>Electrical power:</span> 440 kW</p>
+			<p><span>Total energy consumption:</span> 2157 kWh/m2</p>
+			<p><span>CO2 emissions:</span> PV plant (23 MWh)</p>
+		</div>
+	</div>
+	
+	<div id="right">
+		<div id="topRight">
+			<p><strong><a href="{{ path('adminBuilding') }}">{{ optimus_instance }}</a> > {{ nameBuilding}} >{%trans%}  Sensors {%endtrans%}</strong></p>					
+		</div>
+		<div id="centerRight">				
+			<div>
+				<div style="overflow:hidden;">
+					<div id="button_addSensor" class="buttonBig">{%trans%} ADD SENSOR {%endtrans%}</div>
+					
+					<p style="margin:0px; margin-bottom:20px; float:right;" class="buttonBig" onclick="location.href='{{ path('sensor_checkStatus', {'idBuilding':idBuilding} )}}'; ">Check Status</p>
+					
+					<div style="background-color:#ddd; overflow:hidden; cursor:pointer;">
+						<p class="titleContentDescription" style="float:left;"><strong>{%trans%} Sensors {%endtrans%}</strong></p>
+					</div>
+					
+					<div style="background-color:#eee; overflow:hidden; margin-bottom:10px;">
+						<div style="float:left; border-right:1px solid #ddd; width:100%; font-size: 12px;">
+							<table border="0" style="background-color: #fff; font-size:12px; border:1px solid #e4e4e4; box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12); table-layout:	fixed;">
+								<thead style="background-color:#fff; font-weight:bold; border-bottom:1px solid #e4e4e4;">
+									<tr style="background-color: #f9f9f9; border-color: #eee;">
+										<td style="text-align:center; font-size:11px; border-right:0px; padding: 3px; height:40px; width:15px">Id</td>
+										<td style="text-align:left; font-size:11px; border-right:0px; padding: 3px;">{%trans%} Sensor data {%endtrans%}</td>
+										
+										<td style="text-align:center; font-size:11px; border-right:0px; padding: 3px; width:60px;">{%trans%} Status {%endtrans%}</td>
+										<td style="text-align:center; font-size:11px; border-right:0px; padding: 3px; width:60px;">{%trans%} Last data received {%endtrans%}</td>
+										<td style="text-align:center; font-size:11px; border-right:0px; padding: 3px; width:60px;">{%trans%} Actions {%endtrans%}</td>
+									</tr>
+								</thead>
+								<tbody>
+									{% set i=0 %}
+									{% for sensor in sensors %}
+										{#%if i < 10 %#}
+										<tr style="border-bottom:1px solid #e4e4e4;">
+											<td style="border-right:0px; padding: 3px;">{{ sensor.id }}</td>
+											<td style="border-right:0px; padding: 3px;text-align:left;">
+												<strong>{{ sensor.name }}</strong> ({{ sensor.units }}) 
+												<p style="margin:0px; margin-top:5px;"> <span style="margin:0 10px 0 5px; color:#888;">URI:</span>	
+													{{  sensor.url|length > 90  ?  sensor.url[41:] ~ '...' : sensor.url }} 
+												</p>
+												<p style="margin:0px;"><span style="margin:0 10px 0 5px; color:#888;">Prediction model:</span> 
+													{{ sensor.urlService|length > 60  ?   sensor.urlService[40:]~ '...' : sensor.urlService }}
+												</p>											
+											</td>
+											
+											<td style="border-right:0px; padding: 3px;">{{ sensor.status }}</td>
+											<td style="border-right:0px; padding: 3px;">{{ sensor.lastData }}</td>
+											<td style="border-right:0px; padding: 3px;">
+												<p id="editSensor_{{sensor.id}}" style=" margin:0; margin-bottom: 4px; padding:0; width:59px;" class="buttonBig">{%trans%} edit {%endtrans%}</p> 
+												<p class="buttonBig" style=" margin: 0px; padding:0;" onclick="location.href='{{path('sensor_delete', {'idBuilding': idBuilding, 'idSensor':sensor.id} )}}';">{%trans%} delete {%endtrans%}</p>
+											</td>
+										</tr>
+										<div id="editSensorForm_{{sensor.id}}">
+											{{ render(controller('OptimusOptimusBundle:Sensor:edit', {'idBuilding': idBuilding, 'idSensor':sensor.id})) }}
+										</div>
+										{#% endif %#}
+										{% set i= i+1 %}
+									{% endfor %}
+								</tbody>
+							</table>
+
+						</div>																
+					</div>
+				</div>					
+				
+				
+				
+				<div id="addSensorForm">
+					{{ render(controller('OptimusOptimusBundle:Sensor:new', {'idBuilding': idBuilding})) }}
+				</div>				
+			</div>
+		</div>
+	</div>
+		
+	
+	<script type="text/javascript">
+		$(function() {
+			$('.buttonBig').button();
+			$( "#addSensorForm" ).dialog({
+				autoOpen: false,
+				//height: 300,
+				width: 400,
+				modal: true,
+				buttons: {					
+				},
+				close: function() {					
+					//allFields.removeClass( "ui-state-error" );
+				}
+			});
+			
+			$( "#button_addSensor" ).button().on( "click", function() {
+				$( "#addSensorForm" ).dialog( "open" );
+			});
+			
+			{% for sensor in sensors%} 
+			
+				$( "#editSensorForm_{{sensor.id}}" ).dialog({
+					autoOpen: false,
+					//height: 300,
+					width: 400,
+					modal: true,
+					buttons: {						
+					},
+					close: function() {					
+						//allFields.removeClass( "ui-state-error" );
+					}
+				});
+				
+				$( "#editSensor_{{sensor.id}}").button().on( "click", function() {
+					$( "#editSensorForm_{{sensor.id}}" ).dialog( "open" );
+				});
+			{% endfor %}
+		});
+	</script>
+    
+{% endblock %}

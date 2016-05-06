@@ -1,0 +1,78 @@
+parameters:
+    optimus_instancia: spain
+    optimus_endpoint: "http://winarc.housing.salle.url.edu:8080/sparql"
+    OPTIMUS_GRAPH: ""							
+    OPTIMUS_SENSORS: 14
+
+    OPTIMUS_SENSOR_1: 
+        url:  "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/sunnyportal_energy_production"
+        name:  Energy production
+        display:  yes
+        color:  "#594a0"	
+    OPTIMUS_SENSOR_2: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/sunnyportal_solar_radiation"
+        name: Solar radiation
+        display: yes
+        color: "#f669a4"
+    OPTIMUS_SENSOR_3: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_acconsumption"
+        name: Acconsumption
+        display: yes
+        color: "#19c5b5"
+    OPTIMUS_SENSOR_4: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_totalenergy"
+        name: Total energy
+        display: yes
+        color: "#afaae1"
+    OPTIMUS_SENSOR_5: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_unifler1consumption"
+        name: Unifler consumption - 1
+        display: yes
+        color: "#82BEE5"
+    OPTIMUS_SENSOR_6: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_unifler2consumption"
+        name: Unifler consumption - 2
+        display: no
+        color: "#82BEE5"
+    OPTIMUS_SENSOR_7: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_2ndlightsconsumption"
+        name: Light consumption - 2
+        display: yes
+        color: "#F0ABA1"
+    OPTIMUS_SENSOR_8: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_3ndlightsconsumption"
+        name: Light consumption - 3
+        display: no
+        color: "#82BEE5"
+    OPTIMUS_SENSOR_9: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_2ndtotalconsumption"
+        name: Total consumption - 2
+        display: yes
+        color: "#F7548D"
+    OPTIMUS_SENSOR_10: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_3ndtotalconsumption"
+        name: Total consumption - 3
+        display: no
+        color: "#82BEE5"
+    OPTIMUS_SENSOR_11: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_temperature1"
+        name: Temperature - 1
+        display: yes
+        color: "#F9E654"
+    OPTIMUS_SENSOR_12: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_temperature2"
+        name: Temperature - 2
+        display: no
+        color: "#82BEE5"
+    OPTIMUS_SENSOR_13: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_humidity"
+        name: Humidity
+        display: yes
+        color: "#867ADD"
+    OPTIMUS_SENSOR_14: 
+        url: "http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_co2"
+        name: CO2
+        display: yes
+        color: "#47CDB5"
+   
+   

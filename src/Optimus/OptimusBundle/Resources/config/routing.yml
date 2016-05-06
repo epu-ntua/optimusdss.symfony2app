@@ -1,0 +1,244 @@
+# src/Optimus/OptimusBundle/Resources/config/routing.yml
+login:
+    path:   /login
+    defaults:  { _controller: OptimusOptimusBundle:Login:login }
+    
+login_check:
+    path:   /login_check
+    
+logout:
+    path:   /logout
+
+homepage:
+    path:     /home/{from}/{to}/{timeSelected}
+    defaults: { _controller: OptimusOptimusBundle:Historic:index, from:"", to:"", timeSelected:"" }
+    
+   
+prediction:
+    path:     /prediction/{idBuilding}/{from}/{to}
+    defaults: { _controller: OptimusOptimusBundle:Prediction:index, from:"", to:"" }
+
+newPrediction:
+    path:     /new-prediction/{idBuilding}/{from}/{to}
+    defaults: { _controller: OptimusOptimusBundle:Prediction:newPrediction }
+
+sensor:
+    path:     /sensor
+    defaults: { _controller: OptimusOptimusBundle:Sensor:index }
+
+actionPlan:
+    path:     /action-plan/{idBuilding}/{idAPType}/{from}/{to}/{timeSelected}
+    defaults: { _controller: OptimusOptimusBundle:PVActionPlan:index, idAPType:"", from:"", to:"", timeSelected:"" }
+
+actionPlan_PVMaintenance:
+    path:     /action-plan-pvm/{idBuilding}/{idAPType}/{from}/{to}/{timeSelected}
+    defaults: { _controller: OptimusOptimusBundle:PVMActionPlan:index, idAPType:"", from:"", to:"", timeSelected:"" }
+
+changePVMStatusDay:
+    path:    /change-status-pvm/{idOutputDay}
+    defaults: { _controller: OptimusOptimusBundle:PVMActionPlan:changeStatusDay }
+    requirements: { _method: post }
+    
+newCalculatePVM:
+    path:    /new-calculate-pvm/{idBuilding}/{idAPType}/{from}/{to}
+    defaults: { _controller: OptimusOptimusBundle:PVMActionPlan:newCalculatePVM }
+
+newCalculatePV:
+    path:    /new-calculate-pv/{idBuilding}/{idAPType}/{from}/{to}
+    defaults: { _controller: OptimusOptimusBundle:PVActionPlan:newCalculatePV }
+
+changePVStatusDay:
+    path:    /change-status/{idOutputDay}
+    defaults: { _controller: OptimusOptimusBundle:PVActionPlan:changeStatusDay }
+    requirements: { _method: post }
+
+changePVStrategy:
+    path:    /change-strategy
+    defaults: { _controller: OptimusOptimusBundle:PVActionPlan:changeStrategy }
+    requirements: { _method: post }
+
+changePVStrategyWeek:
+    path:    /change-strategy-week
+    defaults: { _controller: OptimusOptimusBundle:PVActionPlan:changeStrategyWeek }
+    requirements: { _method: post }
+
+init:
+   path:     /init
+   defaults: { _controller: OptimusOptimusBundle:Init:index }
+
+selectOptions:
+   path:     /select-options
+   defaults: { _controller: OptimusOptimusBundle:Init:selectOptions }
+
+selectGraph:
+   path:     /select-graph/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Init:selectGraph }
+
+adminBuilding:
+   path:     /admin-buildings
+   defaults: { _controller: OptimusOptimusBundle:Building:index }
+
+building_create:
+   path:     /building-create
+   defaults: { _controller: OptimusOptimusBundle:Building:create }  
+   requirements: { _method: post }
+
+building_delete:
+   path:     /building-delete/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Building:delete } 
+
+building_save:
+   path:     /building-save/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Building:save }  
+   requirements: { _method: post } 
+
+globalConfigBuilding:
+   path:     /configuration-building/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Building:globalConfigBuilding }   
+
+sensorRTime_save:
+   path:     /sensorRTime-save/{idBuilding}/{idSensorRTime}
+   defaults: { _controller: OptimusOptimusBundle:Building:saveSensorRTime } 
+
+sensorRTime_create:
+   path:     /sensorRTime-create/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Building:addSensorRTime } 
+
+sensorRTime_delete:
+   path:     /sensorRTime-delete/{idBuilding}/{idSensorRTime}
+   defaults: { _controller: OptimusOptimusBundle:Building:deleteSensorRTime }
+
+building_description:
+   path:     /building-description/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Building:description } 
+
+adminPartitions:
+   path:     /admin-partitions/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Partition:index }    
+
+createPartition:
+   path:    /partition-create
+   defaults: { _controller: OptimusOptimusBundle:Partition:create}
+   requirements: { _method: post }
+
+deletePartition:
+   path:    /partition-delete
+   defaults: { _controller: OptimusOptimusBundle:Partition:delete}
+   requirements: { _method: post }
+
+adminSensors:
+   path:     /admin-sensors/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Sensor:getAdminSensors } 
+
+sensor_create:
+   path:     /sensor-create/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Sensor:create }  
+   requirements: { _method: post }
+
+sensor_save:
+   path:     /sensor-save/{idBuilding}/{idSensor}
+   defaults: { _controller: OptimusOptimusBundle:Sensor:save }  
+   requirements: { _method: post }
+
+sensor_delete:
+   path:     /sensor-delete/{idBuilding}/{idSensor}
+   defaults: { _controller: OptimusOptimusBundle:Sensor:delete }
+
+sensor_checkStatus:
+   path:     /sensor-check-status/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Sensor:checkStatusSensors }
+
+adminActionPlans:
+   path:     /admin-action-plans/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:AdminActionPlan:adminActionPlans, type:"" }  
+
+actionPlan_mapping:
+   path:     /actionPlan-mapping/{idBuilding}/{idActionPlan}
+   defaults: { _controller: OptimusOptimusBundle:APSensors:mapping }
+
+actionPlan_save:
+   path:    /actionPlan-save/{idBuilding}/{idActionPlan}
+   defaults: { _controller: OptimusOptimusBundle:AdminActionPlan:save }
+
+sensorPartition_create:
+   path:     /sensorPartition-create/{idBuilding}/{idActionPlan}
+   defaults: { _controller: OptimusOptimusBundle:APSensors:addSensorPartition } 
+   requirements: { _method: post }
+
+sensorPartition_delete:
+   path:     /sensorPartition-delete/{idBuilding}/{idActionPlan}/{idSensorPartition}/{orderSensor}
+   defaults: { _controller: OptimusOptimusBundle:APSensors:deleteSensorPartition }
+
+sensorPartition_save:
+   path:     /sensorPartition-save/{idBuilding}/{idActionPlan}/{idSensorPartition}/{orderSensor}
+   defaults: { _controller: OptimusOptimusBundle:APSensors:saveSensorPartition }  
+   requirements: { _method: post }
+
+view_switchOnOff:
+   path:     /view-switch-On-Off/{idBuilding}/{idAPType}/{from}/{to}/{timeSelected}
+   defaults: { _controller: OptimusOptimusBundle:SwitchActionPlan:index, idAPType:"", from:"", to:"", timeSelected:"" } 
+
+changeSwitchStatusDay:
+    path:    /change-status-switch/{idOutputDay}
+    defaults: { _controller: OptimusOptimusBundle:SwitchActionPlan:changeStatusDay }
+    requirements: { _method: post }
+
+changeSwitchStrategy:
+    path:    /change-strategy
+    defaults: { _controller: OptimusOptimusBundle:SwitchActionPlan:changeStrategy }
+    requirements: { _method: post }
+
+
+semanticframeworkget_data_for_model:
+    path:     /semantic-framework/get_data_for_model/{predictedparameter}/{date}/{window}/{sensors}
+    defaults: { _controller: OptimusOptimusBundle:SemanticFramework:get_data_for_model }
+    requirements: { _method: get }
+   
+semanticframeworkget_data_for_forecasting:
+    path:     /semantic-framework/get_data_for_forecasting/{predictedparameter}/{date}/{window}/{sensors}
+    defaults: { _controller: OptimusOptimusBundle:SemanticFramework:get_data_for_forecasting }
+    requirements: { _method: get } 
+
+getSetPointPlan:
+    pattern:  /set_point/{idBuilding}/{idAPType}/{start_date}
+    defaults: { _controller: OptimusOptimusBundle:SetPointPlan:set_point, start_date: ''}
+
+newCalculateSPM:
+    path:    /new_set_point/{idBuilding}/{idAPType}/{from}/{to}
+    defaults: { _controller: OptimusOptimusBundle:SetPointPlan:newCalculateSetPointManagement }
+
+changeSPMStatusDay:
+    path:    /change-status-spm/{idOutputDay}
+    defaults: { _controller: OptimusOptimusBundle:SetPointPlan:changeStatusDay }
+    requirements: { _method: post }	
+
+getOccupancyPlan:
+    pattern:  /occupancy/{idBuilding}/{idAPType}/{start_date}/{constraints}
+    defaults: { _controller: OptimusOptimusBundle:Occupancy:occupancy, start_date: '', constraints: ''}
+
+changeOStatusDay:
+    path:    /change-status-occupancy/{idOutputDay}
+    defaults: { _controller: OptimusOptimusBundle:Occupancy:changeStatusDay }
+    requirements: { _method: post }
+
+energySourcePlan:
+    pattern:  /energy_flows/{idBuilding}/{idAPType}/{from}/{to}
+    defaults: { _controller: OptimusOptimusBundle:EnergySourceActionPlan:plan_index, from:'', to:''}
+
+changeEconomizerStatusDay:
+    path:    /change-status-economizer/{idOutputDay}
+    defaults: { _controller: OptimusOptimusBundle:EconomizerActionPlan:changeStatusDay }
+    requirements: { _method: post }
+
+newCalculateEconomizer:
+    path:    /new-calculate-economizer/{idBuilding}/{idAPType}/{from}/{to}
+    defaults: { _controller: OptimusOptimusBundle:EconomizerActionPlan:newCalculateEconomizer }
+
+economizerPlan:
+    pattern:  /economizer/{idBuilding}/{idAPType}/{from}/{to}/{method}
+    defaults: { _controller: OptimusOptimusBundle:EconomizerActionPlan:index, from:'', to:'', method:''}
+
+changeEconomizerInternalDay:
+    path:    /change-internal-economizer
+    defaults: { _controller: OptimusOptimusBundle:EconomizerActionPlan:changeInternalDay }
+    requirements: { _method: post }

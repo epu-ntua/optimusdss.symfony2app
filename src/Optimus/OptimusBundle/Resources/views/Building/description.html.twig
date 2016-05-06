@@ -1,0 +1,27 @@
+
+<p class="titleContentDescription">
+	<strong>{{ optimus_instance }} - {{ building.name }} </strong>
+</p>
+
+<!--<div id="imagesContentDescription">
+	<img class="marginImgRight" src="{#{ asset('bundles/optimus/img/Imagen5.png') }#}"/>
+	<img src="{#{ asset('bundles/optimus/img/Imagen7.png') }#}"/>			
+</div>-->
+
+<div id="attributesContentDescription">
+	<p>		<span>{%trans%} Building use {%endtrans%}:</span>				{{ building.useBuilding }} 	</p>
+	<p>		<span>{%trans%} Address {%endtrans%}:</span> 					{{ building.street }} 	</p>
+	<p>		<span>{%trans%} Year of construction {%endtrans%}:</span> 		{{ building.yearOfConstruction }}	</p>
+	<p>		<span>{%trans%} Surface {%endtrans%}:</span> 					{{ building.surface }} 	</p>
+	<p>		<span>{%trans%} Floors {%endtrans%}:</span> 					6 	</p>
+	
+	<p class="marginBContentDescription">		<span>{%trans%} Occupancy {%endtrans%}:</span> {{ building.occupation }} 	</p>
+
+	<p>		<span>{%trans%} Energy rating {%endtrans%}:</span> 				{{ building.energyRating }} 	</p>
+	<p>		<span>{%trans%} Electricity consumption {%endtrans%}:</span> 		{{ building.electricityConsumption }} 	</p>
+	<p>		<span>{%trans%} Gas consumption {%endtrans%}:</span> 				{{ building.gasConsumption }}	</p>
+	<p>		<span>{%trans%} Energy production from RES {%endtrans%}:</span> 	{{ building.energyProductionFromRES }} 	</p>
+	<p>		<span>{%trans%} Electricity energy cost {%endtrans%}:</span> 		{{ building.electricityEnergyCost }} 	</p>
+	<p>		<span>{%trans%} Gas energy cost {%endtrans%}:</span> 				{{ building.gasEnergyCost }} 	</p>
+
+</div>

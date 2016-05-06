@@ -1,0 +1,25 @@
+{% extends '::base.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block body %}
+
+   
+	<div id="container">
+		<div id="header" >
+			<h3 {% if is_granted('ROLE_ADMIN') %} onclick="location.href='{{ path('selectOptions') }}';" {% else %}  onclick="location.href='{{ path('init') }}';" {% endif %} style="cursor:pointer;">OPTIMUS DSS - {{ optimus_instance }} </h3>
+			{% if is_granted('ROLE_USER') %}
+				{% include 'OptimusOptimusBundle:Login:logged.html.twig' %}
+			{% endif %}
+		</div>  
+
+		<div id="main">			
+			{% block javascripts %}{% endblock %}
+			{% block content %}{% endblock %}
+		</div>
+  
+		<div id="footer" style="background-color:#2e75b6; width:100%; height:40px;">		
+		        
+		</div>
+	</div>
+    
+{% endblock %}

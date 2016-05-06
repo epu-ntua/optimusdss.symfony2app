@@ -1,0 +1,372 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery.dataTables.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery.jeditable.min.js') }}"></script>
+{% endblock %}
+
+{% block clase_ActionPlanData %}activo{% endblock %}
+
+
+{% block content %}
+
+<script type="text/javascript">
+		
+	$(function(){		
+	
+		$("#datepicker").hide();
+		$(".showDiv").slideToggle();
+		
+		var startDate;
+		var endDate;
+		
+		var selectCurrentWeek = function() {
+			window.setTimeout(function () {
+				$('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+			}, 1);
+		}
+		
+		$('#datepicker').datepicker( {
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			onSelect: function(dateText, inst) 
+			{ 			
+				var date = $(this).datepicker('getDate');
+				startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); //diaSelected
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 6); //diaSelected +6
+														
+				var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+				$('#startDate').text($.datepicker.formatDate("yy-mm-dd" , startDate, inst.settings )); //dateFormat
+				$('#endDate').text($.datepicker.formatDate( "yy-mm-dd", endDate, inst.settings ));
+				
+				selectCurrentWeek();
+			},
+			beforeShowDay: function(date) {
+				var cssClass = '';
+				if((date >= startDate && date <= endDate) || (date>=new Date('{{ startDate }}') && date <=new Date('{{ endDate }}')))
+					cssClass = 'ui-datepicker-current-day';
+				return [true, cssClass];
+			},
+			onChangeMonthYear: function(year, month, inst) {
+				selectCurrentWeek();
+			}
+		});
+		
+		$(document).on('mousemove', '#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').addClass('ui-state-hover');    });
+		$(document).on('mouseleave','#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').removeClass('ui-state-hover'); });
+		
+		/* forms */
+		{% for i in 0..6 %}
+			$("#form_{{i}} ").change (function( event ) { //> input[name*=filter]
+				console.log($("#form_{{i}}").serialize());
+				//$("#form_{{i}}").submit(function() {
+					console.log({{dataActionPlan[i].statusDay}});
+					var url = "{{ path('changePVMStatusDay' ,{'idOutputDay':dataActionPlan[i].idOutputDay} ) }}"; // the script where you handle the form input.
+					$.ajax({
+						type: "POST",
+						url: url,
+						data:{ 'data':$("#form_{{i}}").serialize(), idBuilding:{{idBuilding}} }, // serializes the form's elements.
+						success: function(data)
+						{
+							//alert(data); // show response from the php script.
+						}
+					});
+
+					return false;					
+				//});
+			});
+		{% endfor %}
+		
+		/* ----- */
+		
+		
+		//double-clik on table
+		$("#showSchedule").click(function(){
+			$(".showDiv").slideToggle();
+		});
+		
+	});
+		
+	//Show/hide el calendario
+	function displayCalendar()
+	{
+		$("#datepicker").slideToggle();
+	}
+	
+	function createURLView()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('actionPlan_PVMaintenance', {'idBuilding':idBuilding, 'idAPType':idAPType, 'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+	}
+	
+	function createURLPredictor()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('newCalculatePVM', {'idBuilding':idBuilding, 'idAPType':idAPType, 'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+	}
+	
+</script>
+<style>
+
+#menuStrategies
+{
+	width:100px; 
+	height:70px; 
+	position:absolute; 
+	left: 984px; 
+	border: 1px solid; 
+	display:none; 
+	z-index:9999; 
+	background-color:#d0cece;
+	top: 212px;
+}
+
+.selectedDayCell
+{
+	border-left: 3px solid #00D !Important; 
+	border-right: 3px solid #00D !Important;
+}
+
+</style>
+
+	<div id="left">				
+		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}	
+		{{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding, 'idActionPlan':idActionPlan})) }}	
+	</div>
+	
+	<div id="right">
+		<div id="topRight">
+			<p>
+				<strong>
+				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
+				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> > 
+				{{ dataActionPlan_name }}
+				</strong>
+			</p>					
+		</div>
+	
+		<div id="centerRight">
+				<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
+					<div style="float:left;">
+						<p class="titleContentDescription"><strong>{%trans%} Action Plan {%endtrans%}:</strong> <span>{{ dataActionPlan_name }}</span></p>
+						<p class="titleContentDescription"><strong>{%trans%} Description {%endtrans%}:</strong> <span style="font-size:12px;">{{ dataActionPlan_description }}</span></p>
+					</div>
+					<div style="float:left; text-align:right;">
+						<p style="margin:10px 10px;"><span style="color:#2e75b6">{%trans%} Last forecast calculated {%endtrans%}:</span> <span><strong>{{ dataActionPlan_lastCalculation }}</strong></span></p>					
+					</div>
+				</div>
+
+				<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;  border-top:0px;">
+					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #aaa; text-align: right;"><strong>{%trans%} Dates {%endtrans%}:</strong></p>
+					
+					<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #aaa; text-align:center; background-color: #e8eef8;">
+						<span id="startDate">{{ startDate }}</span> / 
+						<span id="endDate">{{ endDate }}</span>
+					</p>
+					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #aaa; cursor:pointer;" onclick="displayCalendar();">+</p>
+					
+					<p class="buttonIndicator" onclick="createURLView();">{%trans%} View {%endtrans%}</p>
+					<!-- 
+					<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">{%trans%} Calculate {%endtrans%}</p>
+					 -->
+				</div>
+				<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
+				
+				<div id="contentGraficas">
+					<!-- tabla de valores -->
+					<div class="contentTableResults">
+						{% if( dataActionPlan != null) %}
+						<table id="tablaActionPlan" border="0" style="font-size: 12px;">					
+							<tbody>
+								<tr class="headerDays" style="text-align:center;">
+									<td colspan="2" style="border-right: 2px solid;"></td>
+									<td>
+									{% if dataActionPlan is defined %}	
+										{% if dataActionPlan[0] is defined %}	
+											{{ (dataActionPlan[0].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[0].abbreviatedDay) }}
+										{% endif %}
+									{% endif %}
+									</td>
+									<td>
+									{% if dataActionPlan is defined %}	
+										{% if dataActionPlan[1] is defined %}	
+											{{ (dataActionPlan[1].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[1].abbreviatedDay) }}
+										{% endif %}
+									{% endif %}
+									</td>
+									<td>
+									{% if dataActionPlan is defined %}	
+										{% if dataActionPlan[2] is defined %}	
+											{{ (dataActionPlan[2].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[2].abbreviatedDay) }}
+										{% endif %}
+									{% endif %}
+									</td>
+									<td>
+									{% if dataActionPlan is defined %}	
+										{% if dataActionPlan[3] is defined %}	
+											{{ (dataActionPlan[3].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[3].abbreviatedDay) }}
+										{% endif %}
+									{% endif %}
+									</td>
+									<td>
+									{% if dataActionPlan is defined %}	
+										{% if dataActionPlan[4] is defined %}	
+											{{ (dataActionPlan[4].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[4].abbreviatedDay) }}
+										{% endif %}
+									{% endif %}
+									</td>
+									<td>
+									{% if dataActionPlan is defined %}	
+										{% if dataActionPlan[5] is defined %}	
+											{{ (dataActionPlan[5].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[5].abbreviatedDay) }}
+										{% endif %}
+									{% endif %}
+									</td>
+									<td>
+									{% if dataActionPlan is defined %}	
+										{% if dataActionPlan[6] is defined %}	
+											{{ (dataActionPlan[6].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[6].abbreviatedDay) }}
+										{% endif %}
+									{% endif %}
+									</td>								
+								</tr>
+								<!-- Top values --> 
+								<tr>
+									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Historical electricity produced through PV system {%endtrans%}(kWh) </td>
+									{% for i in 0..6 %}									
+										<td style="background-color: #d9e1f2; {%if( dataActionPlan[i].day<='now'|date('Y-m-d H:i:s'))%} 
+										background-color: #f2f2f2; {% endif %}">{{ dataActionPlan[i].production_historical_total|round(1, 'common') }}</td>				
+									{% endfor %}
+								</tr>	
+								<tr>
+									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Predicted electricity produced through PV system {%endtrans%}(kWh)</td>
+									{% for i in 0..6 %}									
+										<td style="background-color: #d9e1f2; {%if( dataActionPlan[i].day<='now'|date('Y-m-d H:i:s'))%} 
+										background-color: #f2f2f2; {% endif %}">{{ dataActionPlan[i].production_predicted_total|round(1, 'common') }}</td>				
+									{% endfor %}
+								</tr>	
+																	
+												
+								<tr id="showSchedule">
+									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9"> &#9660; {%trans%} show schedule (per hours) {%endtrans%}</td>
+								</tr>
+								
+								<!-- FIRST COLUMN -->
+								<tr class="showDiv">
+									<td class="firstCellShowDiv" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Difference between</br> predicted and historical </br> PV Production(in KWh) {%endtrans%}</td>
+								</tr>
+								
+								{% for i in 0..23 %}
+								<tr class="showDiv">
+								
+									<!-- TIME COLUMN -->
+									<td class="secondCellShowDiv" style="background-color: #d9e1f2; border-right: 2px solid; {%if(i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
+															
+									<!-- WEEK DAYS COLUMNS -->
+									{% for j in 0..6 %}
+									
+										<!-- DAILY COLUMNS -->
+									
+										{% if dataActionPlan[j].production_difference[i] is defined %}		
+											<td {% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
+													class="selectedDayCell" 
+												{% endif %}
+													style="background-color:
+												{% if dataActionPlan[j].future_day == 1 %}
+													#AAAAAA;
+												{% elseif dataActionPlan[j].alarmPower[i] == 1 %} 
+													#FFAAAA;
+												{% else %}
+													#AAEEAA;													
+												{% endif %}
+												
+												 {%if(i==23)%} border-bottom: 2px solid; {% endif %}" >
+												{{ (dataActionPlan[j].production_difference[i])   |round(1, 'common') }}													
+											</td>
+											
+										{% else %}	
+											<td style="background-color:#777777;{%if(i==23)%} border-bottom: 2px solid; {% endif %}"> no data </td>
+										{% endif %}									
+										
+									{% endfor %}
+									</tr>
+								{% endfor %}
+								
+								<tr>
+									<td class="value" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Alarm status {%endtrans%}</td>
+									{% for j in 0..6 %}
+										<td style="text-align:center;background-color:
+										{% if( dataActionPlan[j].alert == 0) %}  
+											#77FF77;border-bottom: 2px solid;">OK
+										{% elseif( dataActionPlan[j].alert == 1) %}  
+											#FF7777;border-bottom: 2px solid;">ALERT PWR
+										{% elseif( dataActionPlan[j].alert == 2) %} 
+											#FF7777;border-bottom: 2px solid;">ALERl TEMP
+										{% elseif( dataActionPlan[j].alert == 3) %}  
+											#777777;border-bottom: 2px solid;">--
+										{% endif %}
+										</td>
+									{% endfor %}
+								</tr>
+								
+								<tr>
+									<td class="value" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
+									
+									{% for i in 0..6 %}
+										<td style="text-align: left; {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} background-color:#d9d9d9; {% endif %}">
+											<form id="form_{{i}}" method="post">
+									 
+												<div class="inputsFilters" style=" float:left; margin-right:3px;">
+													<p style="font-size:11px; margin:0;">
+														<input type="radio" name="filter" value="0" {%if( dataActionPlan[i].day >'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
+													</p>
+													<p style="font-size:11px; margin:0;">
+														<input type="radio" name="filter" value="1" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
+													</p>
+													<p style="font-size:11px; margin:0;">
+														<input type="radio" name="filter" value="2" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
+													</p>
+													<input type="hidden" value="{{dataActionPlan[i].day|date('Y-m-d') }}" name="day" id="day" />
+													<input type="hidden" value="{{idActionPlan}}" name="idActionPlan" id="idActionPlan" />
+												</div>
+												
+											</form>
+										</td>
+									{% endfor %}
+								</tr>
+
+							</tbody>
+						</table>	
+						
+						{% endif %}
+					</div>
+				</div>			
+		</div> 
+	</div>
+
+{% endblock %}
+
+
+
+

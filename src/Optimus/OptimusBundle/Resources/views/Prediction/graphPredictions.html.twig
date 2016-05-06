@@ -1,0 +1,524 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.pie.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.dashes.js') }}"></script>
+	<script language="javascript" type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.stack.js') }}"></script>
+{% endblock %}
+
+{% block clase_ForecastedData %}activo{% endblock %}
+
+
+{% block content %}
+
+<script type="text/javascript">
+	
+	
+	$(function(){		
+		$("#datepicker").hide();
+		
+		var startDate;
+		var endDate;
+		
+		var selectCurrentWeek = function() {
+			window.setTimeout(function () {
+				$('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+			}, 1);
+		}
+		
+		$('#datepicker').datepicker( {
+			/*showWeek: true,
+			firstDay: 1,*/
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			onSelect: function(dateText, inst) { 
+				var date = $(this).datepicker('getDate');				
+									
+				/*startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());  //lunes
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);*/	//Domingo
+				startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); //diaSelected
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 6); //diaSelected +6
+				
+				
+				//endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);
+				console.log(startDate);
+				console.log(endDate);
+						
+				var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+				$('#startDate').text($.datepicker.formatDate("yy-mm-dd" , startDate, inst.settings )); //dateFormat
+				$('#endDate').text($.datepicker.formatDate( "yy-mm-dd", endDate, inst.settings ));
+				
+				selectCurrentWeek();
+								
+				//location.href="{{ path('prediction',{'idBuilding':idBuilding}) }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+			},
+			beforeShowDay: function(date) {
+				var cssClass = '';
+				if((date >= startDate && date <= endDate) /*|| (date>=new Date('{{ startDate }}') && date <=new Date('{{ endDate }}'))*/)
+					cssClass = 'ui-datepicker-current-day';
+				return [true, cssClass];
+			},
+			onChangeMonthYear: function(year, month, inst) {
+				selectCurrentWeek();
+			}
+		});
+		
+		$(document).on('mousemove', '#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').addClass('ui-state-hover');    });
+		$(document).on('mouseleave','#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').removeClass('ui-state-hover'); });	
+		
+		/*-----------------------------------------------------------------------------------*/
+		
+		/* ---------------- Graph Stack---------------*/
+		var stack = true,	bars = false,	lines = true,	steps = false;
+			
+		var stackSensors=["Energy production", "Total consumption", "CO2"];
+	
+		{% set maxY=0 %}
+		{% set minY=0 %}
+		{% set startPredictor=startDate | date('F j, Y H:i:s') %}
+		{% set endPredictor=endDate | date('F j, Y H:i:s') %}
+		{% set initPred = true %}
+		var dataset=[];
+		var aHeight = [];
+		aHeight["Energy cost"] = 70;
+		aHeight["CO2"] = 70;
+		aHeight["Energy consumption"] = 260;
+		aHeight["Produced renewable energy"] = 50;
+		
+		
+		{% for z in mappingVariable %}
+			{% set lp_z=loop.index0 %}				
+
+			var dataVariable=[];	
+				
+			{% if mappingVariable[lp_z].data is not empty %}	
+			
+				{% for j in mappingVariable[lp_z].data %}
+					{% set lp_j=loop.index0 %}							
+					
+					
+					{% set date = mappingVariable[lp_z].data[lp_j].date | date("F j, Y H:i:s") %}
+					
+					var value = 0;
+					{% if mappingVariable[lp_z].maxValue != 0 %}
+						value = {{mappingVariable[lp_z].data[lp_j].value}} * aHeight["{{mappingVariable[lp_z].name}}"] / {{mappingVariable[lp_z].maxValue}}
+					{% endif %}					 
+					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(2)+" {{mappingVariable[lp_z].units}}"]);	
+					//dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  {{mappingVariable[lp_z].data[lp_j].value}} {{mappingVariable[lp_z].units}}"]);		
+				
+				{% endfor %}	
+			
+			{% endif %}		
+			
+			dataset.push({data:dataVariable, label: "{{mappingVariable[lp_z].name}}", color:"{{mappingVariable[lp_z].color}}", dashes: { show: false, dashLength:[3, 3], lineWidth: 1, color:"{{mappingVariable[lp_z].color}}"}, shadowSize: 0, stack: {{mappingVariable[lp_z].stack}}});
+		
+		{% endfor %}		
+			
+		console.log(dataset);
+			
+		var plot2 = $.plot("#placeholder_stack", dataset,{
+			series: {
+				stack: stack,
+				lines: {
+					show: lines,
+					fill: true,
+					steps: steps,
+					lineWidth: 1.1,
+					strokeStyle: "#eee"
+				},
+				points: {
+					show: false
+				},
+				shadowSize: 1
+			}, 
+			 
+			grid: {
+				canvasText:{show:true},
+				hoverable: true,
+				backgroundColor: { colors: [ "#fff", "#fff" ] },
+				borderColor: "#bbb",
+				borderWidth: {
+					top: 1,
+					right: 1,
+					bottom: 1,
+					left: 1
+				},
+				markings: [
+					{ color: "#ddd", fillColor:0.1, lineWidth: 1, xaxis: { from:  new Date("{{ actualDate | date('F j, Y') }}"), to: new Date("{{ endDate | date('F j, Y') }}") } }
+				]
+			},
+			legend: {
+				show: false
+			},
+			crosshair: {
+				mode: "x"
+			},				
+			xaxis:{					
+					mode: "time", min: new Date("{{ startDate | date('F j, Y') }}"), max: new Date("{{ endDate | date('F j, Y') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					show:true,
+					timeformat: "%a <br /> %d.%m",
+					labelWidth: 50,
+					minTickSize: [1, "day"], reserveSpace:true						
+				},
+			yaxis:{min:0, max: 400, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false}, //{{ minY }}
+			//pan:{interactive:true, cursor: "move", frameRate: 20},
+			/*selection: {
+				mode: "x"
+			}*/
+		});	
+		
+		$("#placeholder_stack").bind("plothover", function (event, pos, item) {
+					if (item) {					
+						document.body.style.cursor = 'pointer';
+						if (previousPoint != item.dataIndex) {
+							previousPoint = item.dataIndex;
+							
+							//console.log(item);
+							$("#tooltip").remove();
+							var x = item.datapoint[0],
+								y = item.datapoint[1];
+								z = item.series.data[item.dataIndex+1][2];
+							showTooltip(item.pageX, item.pageY, z);
+						}
+					}else{
+						document.body.style.cursor = 'default';
+						$("#tooltip").remove();
+						previousPoint = null;
+					}
+				});
+		
+		plot2.setSelection({
+			xaxis: {
+				from: new Date("2015-05-11"), 
+				to: new Date("2015-05-14") 
+			}
+		});
+		
+		
+					
+		/*------------------------------------------*/ 
+		
+		/*Array same data historical and predicted */
+		{% set aVariables=[] %}
+		{% set aUnitsVariable=[] %}
+		{% set countNames=0 %}
+		{% for i in dataFinal %}
+			{% set lp_i=loop.index0 %}
+			{% if dataFinal[lp_i].name not in aVariables %}
+				{% set aVariables = aVariables|merge({ (countNames): dataFinal[lp_i].name}) %}
+				{% set aUnitsVariable = aUnitsVariable|merge({ (countNames): dataFinal[lp_i].units}) %}
+				
+				{% set countNames=countNames+1 %}
+					
+				var plot= $.plot($("#placeHistoricPredictor_{{ lp_i }}"), [ 		
+					{% set maxY=0 %}
+					{% set minY=0 %}				
+				
+					{						
+						data: [
+							{% for j in dataFinal[lp_i].values %}
+								{% set lp_j=loop.index0 %}							
+								
+							
+								{% if lp_j==0 %} 
+									{% set minY= dataFinal[lp_i].values[lp_j].value  %}
+								{% elseif minY > dataFinal[lp_i].values[lp_j].value %} 
+									{% set minY=dataFinal[lp_i].values[lp_j].value  %}
+								{% endif %}
+								
+								{% if maxY < dataFinal[lp_i].values[lp_j].value %} 
+									{% set maxY=dataFinal[lp_i].values[lp_j].value %}
+								{% endif %}			
+							
+								{% set date = dataFinal[lp_i].values[lp_j].date | date("F j, Y H:i:s") %}
+				
+						
+								[new Date("{{ date }}"), {{ dataFinal[lp_i].values[lp_j].value }} ],
+							{% endfor %}
+							
+							{% if dataFinal[lp_i].type =='prediction' %}
+								], color:'#000000', dashes: { show: true, dashLength:[4, 2], lineWidth:1},				
+								//dashes: { show: true }, shadowSize: 0,	
+							{% else %}
+								], color:'{{ dataFinal[lp_i].color}}', lines:{show:true, lineWidth:1, fillColor:'#000000'},						
+							{% endif %}					
+					},
+				
+					{% set z=lp_i+1 %}				
+				
+					{% for z in dataFinal %}
+						{% set lp_z=loop.index0 %}							
+						{% if dataFinal[lp_z].name == dataFinal[lp_i].name %}
+							{						
+								data: [
+									{% for k in dataFinal[lp_z].values %}
+										{% set lp_k=loop.index0 %}							
+										
+									
+										{% if lp_k==0 %} 
+											{% set minY= dataFinal[lp_z].values[lp_k].value  %}
+										{% elseif minY > dataFinal[lp_z].values[lp_k].value %} 
+											{% set minY=dataFinal[lp_z].values[lp_k].value  %}
+										{% endif %}
+										
+										{% if maxY < dataFinal[lp_z].values[lp_k].value %} 
+											{% set maxY=dataFinal[lp_z].values[lp_k].value %}
+										{% endif %}			
+									
+										{% set date = dataFinal[lp_z].values[lp_k].date | date("F j, Y H:i:s") %}
+						
+								
+										[new Date("{{ date }}"), {{ dataFinal[lp_z].values[lp_k].value }} ],
+									{% endfor %}
+								{% if dataFinal[lp_z].type =='prediction' %}
+									], color:'#000000', dashes: { show: true, dashLength:[4, 2], lineWidth:1},					
+									//dashes: { show: true },shadowSize: 0,
+								{% else %}
+									], color:'{{ dataFinal[lp_z].color}}', lines:{show:true, lineWidth:1, fillColor:'#000000'},
+								{% endif %}					
+							},
+						{% endif %}
+					{% endfor %}
+					
+				{% set panYmin = 0.1+(0.1/100)*100 %}
+				{% set panYmax = maxY+(maxY/100)*20 %}		
+				
+				],
+				
+				{
+					grid: {
+						canvasText:{show:true},
+						hoverable: true,
+						clickable: true,
+						borderWidth: 1,
+						borderColor:"#cacaca",
+						minBorderMargin: 0.5,
+						axisMargin: 1,
+						backgroundColor:'#ffffff'
+					},
+							
+					xaxis:{					
+						mode: "time", min: new Date("{{ startDate | date('F j, Y H:i:s') }}"), max: new Date("{{ endDate | date('F j, Y H:i:s') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+						{% if lp_i==0 %}  
+							position:'top', 
+						{% endif %}					
+						{% if lp_i < ((dataFinal | length)-1) and lp_i!=0 %} 					
+							show:false, 
+						{% else %}
+							show:true,
+							timeformat: "%a \n %d.%m",
+							labelWidth: 50,
+							minTickSize: [1, "hour"], reserveSpace:true				
+						{% endif %} 
+					},
+					yaxis:{min:{{ minY }}, max:{{ maxY }}, tickDecimals: 2,  panRange:[{{ panYmin}},{{ panYmax}}], labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, {{ maxY }}], font:{size: 9, family: "sans-serif", color:"#626262"}},
+					pan:{interactive:true, cursor: "move", frameRate: 20}
+				});
+			
+				var previousPoint = null;
+				$("#placeHistoricPredictor_{{ lp_i }}").bind("plothover", function (event, pos, item) {
+					if (item) {					
+						document.body.style.cursor = 'pointer';
+						if (previousPoint != item.dataIndex) {
+							previousPoint = item.dataIndex;
+
+							$("#tooltip").remove();
+							var x = item.datapoint[0],
+								y = item.datapoint[1];
+							showTooltip(item.pageX, item.pageY,y);
+						}
+					}else{
+						document.body.style.cursor = 'default';
+						$("#tooltip").remove();
+						previousPoint = null;
+					}
+				});
+				
+			{% endif %}
+		{% endfor %}
+		
+		
+		
+		//Función compartida por todas las gráficas
+		function showTooltip(x, y, contents)
+		{
+			$('<div id="tooltip" style="font-size:10px;">' + contents + '</div>').css( {
+				position: 'absolute',
+				display: 'none',
+				top: y-20,
+				left: x + 10,
+				border: '1px solid #595959',
+				padding: '2px',				
+				'background-color': '#DADADA',
+				opacity: 0.80
+			}).appendTo("body").fadeIn(200);
+		}
+		
+		
+	});
+	
+	//Show/hide el calendario
+	function displayCalendar()
+	{
+		$("#datepicker").slideToggle();
+	}
+	
+	//Cambia el formato del tiempo: dia / semana / mes
+	/*function changeTo(time)
+	{
+		if(time=='day'){
+			$("#selectDay").css({'background-color':'#2e75b6', 'color':'#fff' });
+			$("#selectWeek").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			$("#selectMonth").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			timeSelected='day';
+		}else if(time=='week'){ 
+			$("#selectDay").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			$("#selectWeek").css({'background-color':'#2e75b6', 'color':'#fff' });
+			$("#selectMonth").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			timeSelected='week';
+		}else if(time=='month'){
+			$("#selectDay").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			$("#selectWeek").css({'background-color':'#e8eef8', 'color':'#44546a' });
+			$("#selectMonth").css({'background-color':'#2e75b6', 'color':'#fff' });
+			timeSelected='month';
+		}
+	}*/
+	
+	function createURLView()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('prediction', {'idBuilding':idBuilding,'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+		//location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+	}
+	
+	function createURLPredictor()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('newPrediction', {'idBuilding':idBuilding, 'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+		//location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+	}
+
+	
+</script>
+    
+	<div id="left">		
+		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}
+		{{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding})) }}
+	</div>
+	<div id="right">
+	
+		<div id="topRight">
+			<p><strong>
+				<span style="text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
+				<span style="text-decoration:underline;" onclick="location.href='{{ path('selectGraph',{'idBuilding':idBuilding}) }}';">{{nameBuilding}}</span> > 
+				Historical and forecasted data
+			</strong></p>					
+		</div>
+	
+		<div id="centerRight">
+				<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
+					<div style="width:625px;float:left;">
+						<p class="titleContentDescription"><strong>{%trans%} Historical and Forecasted data {%endtrans%}</strong></p>
+					</div>
+					<div style="float:left; text-align:right;">
+						<p style="margin:3px 10px;"><span style="color:#2e75b6">{%trans%} Last forecast calculated{%endtrans%}:</span> <span><strong>{{ lastDateForecasted }}</strong></span></p>
+						<!--<p style="margin:3px 10px;"><span style="color:#2e75b6">Last data received:</span> <span> <strong>15/04/2014 8:00</strong> </span></p>-->
+					</div>
+				</div>
+				<!--<div id="indicators" style="background-color:#d0cece; width:100%;  overflow:hidden; border-bottom:1px solid #7f7f7f; border-top:1px solid #7f7f7f;">
+					<p style="width:847px; border-right:1px solid #7f7f7f; float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px;"><strong>Indicators</strong></p>
+					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3;">+</p>
+				</div>-->	
+				
+				<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa; border-top:0px;">
+					<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:60px; border-right:1px solid #aaa;"><strong>{%trans%}Dates{%endtrans%}</strong></p>
+					
+					<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #aaa; text-align:center; background-color: #e8eef8;">
+						<span id="startDate">{{ startDate }}</span> / 
+						<span id="endDate">{{ endDate }}</span>
+					</p>
+					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #aaa; cursor:pointer;" onclick="displayCalendar();">+</p>
+							
+					<p class="buttonIndicator" onclick="createURLView();">{%trans%} View {%endtrans%}</p>
+					
+					<p class="buttonIndicator" onclick="createURLPredictor();">Calculate forecast</p>					
+					
+				</div>
+				
+				<div id="contentGraficas" style="overflow:hidden; float:left; padding-top:25px; background-color:#f8f8f8;">
+					
+					<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
+										
+					<!-- Graph Stack -->
+					<div style="float:left; margin-bottom: 30px; width:100%;">		
+						{% if mappingVariable is not empty %}
+							<div style="float:left; margin-left:45px;">
+								{% for z in mappingVariable %}
+									{% set lp_z=loop.index0 %}
+									<div style="float:left;"><p style="width:14px; height:14px; background-color:{{mappingVariable[lp_z].color}}; float:left; "></p><p style="float:left; margin-left:0;"> {{mappingVariable[lp_z].name |trans}} </p></div>
+								{% endfor %}
+								
+							</div>	
+						{% endif %}
+						<div id="placeholder_stack" style="{%if mappingVariable is empty%}display:none;{% endif %} height:200px; float:left; top:-20px; width:870px;">	</div>
+						
+					</div>
+					
+					<!-- Gráfica Historic + Predictor -->		
+					
+					{% for i in aVariables %}
+						
+						{% set loop_i=loop.index0 %}					
+						
+						{% if loop_i < (aVariables|length)-1 %}
+							{% set stilo=" height:60px;" %}
+						{% else %}
+							{% set stilo="min-height:100px;" %} 
+						{% endif %}
+						
+						
+						{% if loop_i ==0  %}
+							{% set stilo2="width:500px;" %}							
+						{% elseif loop_i==(aVariables|length)-1 %}
+							{% set stilo2="width:500px;" %}	
+						{% else %}
+							{% set stilo2="width:475px;" %} 
+						{% endif %}
+						
+						
+						<div style="float:left; width:100%; {{stilo}} ">
+							<p style="font-size:11px; font-weight:bold; text-transform:capitalize; float:left; width:350px; word-wrap: break-word; margin-right:10px; text-align:right;">{{ aVariables[loop_i] }} ({{ aUnitsVariable[loop_i] }})</p>
+							
+							<div id="placeHistoricPredictor_{{ loop_i }}" style=" height:100px; float:left; top:-20px; pointer-events:none; {{stilo2}}">	</div>
+						</div>										
+					{% endfor %}
+					
+				</div>			
+		</div>  
+	</div>
+
+{% endblock %}

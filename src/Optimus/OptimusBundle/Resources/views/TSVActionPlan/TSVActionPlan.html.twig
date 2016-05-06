@@ -1,0 +1,543 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('bundles/optimus/js/jsTree/themes/default/style.min.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+	
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jsTree/jstree.min.js') }}"></script>
+		
+{% endblock %}
+
+{% block clase_ActionPlanData %}activo{% endblock %}
+
+
+{% block content %}
+
+<script type="text/javascript">
+	var controlBefore=false;
+	var controlOpen=false;
+	
+	$(function(){		
+		$("#datepicker").hide();
+		$(".showDiv").slideToggle();
+		
+		var startDate;
+		var endDate;
+		
+		var selectCurrentWeek = function() {
+			window.setTimeout(function () {
+				$('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+			}, 1);
+		}
+		
+		$('#datepicker').datepicker( {
+			/*showWeek: true,
+			firstDay: 1,*/
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			onSelect: function(dateText, inst) { 
+				var date = $(this).datepicker('getDate');
+								
+				/*startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);*/
+				startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); //diaSelected
+				endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 6); //diaSelected +6
+														
+				var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+				$('#startDate').text($.datepicker.formatDate("yy-mm-dd" , startDate, inst.settings )); //dateFormat
+				$('#endDate').text($.datepicker.formatDate( "yy-mm-dd", endDate, inst.settings ));
+				
+				selectCurrentWeek();
+				
+				//location.href='<?php //echo base_url(); ?>index.php/main_controller/index/'+$('#startDate').html()+'/'+$('#endDate').html()+'/'+timeSelected;
+			},
+			beforeShowDay: function(date) {
+				var cssClass = '';
+				if((date >= startDate && date <= endDate) || (date>=new Date('{{ startDate }}') && date <=new Date('{{ endDate }}')))
+					cssClass = 'ui-datepicker-current-day';
+				return [true, cssClass];
+			},
+			onChangeMonthYear: function(year, month, inst) {
+				selectCurrentWeek();
+			}
+		});
+		
+		$(document).on('mousemove', '#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').addClass('ui-state-hover');    });
+		$(document).on('mouseleave','#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').removeClass('ui-state-hover'); });
+			
+		/*-----------------------------------------------------------------------------------*/
+		
+		/* FORMS STATUS */		
+		{% for i in 0..6 %}
+			$("#form_{{i}} ").change (function( event ) { //> input[name*=filter]
+				var url = "{{ path('changeSwitchStatusDay' ,{'idOutputDay':dataActionPlan[i].idOutputDay} ) }}"; // the script where you handle the form input.
+
+				$.ajax({
+					type: "POST",
+					url: url,
+					data:{ 'data':$("#form_{{i}}").serialize()}, // serializes the form's elements.
+					success: function(data)
+					{
+						//alert(data); // show response from the php script.
+					}
+				});
+
+				return false;					
+				//});
+			});
+		{% endfor %}
+		
+		
+		/* TREE */
+		var str="{{ tree }}";		
+		var tree= JSON.parse(str.replace(/&quot;/g,'"'));
+				
+		$('#jstree_demo_div').jstree({
+			"core" : {
+			"animation" : false,
+			"check_callback" : false,
+			"themes" : { "stripes" : false, "icons":false, "dots":false },
+			'data' : 
+				tree
+			 },
+			"types" : {
+				"#" : {
+					"max_children" : 1, 
+					"max_depth" : 4, 
+					"valid_children" : ["root"]
+				},
+				"root" : {
+					"icon" : "/static/3.1.0/assets/images/tree_icon.png",
+					"valid_children" : ["default"]
+				},
+				"default" : {
+					"valid_children" : ["default","file"]
+				},
+				"file" : {
+					"icon" : "glyphicon glyphicon-file",
+					"valid_children" : []
+				}
+			},
+			"plugins" : [
+				"dnd", "search",
+				"state", "types" /*,"wholerow"*/
+			]
+			
+		}).on('ready.jstree', function() {
+			$('#jstree_demo_div').jstree('open_all');
+			//$('#jstree_demo_div').jstree().unbind();
+			createTable();
+			controlBefore=true;
+			console.log("ready");
+		}).on('open_node.jstree', function() {
+			
+			console.log("open");
+			if(controlBefore!=false){
+					
+				if(controlOpen==false)
+				{				
+					createTable();
+					heightRows();					
+				}
+			}
+		}).on('close_node.jstree', function() {			
+			createTable();			
+		});
+				
+		/*--------------------------------------------------------------*/
+		
+		//double-clik on table
+		$("#showSchedule").click(function(){
+			$(".showDiv").slideToggle();
+		});
+		
+		//double-clik on table
+		$("#arrowStrategy").click(function(){
+			$("#menuStrategies").slideToggle();
+		});
+		
+		$("#button_heating").click(function(){
+			if($("#button_heating").is(':checked'))
+			{
+				$(".heating").css('display','table');
+				heightRows();
+			}else{
+				$(".heating").css('display','none');
+				heightRows();
+				
+			}
+		});
+		
+		$("#button_cooling").click(function(){
+			if($("#button_cooling").is(':checked'))
+			{
+				$(".cooling").css('display','table');
+				heightRows();
+			}else{
+				$(".cooling").css('display','none');
+				heightRows();
+			}
+		});
+		
+		$("#button_baseline").click(function(){
+			if($("#button_baseline").is(':checked'))
+			{
+				$(".row_baseline").css('display','');
+				createTable();
+				heightRows();
+				
+			}else{
+				createTable();
+				$(".row_baseline").css('display','none');
+				heightRows();
+			}
+		});
+	
+	});
+	
+	function heightRows()
+	{
+		if(($("#button_heating").is(':checked')) && ($("#button_cooling").is(':checked')))
+		{
+			$('.heating').css('height','12px');
+			$('.cooling').css('height','12px');
+		}else if(($("#button_heating").is(':checked')) && (!$("#button_cooling").is(':checked'))){
+			$('.heating').css('height','24px');
+		}else if((!$("#button_heating").is(':checked')) && ($("#button_cooling").is(':checked'))){
+			$('.cooling').css('height','24px');
+		}
+	}
+	
+	function createTable()
+	{	
+		var tables=[];
+		var str="";
+		$("#tableSwitch").html("");	
+		
+		str+="<table style='line-height: 3px; height:24px; border:0px; font-size:11px;' border='0' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'>";
+		
+		str+="<tr style='text-align:center; line-height: 3px; height:24px;'><td></td><td colspan='3'>Mon</td><td colspan='3'>Tue</td><td  colspan='3'>Wed</td><td colspan='3'>Thu</td><td colspan='3'>Fri</td><td colspan='3'>Sat</td><td colspan='3'>Sun</td><td>Total</td></tr>";
+		
+		str+="<tr style='text-align:center; line-height: 3px; height:24px;'><td>option</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td>Total</td></tr>";
+		
+		$( ".jstree-anchor" ).each(function() {
+			var attrId=$(this).attr("id");
+			id=attrId.split("_");
+			
+			
+			{% for partition in allPartitions %}
+				//str="";
+				if (id[0]=={{partition.id}})
+				{					
+					{% if  partition.childs==true or partition.sensors==false %}		{#partition.partition.getFkBuildingPartitioning()!=null#}				
+						str+="<tr style='border:1px solid;'> <td></td><td colspan='21'></td><td style='border-bottom:0px; height:22px;'>Total</td></tr>";			
+					{% else %}
+						console.log({{partition.id}});
+						//check baseline
+						if($("#button_baseline").is(':checked')) 	$("#"+id[0]+"_anchor").css("height","48px");
+						else 										$("#"+id[0]+"_anchor").css("height","24px");
+						
+						//Selected
+						str+="<tr style='border:1px solid;'><td rowspan='1' width='10%' style='height:24px; background-color:#A9D08E;'>Selected</td>";
+							//Heating
+							str+="<td colspan='21' width='80%' style='padding-right:0px; border-bottom: 1px ;'><table style='line-height: 3px; height:12px; border:0px; font-size:10px; background-color:#FF7C80;' class='heating' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'> <tr width='100%' id='{{partition.id}}_heating' border='0'>  ";
+						
+							{% for i in 0..6 %}
+								{% if i==6 %} 	str+="<td style='width:27px;'>11:00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;border-right:0;'>22º</td>";
+								{% else %} 		str+="<td style='width:27px;'>11:00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;'>22º</td>";
+								{% endif %}
+							{% endfor %}
+							
+							str+="</tr></table>";
+							//Cooling
+							str+="<table style='line-height: 3px; height:12px; border:0px; font-size:10px; background-color:#BDD7EE;' class='cooling' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'><tr id='{{partition.id}}_cooling'   border='0'>";
+						
+							{% for i in 0..6 %}
+								{% if i==6 %} 	str+="<td style='width:27px;'>0"+Math.round(Math.random(1, 100))+":00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;border-right:0;'>22º</td>";
+								{% else %}  	str+="<td style='width:27px;'>0"+Math.round(Math.random(1, 100))+":00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;'>22º</td>";
+								{% endif %}
+							{% endfor %}
+							
+							str+="</tr></table>";
+						
+							str+="</td>";
+						
+						str+="<td rowspan='1' width='10%' style='background-color:#A9D08E;'>2888 KW</td></tr>";
+						
+						//Baseline
+						str+="<tr style='border:1px solid;' class='row_baseline'><td rowspan='1' width='10%' style='height:24px; background-color:#F8CBAD;'>Baseline</td>";
+							//Heating
+							str+="<td colspan='21' width='80%' style='padding-right:0px; border-bottom:1px;'><table style='line-height: 3px; height:12px; border:0px; font-size:10px; background-color:#FCD8D8;' class='heating' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'> <tr width='100%' id='{{partition.id}}_heating' border='0'>  ";
+						
+							{% for i in 0..6 %}
+								{% if i==6 %} 	str+="<td style='width:27px;'>11:00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;border-right:0;'>22º</td>";
+								{% else %} 		str+="<td style='width:27px;'>11:00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;'>22º</td>";
+								{% endif %}
+							{% endfor %}
+							
+							str+="</tr></table>";
+							
+							//Cooling
+							str+="<table style='line-height: 3px; height:12px; border:0px; font-size:10px; background-color:#DDEBF7;' class='cooling' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'><tr id='{{partition.id}}_cooling'   border='0'>";
+							
+							{% for i in 0..6 %}
+								{% if i==6 %} 		str+="<td style='width:27px;'>0"+Math.round(Math.random(1, 100))+":00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff; border-right:0;'>22º</td>";
+								{% else %}  		str+="<td style='width:27px;'>0"+Math.round(Math.random(1, 100))+":00</td><td style='width:27px;'>22:00</td><td style='background-color:#fff;'>22º</td>";
+								{% endif %}
+							{% endfor %}
+							
+							str+="</tr></table>";						
+							str+="</td>";
+						
+						str+="<td rowspan='1' width='10%' style='background-color:#F8CBAD;'>2888 KW</td></tr>";
+						//$("#tableSwitch").append(str);						
+					{% endif %}
+					
+					//tables.push( {id:{{partition.id}}, str:str} );
+					
+				}
+			{% endfor %}
+			
+			//$("#tableSwitch").append("<table><tr>"+str+"</tr></table>");
+		});
+		str+="</table>";
+		$("#tableSwitch").append(str);
+		
+		if($("#button_baseline").is(':checked')) 	$(".row_baseline").css("display","");
+		else 										$(".row_baseline").css("display","none");
+		if($("#button_cooling").is(':checked')) 	$(".cooling").css("display","table");
+		else 										$(".cooling").css("display","none");
+		if($("#button_heating").is(':checked')) 	$(".heating").css("display","table");
+		else 										$(".heating").css("display","none");
+	}
+	
+	//Show/hide el calendario
+	function displayCalendar()
+	{
+		$("#datepicker").slideToggle();
+	}
+	
+	function createURLView()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('actionPlan', {'idBuilding':idBuilding, 'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+		//location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+	}
+	
+	function createURLPredictor()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('newCalculate', {'idBuilding':idBuilding, 'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+		//location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
+	}
+	
+	function changeStrategy(type)
+	{
+		$("#menuStrategies").css('display','none');
+		$(".textStrategyActual").html(type.toUpperCase());
+		
+		if(type=='finance')
+		{
+			$("#menuStrategies").html("<p style='cursor:pointer;' onclick='changeStrategy(\"Green\");'>GREEN</p> <p style='cursor:pointer;' onclick='changeStrategy(\"Intermediate\");'>INTERMEDIATE</p>");
+		}else if(type=='green')
+		{
+			$("#menuStrategies").html("<p style='cursor:pointer;' onclick='changeStrategy(\"Finance\");'>FINANCE</p> <p style='cursor:pointer;' onclick='changeStrategy(\"Intermediate\");'>INTERMEDIATE</p>");
+		}else{
+			$("#menuStrategies").html("<p style='cursor:pointer;' onclick='changeStrategy(\"Finance\");'>FINANCE</p><p style='cursor:pointer;' onclick='changeStrategy(\"Green\");'>GREEN</p> ");
+		}
+		//var url="";
+		{% for i in 0..6 %}
+			{% if dataActionPlan[i] is defined %}
+				{% set idOutputDay=dataActionPlan[i].idOutputDay %}
+			{% else %}
+				{% set idOutputDay=0 %}
+			{% endif %}
+			//AJAX
+			$.ajax({
+				type:'POST',					
+				url: "{{path('changeSwitchStrategy')}}",
+				data: { idOutputDay:{{ idOutputDay }}, type:type },
+				success:function(){
+					//data.instance.refresh();
+					//location.reload(); 
+				}
+			});
+		{% endfor %}
+	}
+
+	
+</script>
+    
+	<div id="left">
+		{% include 'OptimusOptimusBundle:Login:logged.html.twig' %}
+		
+		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}
+		
+	</div>
+	<div id="right">
+		<div id="topRight">
+			<p><strong>
+				<span style="cursor:pointer;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
+				<span style="cursor:pointer;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">Town Hall</span> > 
+				Action Plan: TSV 
+				</strong></p>					
+		</div>
+	
+		<div id="centerRight">
+			<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;">
+				<div style="width:650px;float:left;">
+					<p class="titleContentDescription"><strong>Action Plan:</strong> <span>TSV </span></p>
+					<p class="titleContentDescription"><strong>Description:</strong> <span style="font-size:11px;">TSV</span></p>
+				</div>
+				<div style="float:left; text-align:right;">
+					<p style="margin:10px 10px;"><span style="color:#2e75b6">Last forecast calculated:</span> <span><strong>15/04/2014 8:00</strong></span></p>					
+				</div>
+			</div>
+			<!--<div id="indicators" style="background-color:#d0cece; width:100%;  overflow:hidden; border-bottom:1px solid #7f7f7f; border-top:1px solid #7f7f7f;">
+				<p style="width:847px; border-right:1px solid #7f7f7f; float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px;"><strong>Indicators</strong></p>
+				<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3;">+</p>
+			</div>-->	
+				
+			<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f; border-top:0px;">		
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #7f7f7f;  text-align: right;"><strong>Profile:</strong></p>
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:150px; border-right:1px solid #7f7f7f;  text-align: right;">Summer profile</p>
+				
+				<!--<p style="float:left; margin: 0 0 0 120px; height:15px; padding:10px; width:201px; border-right:1px solid #7f7f7f;  text-align: right;"><strong>Num. panels:</strong></p><p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right;">25</p>-->	
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #7f7f7f;  text-align: right;"><strong>Visualization:</strong></p><p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right;">Daily</p>
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #7f7f7f;  text-align: right;">Strategy selected</p><p class="strategyActual" style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right; cursor:pointer;"><span class="textStrategyActual">FINANCE</span> <span id="arrowStrategy">&#9660;</span></p>					
+			</div>
+				
+			<div id="menuStrategies" style="width:100px; position:absolute; height:70px; left: 984px; border: 1px solid; display:none; z-index:9999; background-color:#d0cece; top: 212px;">
+				<p style="cursor:pointer;" onclick="changeStrategy('green');">GREEN</p>
+				<p style="cursor:pointer;" onclick="changeStrategy('intermediate');">INTERMEDIATE</p>
+			</div>
+				
+			<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;  border-top:0px;">
+				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #7f7f7f; text-align: right;"><strong>Dates:</strong></p>
+				
+				<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #7f7f7f; text-align:center; background-color: #e8eef8;">
+					<span id="startDate">{{ startDate }}</span> / 
+					<span id="endDate">{{ endDate }}</span>
+				</p>
+				<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #7f7f7f; cursor:pointer;" onclick="displayCalendar();">+</p>
+				
+				<p class="buttonIndicator" onclick="createURLView();">View</p>
+				
+				<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">Calculate</p>
+				<p>Selected Day: {{  "now"|date("Y-m-d")  }}</p>
+			</div>
+			
+			<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#d0cece;"></div>
+			
+			<div id="contentGraficas">
+				<p> <input type="checkbox" id="button_heating"/>Heating</p>
+				<p> <input type="checkbox" id="button_cooling"/>Cooling</p>
+				<p> <input type="checkbox" id="button_baseline"/>Baseline</p>
+				
+				<!-- Header table -->
+				<!--<div style="width:100%; float:left; display:block;">
+					<table border="0" style="width:80%; float:right; display:table;">
+						<thead>
+							<tr class="headerTemp">
+								<th class="firstColumnHeaderTemp" colspan="2">Ext. Temp</th>
+								{% for i in 0..6 %}
+									{% if i==0 %}
+										<th colspan="2"> &#9728;</th>
+									{% elseif i==1 %}
+										<th colspan="2">&#127749;</th>
+									{% elseif i==2 %}
+										<th colspan="2">&#127745;</th>
+									{% elseif i==3 %}
+										<th colspan="2">12º C</th>
+									{% elseif i==4 %}
+										<th colspan="2">&#10052;</th>
+									{% elseif i==5 %}
+										<th colspan="2">&#10052;</th>
+									{% elseif i==6 %}
+										<th colspan="2">&#10052;</th>
+									{% endif %}
+									
+								{% endfor %}
+																	
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="headerDays">
+								<td colspan="2" style="border-right: 2px solid;"></td>
+								<td colspan="2">Mon</td>
+								<td colspan="2">Tue</td>
+								<td colspan="2">Wed</td>
+								<td colspan="2">Thu</td>
+								<td colspan="2">Fri</td>
+								<td colspan="2">Sat</td>
+								<td colspan="2">Sunday</td>
+								<td colspan="2">Total</td>								
+							</tr>
+						</tbody>
+					</table>		
+				</div>-->
+				
+				<div style="width:100%; float:left; display:block;">
+					<!-- Tree -->
+					<div id="jstree_demo_div" style="float:left; width:20%; font-size: 14px; font-weight: bold; padding:47px 0 0 20px; margin-bottom:30px;">	</div>
+					<!-- Table-->
+					<div id="tableSwitch" style="float:left; width:77%;  display:block; padding:0; line-height: 24px;">
+					
+					</div>
+					
+				</div>
+						
+				<!-- Filtros -->
+				<div class="contentTableResults" style="float:left;">					
+					
+					<div id="contentFilterTable">
+						<div id="headerFilter" style="width:259px;">
+							<p>Please confirm the action plan:</p>
+						</div>
+						<div id="filters" style="width:581px;">
+							{% for i in 0..6 %}
+								<form action="" method="post">
+								 
+									<div class="inputsFilters" style=" float:left; margin-right:15px;">
+										<p style="font-size:11px; margin:0;">
+											<input type="radio" name="filter" value="0">Unknown
+										</p>
+										<p style="font-size:11px; margin:0;">
+											<input type="radio" name="filter" value="1">Accepted
+										</p>
+										<p style="font-size:11px; margin:0;">
+											<input type="radio" name="filter" value="2">Declined
+										</p>
+										<input type="hidden" value="" name="day" id="day" />
+										<input type="hidden" value="" name="idActionPlan" id="idActionPlan" />
+									</div>
+								</form>
+							{% endfor %}
+						</div>						
+					</div>
+					
+				</div>
+			</div>			
+		</div> 
+	</div>
+
+{% endblock %}
+

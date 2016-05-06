@@ -1,0 +1,11 @@
+<div class="edit_building">	
+	
+	<form action="{{ path('building_save',{'idBuilding':idBuilding}) }}" method="post" {{ form_enctype(form) }}>
+		{{ form_errors(form) }}       
+        {{ form_rest(form) }}
+        <p>
+            <button type="submit" class="buttonBig">{%trans%}Edit Building{%endtrans%}</button>
+        </p>
+    </form>
+ 
+</div>

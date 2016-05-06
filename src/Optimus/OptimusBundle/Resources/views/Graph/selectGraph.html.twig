@@ -1,0 +1,299 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+			
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.dashes.js') }}"></script>
+	<script language="javascript" type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.stack.js') }}"></script>
+{% endblock %}
+
+{% block content %} 
+
+<script type="text/javascript">
+/* ---------------- Graph Stack---------------*/
+	$(function(){
+		var stack = true,	bars = false,	lines = true,	steps = false;
+			
+		var stackSensors=["Energy production", "Total consumption", "CO2"];
+	
+		{% set maxY=0 %}
+		{% set minY=0 %}
+		{% set startPredictor=startDate | date('F j, Y H:i:s') %}
+		{% set endPredictor=endDate | date('F j, Y H:i:s') %}
+		{% set initPred = true %}
+		var dataset=[];
+		
+		{% for i in dataFinal %}
+			{% set lp_i=loop.index0 %}
+			
+			{% if dataFinal[lp_i].name == "Energy production" or dataFinal[lp_i].name=="Total consumption - 2" or dataFinal[lp_i].name=="CO2" %}				
+				var dataVariable=[];								
+					
+					{% for j in dataFinal[lp_i].values %}
+						{% set lp_j=loop.index0 %}							
+							
+						{% if minY > dataFinal[lp_i].values[lp_j].value %} 
+							{% set minY=dataFinal[lp_i].values[lp_j].value  %}
+						{% endif %}
+						
+						{% if maxY < dataFinal[lp_i].values[lp_j].value %} 
+							{% set maxY=dataFinal[lp_i].values[lp_j].value %}
+						{% endif %}	
+						
+						{% set date = dataFinal[lp_i].values[lp_j].date | date("F j, Y H:i:s") %}
+						
+						{#% if dataFinal[lp_i].type=="prediction" %#}
+							{#% if initPred==true %#}
+								{#% set initPred=false %#}
+								{#% set startPredictor=date %#}
+								{#% set endPredictor=date %#}
+							{#% else %#}
+								{#% if startPredictor > date %#}
+									{#% set startPredictor=date %#}
+								{#% endif %#}
+							
+								{#% if endPredictor < date %#}
+									{#% set endPredictor=date %#}
+								{#% endif %#}
+								
+							{#% endif %#}
+						{#% endif %#}
+						
+						{% if dataFinal[lp_i].name == "Energy production" %}
+							dataVariable.push([new Date("{{ date }}"), {{ (dataFinal[lp_i].values[lp_j].value *120)/12964 }} , "Energy production  {{dataFinal[lp_i].values[lp_j].value}} KW"]);	
+						{% elseif dataFinal[lp_i].name=="Total consumption - 2" %}
+							dataVariable.push([new Date("{{ date }}"), {{ (dataFinal[lp_i].values[lp_j].value *120)/0.56 }} ,"Total consumption {{dataFinal[lp_i].values[lp_j].value}} KW "]);	
+						{% elseif dataFinal[lp_i].name=="CO2" %}
+							dataVariable.push([new Date("{{ date }}"), {{ (dataFinal[lp_i].values[lp_j].value *120)/736}}, "CO2 {{dataFinal[lp_i].values[lp_j].value}} kgCO2/m2" ] );	
+						{% endif %}
+											
+					{% endfor %}			
+				
+				{% if lp_i < loop.last %}
+					dataset.push({data:dataVariable, label: "{{dataFinal[lp_i].name}}", color:"{{dataFinal[lp_i].color}}", dashes: { show: false, dashLength:[3, 3], lineWidth: 1, color:"{{dataFinal[lp_i].color}}"}, shadowSize: 0});
+				{% else %}
+					dataset.push({data:dataVariable, label: "{{dataFinal[lp_i].name}}", color:"{{dataFinal[lp_i].color}}", dashes: { show: false, dashLength:[3, 3], lineWidth: 1, color:"{{dataFinal[lp_i].color}}"}, shadowSize: 0, stack:1});
+				
+				{% endif %}	
+			
+			{% endif %}		
+		{% endfor %}
+		
+		console.log(dataset);
+			
+		var plot2 = $.plot("#placeholder_stack", dataset,{
+			series: {
+				stack: stack,
+				lines: {
+					show: lines,
+					fill: true,
+					steps: steps,
+					lineWidth: 0.1,
+					strokeStyle: "#eee"
+				},
+				points: {
+					show: false
+				},
+				shadowSize: 1
+			}, 
+			 
+			grid: {
+				canvasText:{show:true},
+				hoverable: true,
+				backgroundColor: { colors: [ "#fff", "#fff" ] },
+				borderColor: "#bbb",
+				borderWidth: {
+					top: 1,
+					right: 1,
+					bottom: 1,
+					left: 1
+				},
+				markings: [
+					{ color: "#ddd", fillColor:0.1, lineWidth: 1, xaxis: { from:  new Date("{{ actualDate | date('F j, Y H:i:s') }}"), to: new Date("{{ endDate | date('F j, Y H:i:s') }}") } }
+				]
+			},
+			legend: {
+				show: false
+			},
+			crosshair: {
+				mode: "x"
+			},				
+			xaxis:{					
+					mode: "time", min: new Date("{{ startDate | date('F j, Y H:i:s') }}"), max: new Date("{{ endDate | date('F j, Y H:i:s') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					show:false,
+					timeformat: "%a \n %d.%m",
+					labelWidth: 50,
+					minTickSize: [1, "hour"], reserveSpace:true						
+				},
+			yaxis:{min:{{ minY }}, max: 400, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false},
+			//pan:{interactive:true, cursor: "move", frameRate: 20},
+			/*selection: {
+				mode: "x"
+			}*/
+		});	
+		
+		$("#placeholder_stack").bind("plothover", function (event, pos, item) {
+					if (item) {					
+						document.body.style.cursor = 'pointer';
+						if (previousPoint != item.dataIndex) {
+							previousPoint = item.dataIndex;
+							
+							//console.log(item);
+							$("#tooltip").remove();
+							var x = item.datapoint[0],
+								y = item.datapoint[1];
+								z = item.series.data[item.dataIndex+1][2];
+							showTooltip(item.pageX, item.pageY, z);
+						}
+					}else{
+						document.body.style.cursor = 'default';
+						$("#tooltip").remove();
+						previousPoint = null;
+					}
+				});
+		
+		plot2.setSelection({
+			xaxis: {
+				from: new Date("2015-05-11"), 
+				to: new Date("2015-05-14") 
+			}
+		});
+		
+		
+		//Función compartida por todas las gráficas
+		function showTooltip(x, y, contents)
+		{
+			$('<div id="tooltip" style="font-size:10px;">' + contents + '</div>').css( {
+				position: 'absolute',
+				display: 'none',
+				top: y-20,
+				left: x + 10,
+				border: '1px solid #595959',
+				padding: '2px',				
+				'background-color': '#DADADA',
+				opacity: 0.80
+			}).appendTo("body").fadeIn(200);
+		}
+		
+		
+	});	
+					
+		/*------------------------------------------*/ 
+</script>
+  
+	<div id="left" style="">
+		{% include 'OptimusOptimusBundle:Login:logged.html.twig' %}
+			
+		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}		
+	</div>
+	
+	<div id="right">
+		<div id="topRight">
+			<p><strong><span onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > List of buildings</strong></p>					
+		</div>
+		<div id="centerRight">			
+			<div>
+				<div style="background-color:#ddd; overflow:hidden;">
+					<p class="titleContentDescription"><strong>Action plans</strong></p>							
+				</div>
+				
+				<div style="background-color:#eee; overflow:hidden; margin-bottom:20px;">
+					{% for aPlan in actionPlans %}
+						{% if aPlan.type==2 %}
+							{#% set direccion=path('view_switchOnOff', {'idBuilding':idBuilding}) %#}
+							{% set direccion='' %}
+						{% elseif aPlan.type==4 %}
+							{% set direccion=path('actionPlan', {'idBuilding':idBuilding}) %}
+						{% else %}
+							{% set direccion='' %}
+						{% endif %}
+						<div style="overflow:hidden; border-bottom:1px solid #ddd; padding:5px 0px;" onclick="location.href='{{direccion}}';">
+						
+							<div style="float:left; width:600px; cursor:pointer;">
+								<p><span style="color:#2e75b6"><strong>{{ aPlan.name }}</strong></span></p>
+							</div>
+							<div style="float:left;">
+								<p style="margin:3px 10px;"><span style="color:#2e75b6">Status:</span> <span style="color:#C00000"><strong> No action required</strong></span></p>
+								<p style="margin:3px 10px;"><span style="color:#2e75b6">Last action:</span> <span style="color:#C00000"> <strong>15 / 04 / 2014 8:00</strong> </span></p>
+							</div>
+						</div>
+					
+					{% endfor %}
+					<!--
+					<div style="overflow:hidden; border-bottom:1px solid #ddd; padding:5px 0px;">
+					
+						<div style="float:left; width:600px;">
+							<p><span style="color:#2e75b6"><strong>Scheduling the set point temperature – adaptive comfort concept</strong></span></p>
+						</div>
+						<div style="float:left;">
+							<p style="margin:3px 10px;"><span style="color:#2e75b6">Status:</span> <span style="color:#C00000"><strong> No action required</strong></span></p>
+							<p style="margin:3px 10px;"><span style="color:#2e75b6">Last action:</span> <span style="color:#C00000"> <strong>15 / 04 / 2014 8:00</strong> </span></p>
+						</div>
+					</div>
+					
+					<div style="overflow:hidden; border-bottom:1px solid #ddd; padding:5px 0px; cursor:pointer;" >
+						<div style="float:left; width:600px;">
+							<p><span style="color:#2e75b6"><strong>Optimum start/stop of the heating/cooling system </strong></span></p>
+						</div>
+						<div style="float:left;">
+							<p style="margin:3px 10px;"><span style="color:#2e75b6">Status:</span> <span style="color:#C00000"><strong> No action required</strong></span></p>
+							<p style="margin:3px 10px;"><span style="color:#2e75b6">Last action:</span> <span style="color:#C00000"> <strong>15 / 04 / 2014 8:00</strong> </span></p>
+						</div>
+					</div>
+					
+					<div style="overflow:hidden; border-bottom:1px solid #ddd; padding:5px 0px; cursor:pointer;"  onclick="location.href='';">	
+						<div style="float:left; width:600px;">
+							<p><span style="color:#2e75b6"><strong>Sale/consumption of the electricity produced through the PV system</strong></span></p>
+						</div>
+						<div style="float:left;">
+							<p style="margin:3px 10px;"><span style="color:#2e75b6">Status:</span> <span> No action required</span></p>
+							<p style="margin:3px 10px;"><span style="color:#2e75b6">Last action:</span> <span> 15 / 04 / 2014 8:00 </span></p>
+						</div>
+					</div>
+					
+					<div style="overflow:hidden; border-bottom:1px solid #ddd; padding:5px 0px;">
+						<div style="float:left; width:600px;">
+							<p><span style="color:#2e75b6"><strong>PV energy management</strong></span> </p>
+						</div>
+						<div style="float:left;">
+							<p style="margin:3px 10px;"><span style="color:#2e75b6">Status:</span> <span>No action required</span></p>
+							<p style="margin:3px 10px;"><span style="color:#2e75b6">Last action:</span> <span> 15 / 04 / 2014 8:00 </span></p>
+						</div>
+						
+					</div>-->
+					
+				</div>
+				
+				<div style="overflow:hidden; cursor:pointer;" onclick="location.href='{{ path('prediction', {'idBuilding':idBuilding}) }}';">
+					<div style="background-color:#ddd; overflow:hidden;" >
+						<div style="float:left; width:600px;">
+							<p class="titleContentDescription" style="float:left;"><strong>Historical and Forecasted data</strong></p>
+						</div>
+						<div style="float:left;">
+							<p style="margin:3px 10px;"><span style="color:#2e75b6">Status:</span> <span>No action required</span></p>
+							<p style="margin:3px 10px;"><span style="color:#2e75b6">Last action:</span> <span> 15 / 04 / 2014 8:00 </span></p>
+						</div>
+					</div>
+					
+					<!-- Graph Stack -->
+					<div style="background-color:#eee; overflow:hidden;">
+						<!--<img src="{{ asset('bundles/optimus/img/graphSelectGraph.png') }}"/>-->
+						<div id="placeholder_stack" style=" height:400px; float:left; top:-20px; width: 100%;">	</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+    
+{% endblock %}

@@ -1,0 +1,31 @@
+
+<div style="float:left; width:100%;">
+	<p class="titleContentDescription" style="margin-top:30px;">
+		<strong>{%trans%} Activity stream {%endtrans%}</strong>
+	</p>
+		
+	{% for event in lastEvents %}		
+		<p style="font-size:11px; "> 
+			{% if(event.getFkUser() != NULL) %}
+				{{ event.getFkUser().name |capitalize }}
+				
+				{% if(event.action== 'declines') %}
+					<span style="color:#ff0000;">{{event.action |trans}}</span>
+				{% elseif(event.action == 'accepts') %}
+					<span >{{event.action|trans}}</span>
+				{% elseif(event.action == 'unknows') %}
+					<span> {{event.action|trans}}</span>
+				{% endif %}
+				<span style="color:#2e75b6;">{{event.textEvent |trans}} </span>
+				
+			{% else %}				
+				<span style="color:#00B050;">OPTIMUS {{event.textEvent |trans}} </span>	
+			{% endif %}
+			
+			
+			{%trans%} on {%endtrans%}			
+			<span style="color:#626262;">{{event.date |date("d/m/y")}}</span>
+		</p>
+	{% endfor %}
+	
+</div>

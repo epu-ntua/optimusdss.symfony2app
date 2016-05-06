@@ -1,0 +1,137 @@
+services:
+#    app.arc2:
+ #       class: OptimusBundle\Resources\arc2\ARC2
+#    optimus_optimus.example:
+#        class: Optimus\OptimusBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
+
+    service_ontologia:
+        class: Optimus\OptimusBundle\Servicios\ServiceOntologia
+        arguments: [%optimus_endpoint%,%optimus_graph%, "@doctrine.orm.entity_manager"]
+
+    service_service_calculation_data_invoke:
+        class: Optimus\OptimusBundle\Servicios\ServiceCalculationDataInvoke
+
+    service_predict_data_invoke:
+        class: Optimus\OptimusBundle\Servicios\ServicePredictDataInvoke
+
+    service_appv:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPPVCalculation
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    service_appvm:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPPVMCalculation
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia", "@service_predict_data_invoke", "@service_event"]    
+        
+    service_appreheating:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPPreheating
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia", "@service_predict_data_invoke", "@service_event"]
+
+    service_apadaptative:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPAdaptative
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    service_aptsv:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPTSV
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    service_aptcv:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPTCV
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    service_apspmc:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPSPMCalculation
+        arguments: ["@doctrine.orm.entity_manager", "@service_apadaptative", "@service_aptcv"]
+
+    service_apspm_presenter:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPSPMPresenter
+        arguments: ["@doctrine.orm.entity_manager", "@service_apadaptative", "@service_aptcv"]
+
+    service_apoc:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPOCalculation
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    service_apo_presenter:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPOPresenter
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    service_data_capturing:
+        class: Optimus\OptimusBundle\Servicios\ServiceDataCapturing
+        arguments: ["@service_ontologia", "@doctrine.orm.entity_manager", %energy_demand_threshold_percentage%, %daily_penalty_energy_threshold%]   
+
+    service_appv_presenter:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPPVPresenter
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia", %energy_demand_threshold_percentage%, %daily_penalty_energy_threshold%]
+        
+    service_appvm_presenter:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPPVMPresenter
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia"]
+
+    service_apph_presenter:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPPHPresenter
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia"]
+
+    service_dailyPrices:
+        class: Optimus\OptimusBundle\Servicios\ServiceDailyPrices
+
+    service_tariffType:
+        class: Optimus\OptimusBundle\Servicios\ServiceTariffType
+    
+    service_pricesContainer:
+        class: Optimus\OptimusBundle\Servicios\ServicePricesContainer
+        arguments: ["@service_dailyPrices", "@service_tariffType"]
+
+    service_periodEvaluator:
+        class: Optimus\OptimusBundle\Servicios\ServicePeriodEvaluator
+        arguments: ["@service_pricesContainer"]   
+
+    service_pricePredictor:
+        class: Optimus\OptimusBundle\Servicios\ServicePricePredictor
+        arguments: ["@service_data_capturing", "@service_periodEvaluator", "@doctrine.orm.entity_manager"]		
+
+    service_calculo:
+        class: Optimus\OptimusBundle\Servicios\ServiceCalculos
+        arguments: ["@service_ontologia", "@service_service_calculation_data_invoke", "@service_predict_data_invoke", "@doctrine.orm.entity_manager", "@service_appv", "@service_appvm", "@service_apeconomizer", "@service_appreheating", "@service_apspmc", "@service_apoc", "@service_event", "@service_pricePredictor", %pvm_num_panels%, %pvm_panels_surface_area%, %pvm_a_coefficient%, %pvm_ta_coefficient%]
+
+    service_event:
+        class: 	Optimus\OptimusBundle\Servicios\ServiceEvents
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    service_sensorStatus:
+        class: 	Optimus\OptimusBundle\Servicios\ServicioSensorStatus
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia"]
+
+    service_sensorsRTime:
+        class: 	Optimus\OptimusBundle\Servicios\ServiceBuildingSensorsRTime
+        arguments: ["@doctrine.orm.entity_manager", "@service_data_capturing", "@service_ontologia"]
+
+    service_dashboard:
+        class: 	Optimus\OptimusBundle\Servicios\ServiceDashboard
+        arguments: ["@doctrine.orm.entity_manager"]
+    service_apsource:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPEnergySource
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    app.twig_extension:
+        class: Optimus\OptimusBundle\Twig\TCVExtension
+        public: false
+        tags:
+            - { name: twig.extension }
+
+    app.command.test:
+        class: Optimus\OptimusBundle\Command\TestCommand
+        tags:
+            -  { name: console.command }
+
+    app.command.test:
+        class: Optimus\OptimusBundle\Command\SensorStatusCommand
+        tags:
+            -  { name: console.command }
+
+    service_apeconomizer:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPEconomizerCalculation
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia", "@service_predict_data_invoke", "@service_event"]
+
+    service_apeconomizer_presenter:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPEconomizerPresenter
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia"]

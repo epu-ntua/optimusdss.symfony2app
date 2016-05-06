@@ -1,0 +1,496 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/optimus/js/jsTree/themes/default/style.min.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/ui-lightness/jquery-ui-1.10.3.mine.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/set_point.css') }}"/>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+    <script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery.jeditable.min.js') }}"></script>
+{% endblock %}
+
+{% block clase_ActionPlanData %}activo{% endblock %}
+
+{% block content %}
+
+    <script type="text/javascript">
+
+        $(function(){
+
+            $("#datepicker").hide();
+            $(".showDiv").slideToggle();
+
+            $('.more_info').on('click', function() {
+                var content=$(this).attr('data-content');
+                $('#'+content).removeClass('hidden');
+                var hidden = $(this).attr('data-hidden');
+                $('#'+hidden).addClass('hidden');
+            });
+
+            $('.less_info').on('click', function() {
+                var content=$(this).attr('data-content');
+                $('#'+content).removeClass('hidden');
+                var hidden=$(this).attr('data-hidden');
+                $('#'+hidden).addClass('hidden');
+            });
+
+            var start_date = $('#startDate').html();
+            var idBuilding = $('#idBuilding').html();
+            var idAPType = $('#idAPType').html();
+
+            $('.section_more').on('click', function() {
+                $('.extended').addClass('hidden');
+                $('.small').removeClass('hidden');
+                var content = $(this).attr('data-content');
+                $('#'+content).addClass('hidden');
+                var hidden = $(this).attr('data-hidden');
+                $('.'+hidden).removeClass('hidden');
+            });
+
+            $('.section_less').on('click', function() {
+                var content = $(this).attr('data-content');
+                $('.'+content).addClass('hidden');
+                var hidden = $(this).attr('data-hidden');
+                $('#'+hidden).removeClass('hidden');
+            });
+
+            $('.sectionId').on('mouseover', function() {
+                if (!$(this).hasClass('clicked')) {
+                    $(this).css('background-color', '#BCDBAD');
+                }
+            });
+
+            $('.sectionId').on('mouseleave', function() {
+                if (!$(this).hasClass('clicked')) {
+                    $(this).css('background-color', 'white');
+                }
+            });
+
+            var startDate;
+            var endDate;
+
+            var selectCurrentWeek = function() {
+                window.setTimeout(function () {
+                    $('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+                }, 1);
+            }
+
+            $('#datepicker').datepicker( {
+                showOtherMonths: true,
+                selectOtherMonths: true,
+                onSelect: function(dateText, inst)
+                {
+                    var date = $(this).datepicker('getDate');
+                    startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); //diaSelected
+                    endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 6); //diaSelected +6
+
+                    var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+                    $('#startDate').text($.datepicker.formatDate("yy-mm-dd" , startDate, inst.settings )); //dateFormat
+                    $('#endDate').text($.datepicker.formatDate( "yy-mm-dd", endDate, inst.settings ));
+
+                    selectCurrentWeek();
+                },
+                beforeShowDay: function(date) {
+                    var cssClass = '';
+                    if((date >= startDate && date <= endDate) || (date>=new Date('{{ startDate }}') && date <=new Date('{{ endDate }}')))
+                        cssClass = 'ui-datepicker-current-day';
+                    return [true, cssClass];
+                },
+                onChangeMonthYear: function(year, month, inst) {
+                    selectCurrentWeek();
+                }
+            });
+
+            $(document).on('mousemove', '#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').addClass('ui-state-hover');    });
+            $(document).on('mouseleave','#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').removeClass('ui-state-hover'); });
+
+        /* forms */
+		{% for i in 0..6 %}
+			$("#form_{{i}} ").change (function( event ) { //> input[name*=filter]
+				console.log($("#form_{{i}}").serialize());
+				//$("#form_{{i}}").submit(function() {
+					console.log({{statusDay[i].statusDay}});
+					var url = "{{ path('changeSPMStatusDay' ,{'idOutputDay':statusDay[i].idOutputDay} ) }}"; // the script where you handle the form input.
+					$.ajax({
+						type: "POST",
+						url: url,
+						data:{ 'data':$("#form_{{i}}").serialize(), idBuilding:{{idBuilding}} }, // serializes the form's elements.
+						success: function(data)
+						{
+							//alert(data); // show response from the php script.
+						}
+					});
+
+					return false;					
+				//});
+			});
+		{% endfor %}
+		
+		/* ----- */
+
+
+            //double-clik on table
+            $("#showSchedule").click(function(){
+                $(".showDiv").slideToggle();
+            });
+
+        });
+
+        //Show/hide el calendario
+        function displayCalendar()
+        {
+            $("#datepicker").slideToggle();
+        }
+
+        function createURLView()
+        {
+            dateI=$("#startDate").html();
+            dateF=$("#endDate").html();
+
+            var url = "{{ path('getSetPointPlan', {'idBuilding':idBuilding, 'idAPType':idAPType, 'start_date':'dateI'}) }}";
+            url = url.replace("dateI", $("#startDate").html());
+
+            location.href=url;
+        }
+
+        function createURLPredictor()
+        {
+            dateI=$("#startDate").html();
+            dateF=$("#endDate").html();
+
+            var url = "{{ path('newCalculateSPM', {'idBuilding':idBuilding, 'idAPType':idAPType, 'from':'dateI', 'to':'dateF'}) }}";
+            url = url.replace("dateI", $("#startDate").html());
+            url = url.replace("dateF", $("#endDate").html());
+
+            location.href=url;
+        }
+
+    </script>
+    <style>
+
+        #menuStrategies
+        {
+            width:100px;
+            height:70px;
+            position:absolute;
+            left: 984px;
+            border: 1px solid;
+            display:none;
+            z-index:9999;
+            background-color:#d0cece;
+            top: 212px;
+        }
+
+        .selectedDayCell
+        {
+            border-left: 3px solid #00D !Important;
+            border-right: 3px solid #00D !Important;
+        }
+
+    </style>
+
+    <div id="left">
+        {{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}
+        {{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding, 'idActionPlan':idActionPlan})) }}
+    </div>
+    <div id="right">
+        <div id="topRight">
+            <p>
+                <strong>
+                    <span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> >
+                    <span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> >
+                    {{ dataActionPlan_name }}
+                </strong>
+            </p>
+        </div>
+
+        <div id="centerRight">
+            <div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
+                <div style="float:left;">
+                    <p class="titleContentDescription"><strong>{%trans%} Action Plan {%endtrans%}:</strong> <span>{{ dataActionPlan_name }}</span></p>
+                    <p class="titleContentDescription"><strong>{%trans%} Description {%endtrans%}:</strong> <span style="font-size:12px;">{{ dataActionPlan_description }}</span></p>
+                </div>
+                <div style="float:left; text-align:right;">
+                    <p style="margin:10px 10px;"><span style="color:#2e75b6">{%trans%} Last forecast calculated {%endtrans%}:</span> <span><strong>{{ dataActionPlan_lastCalculation }}</strong></span></p>
+                </div>
+            </div>
+
+            <div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;  border-top:0px;">
+                <p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #aaa; text-align: right;"><strong>{%trans%} Dates {%endtrans%}:</strong></p>
+
+                <p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #aaa; text-align:center; background-color: #e8eef8;">
+                    <span id="startDate">{{ startDate }}</span> /
+                    <span id="endDate">{{ endDate }}</span>
+                </p>
+                <p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #aaa; cursor:pointer;" onclick="displayCalendar();">+</p>
+
+                <p class="buttonIndicator" onclick="createURLView();">{%trans%} View {%endtrans%}</p>
+
+                <!--<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">{%trans%} Calculate {%endtrans%}</p>-->
+            </div>
+            <div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
+            <div id="contentGraficas">
+                <!-- Filtros -->
+                <div class="contentTableResults" style="margin:2% 0 17% 0; font-size=12;">
+
+                    <table class="table_container">
+                        <tr style="margin:0; line-height:0px;">
+                            <td class="first_col" style="background:#b0b0b0;">
+                                <p style="color:#111; text-align:right;">Building Partitioning</p>
+                            </td>
+                            <td class="second_col" style="background:#777;">
+                                <p style="color:#111; text-align:right;">Dates</p>
+                            </td>
+                            {% for i in 0..6 %}
+                                <td class="next_cols" style="background:#b0b0b0;  text-align:right;">
+                                    <p class="cells" style="color:#111;">{{ weekly_proposed_temperatures[i].date }}</p>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    </table>
+                    <table class="table_container">
+                        <tr class="row" style="line-height:6px;">
+                            <td class="first_col special" style="background:white;">
+                                <p style="color:#555; text-align:left;">Building</p>
+                            </td>
+                            <td style="background:white; width:83%;">
+                            </td>
+                        </tr>
+                    </table>
+                    {% for section in building_sections|keys %}
+                        {% if section not in partitions|keys %}
+                            <table>
+                                <tr class="row" style="line-height:6px;">
+                                    <td class="first_col special" style="background:white;">
+                                        <p style="color:#555; text-align:left;">{% for i in 1..building_sections[(section)] %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ section }}</p>
+                                    </td>
+                                    <td {% if section != building_sections|keys|first %}class="floor"{% endif %} style="background:white; width:83%;">
+                                    </td>
+                                </tr>
+                            </table>
+                        {% else %}
+                            {% set key = section|lower|replace({' ' : '_'}) %}
+                            <table class="table_container small" id="proposed_{{ key }}">
+                                <tr class="row" style="line-height:3px;">
+                                    <td class="first_col special sectionId section_more" style="background:white;" data-content="proposed_{{ key }}" data-hidden="extra_{{ key }}">
+                                        <p class="sections">{% for i in 1..building_sections[(section)] %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ section }}</p>
+                                    </td>
+                                    <td class="second_col special" style="background:#777;">
+                                        <p style="color:#111; margin-right:0;">Set-point suggestion (<sup>o</sup>C)</p>
+                                    </td>
+                                    {% for i in 0..6 %}
+                                        <td class="next_cols special" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}background:white;{% endif %}">
+                                            <p class="cells" style="color:#111;">{% if 'S' not in weekly_proposed_temperatures[i].date %}{% if date(weekly_proposed_temperatures[i].full_date) <= date(currDate) %}{{ partitions[(section)].final_suggestions[i] }}{% else %}--{% endif %}{% endif %}</p>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            </table>
+                            <div class="hidden extra_{{ key }} extended">
+                                <table class="table_container">
+                                    <tr class="row" style="line-height:10px;">
+                                        <td class="sectionId section_less first_col clicked" style="border-bottom-style:none;" data-content="extra_{{ key }}" data-hidden="proposed_{{ key }}">
+                                            <p class="sections">{% for i in 1..building_sections[(section)] %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ section }}</p>
+                                        </td>
+                                        <td style="background:#999;width:83%; border: 1px solid #333; border-bottom-style:none;">
+                                            <p class="important_info" style="color:#111;">Final Suggestion</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table_container">
+                                    <tr class="row">
+                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                        </td>
+                                        <td class="second_col" style="background:#b0b0b0;">
+                                            <p style="color:#111;margin-right: 0">Set-point suggestion (<sup>o</sup>C)</p>
+                                        </td>
+                                        {% for i in 0..6 %}
+                                            <td class="next_cols" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}{% if date(weekly_proposed_temperatures[i].full_date) <= date(currDate) %}background:#79F29F;{% else %}background:#FA96AF;{% endif %}{% endif %}">
+                                                <p class="cells" style="color:#111;">{% if ('S' not in weekly_proposed_temperatures[i].date) and (date(weekly_proposed_temperatures[i].full_date) <= date(currDate)) %}{{ partitions[(section)].final_suggestions[i] }}{% endif %}</p>
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                        </td>
+                                        <td class ="second_col" style="background:#D6D2D3;">
+                                            <p style="color:#333; margin-right: 0">Outdoor temperature (<sup>o</sup>C)</p>
+                                        </td>
+                                        {% for i in 0..6 %}
+                                            <td class="next_cols" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}background:#f2f2f2;{% endif %}">
+                                                <p class="cells" style="color:#111;">{% if ('S' not in weekly_proposed_temperatures[i].date) and (date(startDate) <= date(currDate)) %}{{ weekly_proposed_temperatures[i].daily_mean }}{% endif %}</p>
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr class="row" style="line-height:12px;">
+                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                        </td>
+                                        <td class="second_col special" style="background:#D6D2D3;">
+                                            <p style="color:#333; margin-right: 0">Selected Inference Rule:</p>
+                                        </td>
+                                        {% for i in 0..6 %}
+                                            <td class="next_cols special" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}background:#f2f2f2;{% endif %}">
+                                                <p class="cells" style="color:#111;">{% if ('S' not in weekly_proposed_temperatures[i].date) and (date(startDate) <= date(currDate)) %}{{ partitions[(section)].decision[i] }}{% endif %}</p>
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                </table>
+                                <table class="table_container">
+                                    <tr class="row" style="line-height:8px;">
+                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                        </td>
+                                        <td class="second_col special" style="background:#999; width:83%;">
+                                            <p class="cells" style="color:#111;">Suggestion 1: TCV</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table_container">
+                                    <tr class="row">
+                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                        </td>
+                                        <td class="second_col special" style="background:#D6D2D3;">
+                                            <p style="color:#333; margin-right: 0">Set-point suggestion (<sup>o</sup>C)</p>
+                                        </td>
+                                        {% for i in 0..6 %}
+                                            <td class="next_cols special" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}{% if partitions[(section)].proposed_temperature[i] != 0 %}background:#79F29F;{% else %}background:#FA96AF;{% endif %}{% endif %}">
+                                                <p class="cells" style="color:#111;font-size:80%;">{% if ('S' not in weekly_proposed_temperatures[i].date) and (partitions[(section)].proposed_temperature[i] != 0) %}{{ partitions[(section)].proposed_temperature[i] }}{% endif %}</p>
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                </table>
+                                <table id="more_info_tcv_{{ key }}" class="table_container">
+                                    <tr class="row">
+                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                        </td>
+                                        <td class="full_col special">
+                                            <p style="text-align:left;"><img src="{{ asset('bundles/optimus/img/arrow_down.jpg') }}" class="more_info" data-content="view_more_tcv_{{ key }}" data-hidden="more_info_tcv_{{ key }}" style="cursor:pointer;"/> View more info...</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div id="view_more_tcv_{{ key }}" class="hidden">
+
+                                    <table class="table_container">
+                                        <tr class="row" style="line-height:6px;">
+                                            <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                            </td>
+                                            <td class="full_col special">
+                                                <p class="cells" style="color:#111;"><strong>Feedback from users</strong></p>
+                                                <div class="tcv-feedback-index">
+                                                    <span class="tcv-sensation-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Index:</span>
+                                                    <span class="tcv-sensation tcv-sensation-minus3"></span> <span class="tcv-sensation-label">Cold</span>
+                                                    <span class="tcv-sensation tcv-sensation-minus2"></span> <span class="tcv-sensation-label">Cool</span>
+                                                    <span class="tcv-sensation tcv-sensation-minus1"></span> <span class="tcv-sensation-label">Slightly Cool</span>
+                                                    <span class="tcv-sensation tcv-sensation-minus0"></span> <span class="tcv-sensation-label">Neutral</span>
+                                                    <span class="tcv-sensation tcv-sensation-1"></span> <span class="tcv-sensation-label">Slightly Warm</span>
+                                                    <span class="tcv-sensation tcv-sensation-2"></span> <span class="tcv-sensation-label">Warm</span>
+                                                    <span class="tcv-sensation tcv-sensation-3"></span> <span class="tcv-sensation-label">Hot</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table class="table_container">
+                                        <tr class="row">
+                                            <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                            </td>
+                                            <td class="second_col" style="background:#2e75b6;">
+                                                <p class="cells" style="color:white;">Date</p>
+                                            </td>
+                                            {% for i in 0..6 %}
+                                                <td class="next_cols" style="background:#2e75b6;">
+                                                    <p class="cells" style="color:white; font-size:70%;">{{ weekly_proposed_temperatures[i].date }}</p>
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% for i in 0..23 %}
+                                            <tr class="row">
+                                                <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                                </td>
+                                                <td class="second_col {% if i == 23 %}special{% endif %}" style="background:#111;">
+                                                    <p class="cells" style="color:white;">{{ i }}:00</p>
+                                                </td>
+                                                {% set j = 0 %}
+                                                {% for date in partitions[(section)].feedback %}
+                                                    {% if (i in 7..21) and ('S' not in weekly_proposed_temperatures[j].date) %}
+                                                        <td class="next_cols {% if i == 23 %}special{% endif %} {% if date[i].size >= 3 %}tcv-sensation {{ date[i]|sensation_class }}" {% else %}" style="background: #f2f2f2;"{% endif %}
+                                                        </td>
+                                                    {% else %}
+                                                        <td class="non_working_cols {% if i == 23 %}special{% endif %}">
+                                                        </td>
+                                                    {% endif %}
+                                                    {% set j = j + 1 %}
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                    <table class="table_container">
+                                        <tr class="row" style="line-height:1px;">
+                                            <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                            </td>
+                                            <td class="full_col special">
+                                                <p style="text-align:left;"><img src="{{ asset('bundles/optimus/img/arrow_up.jpg') }}" class="less_info" data-content="more_info_tcv_{{ key }}" data-hidden="view_more_tcv_{{ key }}" style="cursor:pointer;"/> View less info...</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <table class="table_container">
+                                    <tr class="row" style="line-height:8px;">
+                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                        </td>
+                                        <td class="second_col special" style="background:#999; width:83%;">
+                                            <p class="cells" style="color:#111;">Suggestion 2: Adaptive Comfort</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table>
+                                    <tr class="row">
+                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                        </td>
+                                        <td class="second_col special" style="background:#D6D2D3;">
+                                            <p style="color:#333;margin-right: 0">Set-point suggestion (<sup>o</sup>C)</p>
+                                        </td>
+                                        {% for i in 0..6 %}
+                                            <td class="next_cols special" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}{% if date(weekly_proposed_temperatures[i].full_date) <= date(currDate) %}background:#79F29F;{% else %}background:#FA96AF;{% endif %}{% endif %}">
+                                                <p class="cells" style="color:#111;">{% if ('S' not in weekly_proposed_temperatures[i].date) and (date(weekly_proposed_temperatures[i].full_date) <= date(currDate)) %}{{ weekly_proposed_temperatures[i].set_point_temperature }}{% endif %}</p>
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                </table>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <table class="table_container">
+                        <tr style="margin:5px -20px; line-height: 20px;">
+                            <td class="first_col" style="background:#DAEBEB; width:34.2%;">
+                                <p style="color:#111; text-align:right;">Please confirm the action plan:</p>
+                            </td>
+                            {% set curr_date = date(startDate) %}
+                            {% for i in 0..6 %}
+                                <td class="next_cols" style="{% if ('S' in weekly_proposed_temperatures[i].date) or (curr_date < date()|date_modify('-1 day')) %}background:#e0e0e0;{% else %}background:white;{% endif %} text-align:left;">
+                                    <form id="form_{{i}}" method="post">
+										<div class="inputsFilters" style=" float:left; margin-right:3px;">
+											<p style="font-size:11px; margin:0;">
+												<input type="radio" name="filter" value="0" {% if(statusDay[i].statusDay==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
+											</p>
+											<p style="font-size:11px; margin:0;">
+												<input type="radio" name="filter" value="1" {% if(statusDay[i].statusDay==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
+											</p>
+											<p style="font-size:11px; margin:0;">
+												<input type="radio" name="filter" value="2" {% if(statusDay[i].statusDay==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
+											</p>
+											<input type="hidden" value="{{idActionPlan}}" name="idActionPlan" id="idActionPlan" />
+										</div>
+									</form>
+                                    {% set curr_date = curr_date|date_modify('+1 day') %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

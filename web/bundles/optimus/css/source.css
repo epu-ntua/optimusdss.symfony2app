@@ -1,0 +1,104 @@
+.firstColumnHeaderTemp{
+	width: 150px;
+	background-color: #e8eef8;
+}
+
+#headerFilter p{
+	width: 190px;
+	padding: 0;
+	text-align: right;
+}
+
+#contentFilterTable  > #headerFilter  {
+	padding: 0;
+	text-align: right;
+	max-width: 205px;
+}
+
+
+
+#filters{
+	min-width: 693px;
+}
+
+.inputsFilters p{
+	min-width: 99px;
+}
+
+#finalSuggestionsHead > td, #batteryUseHead > td{
+	text-align: left;
+	background-color: #aeaaaa;
+	height: 20px;
+	border-style: solid;
+	border-width: 1px;
+	border-top-width: 2px;
+	border-bottom-width: 2px;
+}
+
+#dates th{
+	background-color: #aeaaaa;
+	font-size: 11pt;
+	text-align: center;
+	border-left-width: 1px;
+	border-left-style: solid;
+	height: 20px;
+	font-weight: normal;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+}
+
+.suggestionPos{
+	color: green;
+	font-weight: bold;
+}
+
+.suggestionNeg{
+	color: red;
+	font-weight: bold;
+}
+
+.finalSuggestionsRow:nth-child(even){
+	background-color: #e6e6e6;
+}
+
+.finalSuggestionsRow:hover{
+	background-color: #e5ffff;;
+}
+
+#chart_days{
+	margin-top: 20px;
+	margin-left: 210px;
+}
+
+#chart_days ul {
+	list-style-type: none;	
+}
+
+#chart_days li{
+	display: inline;
+	margin-right: 12px;
+}
+
+#chart_days li:hover{
+	cursor: pointer;
+}
+
+.selected {
+	color: green;
+	text-decoration: underline;
+}
+
+#chart_btn{
+	background-color: #aeaaaa; 
+	width: 100%; 
+	text-align: left; 
+	border-style: solid; 
+	border-width: 1px;
+	border-top-width: 0px;
+	border-bottom-width: 2px;
+	border-color:black;
+	font-size: 14px;
+	outline:none;
+	cursor: pointer;
+	padding-left: 0px;
+}
