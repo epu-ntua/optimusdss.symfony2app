@@ -64,10 +64,10 @@ class Building extends \Optimus\OptimusBundle\Entity\Building implements \Doctri
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'city', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'street', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'use_building', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'year_of_construction', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'surface', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'occupation');
+            return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'city', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'street', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'use_building', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'year_of_construction', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'surface', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'occupation', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'energy_rating', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'electricity_consumption', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'gas_consumption', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'energy_production_from_RES', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'electricity_energy_cost', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'gas_energy_cost');
         }
 
-        return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'city', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'street', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'use_building', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'year_of_construction', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'surface', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'occupation');
+        return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'city', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'street', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'use_building', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'year_of_construction', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'surface', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'occupation', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'energy_rating', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'electricity_consumption', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'gas_consumption', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'energy_production_from_RES', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'electricity_energy_cost', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Building' . "\0" . 'gas_energy_cost');
     }
 
     /**
@@ -362,6 +362,138 @@ class Building extends \Optimus\OptimusBundle\Entity\Building implements \Doctri
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUseBuilding', array());
 
         return parent::getUseBuilding();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setEnergyRating($energyRating)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setEnergyRating', array($energyRating));
+
+        return parent::setEnergyRating($energyRating);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getEnergyRating()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getEnergyRating', array());
+
+        return parent::getEnergyRating();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setElectricityConsumption($electricityConsumption)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setElectricityConsumption', array($electricityConsumption));
+
+        return parent::setElectricityConsumption($electricityConsumption);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getElectricityConsumption()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getElectricityConsumption', array());
+
+        return parent::getElectricityConsumption();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setGasConsumption($gasConsumption)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setGasConsumption', array($gasConsumption));
+
+        return parent::setGasConsumption($gasConsumption);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getGasConsumption()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getGasConsumption', array());
+
+        return parent::getGasConsumption();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setEnergyProductionFromRES($energyProductionFromRES)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setEnergyProductionFromRES', array($energyProductionFromRES));
+
+        return parent::setEnergyProductionFromRES($energyProductionFromRES);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getEnergyProductionFromRES()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getEnergyProductionFromRES', array());
+
+        return parent::getEnergyProductionFromRES();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setElectricityEnergyCost($electricityEnergyCost)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setElectricityEnergyCost', array($electricityEnergyCost));
+
+        return parent::setElectricityEnergyCost($electricityEnergyCost);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getElectricityEnergyCost()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getElectricityEnergyCost', array());
+
+        return parent::getElectricityEnergyCost();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setGasEnergyCost($gasEnergyCost)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setGasEnergyCost', array($gasEnergyCost));
+
+        return parent::setGasEnergyCost($gasEnergyCost);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getGasEnergyCost()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getGasEnergyCost', array());
+
+        return parent::getGasEnergyCost();
     }
 
 }

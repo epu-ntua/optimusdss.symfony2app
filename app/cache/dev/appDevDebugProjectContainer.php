@@ -40,6 +40,7 @@ class appDevDebugProjectContainer extends Container
         $this->scopeChildren = array('request' => array());
         $this->methodMap = array(
             'annotation_reader' => 'getAnnotationReaderService',
+            'app.command.test' => 'getApp_Command_TestService',
             'assetic.asset_factory' => 'getAssetic_AssetFactoryService',
             'assetic.asset_manager' => 'getAssetic_AssetManagerService',
             'assetic.cache' => 'getAssetic_CacheService',
@@ -188,15 +189,36 @@ class appDevDebugProjectContainer extends Container
             'sensio_framework_extra.view.guesser' => 'getSensioFrameworkExtra_View_GuesserService',
             'sensio_framework_extra.view.listener' => 'getSensioFrameworkExtra_View_ListenerService',
             'service_apadaptative' => 'getServiceApadaptativeService',
+            'service_apeconomizer' => 'getServiceApeconomizerService',
+            'service_apeconomizer_presenter' => 'getServiceApeconomizerPresenterService',
+            'service_apo_presenter' => 'getServiceApoPresenterService',
+            'service_apoc' => 'getServiceApocService',
+            'service_apph_presenter' => 'getServiceApphPresenterService',
             'service_appreheating' => 'getServiceAppreheatingService',
             'service_appv' => 'getServiceAppvService',
+            'service_appv_presenter' => 'getServiceAppvPresenterService',
+            'service_appvm' => 'getServiceAppvmService',
+            'service_appvm_presenter' => 'getServiceAppvmPresenterService',
+            'service_apsource' => 'getServiceApsourceService',
+            'service_apspm_presenter' => 'getServiceApspmPresenterService',
+            'service_apspmc' => 'getServiceApspmcService',
+            'service_aptcv' => 'getServiceAptcvService',
             'service_aptsv' => 'getServiceAptsvService',
             'service_calculo' => 'getServiceCalculoService',
             'service_container' => 'getServiceContainerService',
+            'service_dailyprices' => 'getServiceDailypricesService',
+            'service_dashboard' => 'getServiceDashboardService',
             'service_data_capturing' => 'getServiceDataCapturingService',
-            'service_invoke' => 'getServiceInvokeService',
+            'service_event' => 'getServiceEventService',
             'service_ontologia' => 'getServiceOntologiaService',
+            'service_periodevaluator' => 'getServicePeriodevaluatorService',
+            'service_predict_data_invoke' => 'getServicePredictDataInvokeService',
             'service_pricepredictor' => 'getServicePricepredictorService',
+            'service_pricescontainer' => 'getServicePricescontainerService',
+            'service_sensorsrtime' => 'getServiceSensorsrtimeService',
+            'service_sensorstatus' => 'getServiceSensorstatusService',
+            'service_service_calculation_data_invoke' => 'getServiceServiceCalculationDataInvokeService',
+            'service_tarifftype' => 'getServiceTarifftypeService',
             'session' => 'getSessionService',
             'session.save_listener' => 'getSession_SaveListenerService',
             'session.storage.filesystem' => 'getSession_Storage_FilesystemService',
@@ -277,6 +299,7 @@ class appDevDebugProjectContainer extends Container
             'web_profiler.debug_toolbar' => 'getWebProfiler_DebugToolbarService',
         );
         $this->aliases = array(
+            'console.command.optimus_optimusbundle_command_testcommand' => 'app.command.test',
             'console.command.sensiolabs_security_command_securitycheckercommand' => 'sensio_distribution.security_checker.command',
             'database_connection' => 'doctrine.dbal.default_connection',
             'debug.templating.engine.twig' => 'templating',
@@ -315,6 +338,19 @@ class appDevDebugProjectContainer extends Container
     protected function getAnnotationReaderService()
     {
         return $this->services['annotation_reader'] = new \Doctrine\Common\Annotations\FileCacheReader(new \Doctrine\Common\Annotations\AnnotationReader(), (__DIR__.'/annotations'), true);
+    }
+
+    /**
+     * Gets the 'app.command.test' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Command\TestCommand A Optimus\OptimusBundle\Command\TestCommand instance.
+     */
+    protected function getApp_Command_TestService()
+    {
+        return $this->services['app.command.test'] = new \Optimus\OptimusBundle\Command\TestCommand();
     }
 
     /**
@@ -634,7 +670,7 @@ class appDevDebugProjectContainer extends Container
         $b = new \Doctrine\DBAL\Configuration();
         $b->setSQLLogger($a);
 
-        return $this->services['doctrine.dbal.default_connection'] = $this->get('doctrine.dbal.connection_factory')->createConnection(array('driver' => 'pdo_mysql', 'host' => '127.0.0.1', 'port' => NULL, 'dbname' => 'symfony', 'user' => 'root', 'password' => NULL, 'charset' => 'UTF8', 'driverOptions' => array()), $b, new \Symfony\Bridge\Doctrine\ContainerAwareEventManager($this), array());
+        return $this->services['doctrine.dbal.default_connection'] = $this->get('doctrine.dbal.connection_factory')->createConnection(array('driver' => 'pdo_mysql', 'host' => '127.0.0.1', 'port' => NULL, 'dbname' => 'optimus_santcugat', 'user' => 'optimus', 'password' => 'dssoptimus', 'charset' => 'UTF8', 'driverOptions' => array()), $b, new \Symfony\Bridge\Doctrine\ContainerAwareEventManager($this), array());
     }
 
     /**
@@ -735,7 +771,7 @@ class appDevDebugProjectContainer extends Container
     {
         $this->services['doctrine_cache.providers.doctrine.orm.default_metadata_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
 
-        $instance->setNamespace('sf2orm_default_401489062ca6cb3460577161ba6bcc59183daa4e39e8be814205ad4afdd58f12');
+        $instance->setNamespace('sf2orm_default_675079c2208b1089c03abc3afdfde3b3bcdeefafee6093d37b0f92b2da410155');
 
         return $instance;
     }
@@ -752,7 +788,7 @@ class appDevDebugProjectContainer extends Container
     {
         $this->services['doctrine_cache.providers.doctrine.orm.default_query_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
 
-        $instance->setNamespace('sf2orm_default_401489062ca6cb3460577161ba6bcc59183daa4e39e8be814205ad4afdd58f12');
+        $instance->setNamespace('sf2orm_default_675079c2208b1089c03abc3afdfde3b3bcdeefafee6093d37b0f92b2da410155');
 
         return $instance;
     }
@@ -769,7 +805,7 @@ class appDevDebugProjectContainer extends Container
     {
         $this->services['doctrine_cache.providers.doctrine.orm.default_result_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
 
-        $instance->setNamespace('sf2orm_default_401489062ca6cb3460577161ba6bcc59183daa4e39e8be814205ad4afdd58f12');
+        $instance->setNamespace('sf2orm_default_675079c2208b1089c03abc3afdfde3b3bcdeefafee6093d37b0f92b2da410155');
 
         return $instance;
     }
@@ -2028,7 +2064,7 @@ class appDevDebugProjectContainer extends Container
         $a = $this->get('security.context');
         $b = $this->get('monolog.logger.security', ContainerInterface::NULL_ON_INVALID_REFERENCE);
 
-        return $this->services['security.firewall.map.context.login_firewall'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => $this->get('security.channel_listener'), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($a, array(0 => $this->get('security.user.provider.concrete.main')), 'login_firewall', $b, $this->get('debug.event_dispatcher', ContainerInterface::NULL_ON_INVALID_REFERENCE)), 2 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($a, '558bd37d69248', $b, $this->get('security.authentication.manager')), 3 => $this->get('security.access_listener')), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($a, $this->get('security.authentication.trust_resolver'), $this->get('security.http_utils'), 'login_firewall', NULL, NULL, NULL, $b));
+        return $this->services['security.firewall.map.context.login_firewall'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => $this->get('security.channel_listener'), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($a, array(0 => $this->get('security.user.provider.concrete.main')), 'login_firewall', $b, $this->get('debug.event_dispatcher', ContainerInterface::NULL_ON_INVALID_REFERENCE)), 2 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($a, '572d2d910a633', $b, $this->get('security.authentication.manager')), 3 => $this->get('security.access_listener')), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($a, $this->get('security.authentication.trust_resolver'), $this->get('security.http_utils'), 'login_firewall', NULL, NULL, NULL, $b));
     }
 
     /**
@@ -2060,7 +2096,7 @@ class appDevDebugProjectContainer extends Container
 
         $j = new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($e, $d, '/login', false);
 
-        return $this->services['security.firewall.map.context.secured_area'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => $this->get('security.channel_listener'), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($a, array(0 => $this->get('security.user.provider.concrete.main')), 'secured_area', $b, $c), 2 => $g, 3 => new \Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener($a, $f, new \Symfony\Component\Security\Http\Session\SessionAuthenticationStrategy('migrate'), $d, 'secured_area', $h, $i, array('check_path' => '/login_check', 'username_parameter' => '_lastname', 'use_forward' => false, 'require_previous_session' => true, 'password_parameter' => '_password', 'csrf_parameter' => '_csrf_token', 'intention' => 'authenticate', 'post_only' => true), $b, $c, NULL), 4 => new \Symfony\Component\Security\Http\Firewall\BasicAuthenticationListener($a, $f, 'secured_area', $j, $b), 5 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($a, '558bd37d69248', $b, $f), 6 => $this->get('security.access_listener')), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($a, $this->get('security.authentication.trust_resolver'), $d, 'secured_area', $j, NULL, NULL, $b));
+        return $this->services['security.firewall.map.context.secured_area'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => $this->get('security.channel_listener'), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($a, array(0 => $this->get('security.user.provider.concrete.main')), 'secured_area', $b, $c), 2 => $g, 3 => new \Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener($a, $f, new \Symfony\Component\Security\Http\Session\SessionAuthenticationStrategy('migrate'), $d, 'secured_area', $h, $i, array('check_path' => '/login_check', 'username_parameter' => '_lastname', 'use_forward' => false, 'require_previous_session' => true, 'password_parameter' => '_password', 'csrf_parameter' => '_csrf_token', 'intention' => 'authenticate', 'post_only' => true), $b, $c, NULL), 4 => new \Symfony\Component\Security\Http\Firewall\BasicAuthenticationListener($a, $f, 'secured_area', $j, $b), 5 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($a, '572d2d910a633', $b, $f), 6 => $this->get('security.access_listener')), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($a, $this->get('security.authentication.trust_resolver'), $d, 'secured_area', $j, NULL, NULL, $b));
     }
 
     /**
@@ -2308,6 +2344,71 @@ class appDevDebugProjectContainer extends Container
     }
 
     /**
+     * Gets the 'service_apeconomizer' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPEconomizerCalculation A Optimus\OptimusBundle\Servicios\ServiceAPEconomizerCalculation instance.
+     */
+    protected function getServiceApeconomizerService()
+    {
+        return $this->services['service_apeconomizer'] = new \Optimus\OptimusBundle\Servicios\ServiceAPEconomizerCalculation($this->get('doctrine.orm.default_entity_manager'), $this->get('service_ontologia'), $this->get('service_predict_data_invoke'), $this->get('service_event'));
+    }
+
+    /**
+     * Gets the 'service_apeconomizer_presenter' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPEconomizerPresenter A Optimus\OptimusBundle\Servicios\ServiceAPEconomizerPresenter instance.
+     */
+    protected function getServiceApeconomizerPresenterService()
+    {
+        return $this->services['service_apeconomizer_presenter'] = new \Optimus\OptimusBundle\Servicios\ServiceAPEconomizerPresenter($this->get('doctrine.orm.default_entity_manager'), $this->get('service_ontologia'));
+    }
+
+    /**
+     * Gets the 'service_apo_presenter' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPOPresenter A Optimus\OptimusBundle\Servicios\ServiceAPOPresenter instance.
+     */
+    protected function getServiceApoPresenterService()
+    {
+        return $this->services['service_apo_presenter'] = new \Optimus\OptimusBundle\Servicios\ServiceAPOPresenter($this->get('doctrine.orm.default_entity_manager'));
+    }
+
+    /**
+     * Gets the 'service_apoc' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPOCalculation A Optimus\OptimusBundle\Servicios\ServiceAPOCalculation instance.
+     */
+    protected function getServiceApocService()
+    {
+        return $this->services['service_apoc'] = new \Optimus\OptimusBundle\Servicios\ServiceAPOCalculation($this->get('doctrine.orm.default_entity_manager'));
+    }
+
+    /**
+     * Gets the 'service_apph_presenter' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPPHPresenter A Optimus\OptimusBundle\Servicios\ServiceAPPHPresenter instance.
+     */
+    protected function getServiceApphPresenterService()
+    {
+        return $this->services['service_apph_presenter'] = new \Optimus\OptimusBundle\Servicios\ServiceAPPHPresenter($this->get('doctrine.orm.default_entity_manager'), $this->get('service_ontologia'));
+    }
+
+    /**
      * Gets the 'service_appreheating' service.
      *
      * This service is shared.
@@ -2317,7 +2418,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getServiceAppreheatingService()
     {
-        return $this->services['service_appreheating'] = new \Optimus\OptimusBundle\Servicios\ServiceAPPreheating($this->get('doctrine.orm.default_entity_manager'));
+        return $this->services['service_appreheating'] = new \Optimus\OptimusBundle\Servicios\ServiceAPPreheating($this->get('doctrine.orm.default_entity_manager'), $this->get('service_ontologia'), $this->get('service_predict_data_invoke'), $this->get('service_event'));
     }
 
     /**
@@ -2326,11 +2427,102 @@ class appDevDebugProjectContainer extends Container
      * This service is shared.
      * This method always returns the same instance of the service.
      *
-     * @return \Optimus\OptimusBundle\Servicios\ServiceAPPV A Optimus\OptimusBundle\Servicios\ServiceAPPV instance.
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPPVCalculation A Optimus\OptimusBundle\Servicios\ServiceAPPVCalculation instance.
      */
     protected function getServiceAppvService()
     {
-        return $this->services['service_appv'] = new \Optimus\OptimusBundle\Servicios\ServiceAPPV($this->get('doctrine.orm.default_entity_manager'));
+        return $this->services['service_appv'] = new \Optimus\OptimusBundle\Servicios\ServiceAPPVCalculation($this->get('doctrine.orm.default_entity_manager'));
+    }
+
+    /**
+     * Gets the 'service_appv_presenter' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPPVPresenter A Optimus\OptimusBundle\Servicios\ServiceAPPVPresenter instance.
+     */
+    protected function getServiceAppvPresenterService()
+    {
+        return $this->services['service_appv_presenter'] = new \Optimus\OptimusBundle\Servicios\ServiceAPPVPresenter($this->get('doctrine.orm.default_entity_manager'), $this->get('service_ontologia'), 5, 100000);
+    }
+
+    /**
+     * Gets the 'service_appvm' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPPVMCalculation A Optimus\OptimusBundle\Servicios\ServiceAPPVMCalculation instance.
+     */
+    protected function getServiceAppvmService()
+    {
+        return $this->services['service_appvm'] = new \Optimus\OptimusBundle\Servicios\ServiceAPPVMCalculation($this->get('doctrine.orm.default_entity_manager'), $this->get('service_ontologia'), $this->get('service_predict_data_invoke'), $this->get('service_event'));
+    }
+
+    /**
+     * Gets the 'service_appvm_presenter' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPPVMPresenter A Optimus\OptimusBundle\Servicios\ServiceAPPVMPresenter instance.
+     */
+    protected function getServiceAppvmPresenterService()
+    {
+        return $this->services['service_appvm_presenter'] = new \Optimus\OptimusBundle\Servicios\ServiceAPPVMPresenter($this->get('doctrine.orm.default_entity_manager'), $this->get('service_ontologia'));
+    }
+
+    /**
+     * Gets the 'service_apsource' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPEnergySource A Optimus\OptimusBundle\Servicios\ServiceAPEnergySource instance.
+     */
+    protected function getServiceApsourceService()
+    {
+        return $this->services['service_apsource'] = new \Optimus\OptimusBundle\Servicios\ServiceAPEnergySource($this->get('doctrine.orm.default_entity_manager'));
+    }
+
+    /**
+     * Gets the 'service_apspm_presenter' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPSPMPresenter A Optimus\OptimusBundle\Servicios\ServiceAPSPMPresenter instance.
+     */
+    protected function getServiceApspmPresenterService()
+    {
+        return $this->services['service_apspm_presenter'] = new \Optimus\OptimusBundle\Servicios\ServiceAPSPMPresenter($this->get('doctrine.orm.default_entity_manager'), $this->get('service_apadaptative'), $this->get('service_aptcv'));
+    }
+
+    /**
+     * Gets the 'service_apspmc' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPSPMCalculation A Optimus\OptimusBundle\Servicios\ServiceAPSPMCalculation instance.
+     */
+    protected function getServiceApspmcService()
+    {
+        return $this->services['service_apspmc'] = new \Optimus\OptimusBundle\Servicios\ServiceAPSPMCalculation($this->get('doctrine.orm.default_entity_manager'), $this->get('service_apadaptative'), $this->get('service_aptcv'));
+    }
+
+    /**
+     * Gets the 'service_aptcv' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceAPTCV A Optimus\OptimusBundle\Servicios\ServiceAPTCV instance.
+     */
+    protected function getServiceAptcvService()
+    {
+        return $this->services['service_aptcv'] = new \Optimus\OptimusBundle\Servicios\ServiceAPTCV($this->get('doctrine.orm.default_entity_manager'));
     }
 
     /**
@@ -2356,7 +2548,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getServiceCalculoService()
     {
-        return $this->services['service_calculo'] = new \Optimus\OptimusBundle\Servicios\ServiceCalculos($this->get('service_ontologia'), $this->get('service_invoke'), $this->get('doctrine.orm.default_entity_manager'), $this->get('service_appv'), $this->get('service_appreheating'), $this->get('service_apadaptative'), $this->get('service_aptsv'), $this->get('service_pricepredictor'));
+        return $this->services['service_calculo'] = new \Optimus\OptimusBundle\Servicios\ServiceCalculos($this->get('service_ontologia'), $this->get('service_service_calculation_data_invoke'), $this->get('service_predict_data_invoke'), $this->get('doctrine.orm.default_entity_manager'), $this->get('service_appv'), $this->get('service_appvm'), $this->get('service_apeconomizer'), $this->get('service_appreheating'), $this->get('service_apspmc'), $this->get('service_apoc'), $this->get('service_event'), $this->get('service_pricepredictor'), 40, 80, 1, 1);
     }
 
     /**
@@ -2373,6 +2565,32 @@ class appDevDebugProjectContainer extends Container
     }
 
     /**
+     * Gets the 'service_dailyprices' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceDailyPrices A Optimus\OptimusBundle\Servicios\ServiceDailyPrices instance.
+     */
+    protected function getServiceDailypricesService()
+    {
+        return $this->services['service_dailyprices'] = new \Optimus\OptimusBundle\Servicios\ServiceDailyPrices();
+    }
+
+    /**
+     * Gets the 'service_dashboard' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceDashboard A Optimus\OptimusBundle\Servicios\ServiceDashboard instance.
+     */
+    protected function getServiceDashboardService()
+    {
+        return $this->services['service_dashboard'] = new \Optimus\OptimusBundle\Servicios\ServiceDashboard($this->get('doctrine.orm.default_entity_manager'));
+    }
+
+    /**
      * Gets the 'service_data_capturing' service.
      *
      * This service is shared.
@@ -2382,20 +2600,20 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getServiceDataCapturingService()
     {
-        return $this->services['service_data_capturing'] = new \Optimus\OptimusBundle\Servicios\ServiceDataCapturing($this->get('service_ontologia'), $this->get('doctrine.orm.default_entity_manager'));
+        return $this->services['service_data_capturing'] = new \Optimus\OptimusBundle\Servicios\ServiceDataCapturing($this->get('service_ontologia'), $this->get('doctrine.orm.default_entity_manager'), 5, 100000);
     }
 
     /**
-     * Gets the 'service_invoke' service.
+     * Gets the 'service_event' service.
      *
      * This service is shared.
      * This method always returns the same instance of the service.
      *
-     * @return \Optimus\OptimusBundle\Servicios\ServiceInvoke A Optimus\OptimusBundle\Servicios\ServiceInvoke instance.
+     * @return \Optimus\OptimusBundle\Servicios\ServiceEvents A Optimus\OptimusBundle\Servicios\ServiceEvents instance.
      */
-    protected function getServiceInvokeService()
+    protected function getServiceEventService()
     {
-        return $this->services['service_invoke'] = new \Optimus\OptimusBundle\Servicios\ServiceInvoke();
+        return $this->services['service_event'] = new \Optimus\OptimusBundle\Servicios\ServiceEvents($this->get('doctrine.orm.default_entity_manager'));
     }
 
     /**
@@ -2408,7 +2626,33 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getServiceOntologiaService()
     {
-        return $this->services['service_ontologia'] = new \Optimus\OptimusBundle\Servicios\ServiceOntologia();
+        return $this->services['service_ontologia'] = new \Optimus\OptimusBundle\Servicios\ServiceOntologia('http://optimusdss.epu.ntua.gr:8890/sparql', 'http://optimus_santcugat', $this->get('doctrine.orm.default_entity_manager'));
+    }
+
+    /**
+     * Gets the 'service_periodevaluator' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServicePeriodEvaluator A Optimus\OptimusBundle\Servicios\ServicePeriodEvaluator instance.
+     */
+    protected function getServicePeriodevaluatorService()
+    {
+        return $this->services['service_periodevaluator'] = new \Optimus\OptimusBundle\Servicios\ServicePeriodEvaluator($this->get('service_pricescontainer'));
+    }
+
+    /**
+     * Gets the 'service_predict_data_invoke' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServicePredictDataInvoke A Optimus\OptimusBundle\Servicios\ServicePredictDataInvoke instance.
+     */
+    protected function getServicePredictDataInvokeService()
+    {
+        return $this->services['service_predict_data_invoke'] = new \Optimus\OptimusBundle\Servicios\ServicePredictDataInvoke();
     }
 
     /**
@@ -2421,7 +2665,72 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getServicePricepredictorService()
     {
-        return $this->services['service_pricepredictor'] = new \Optimus\OptimusBundle\Servicios\ServicePricePredictor($this->get('service_data_capturing'), $this->get('doctrine.orm.default_entity_manager'));
+        return $this->services['service_pricepredictor'] = new \Optimus\OptimusBundle\Servicios\ServicePricePredictor($this->get('service_data_capturing'), $this->get('service_periodevaluator'), $this->get('doctrine.orm.default_entity_manager'));
+    }
+
+    /**
+     * Gets the 'service_pricescontainer' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServicePricesContainer A Optimus\OptimusBundle\Servicios\ServicePricesContainer instance.
+     */
+    protected function getServicePricescontainerService()
+    {
+        return $this->services['service_pricescontainer'] = new \Optimus\OptimusBundle\Servicios\ServicePricesContainer($this->get('service_dailyprices'), $this->get('service_tarifftype'));
+    }
+
+    /**
+     * Gets the 'service_sensorsrtime' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceBuildingSensorsRTime A Optimus\OptimusBundle\Servicios\ServiceBuildingSensorsRTime instance.
+     */
+    protected function getServiceSensorsrtimeService()
+    {
+        return $this->services['service_sensorsrtime'] = new \Optimus\OptimusBundle\Servicios\ServiceBuildingSensorsRTime($this->get('doctrine.orm.default_entity_manager'), $this->get('service_data_capturing'), $this->get('service_ontologia'));
+    }
+
+    /**
+     * Gets the 'service_sensorstatus' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServicioSensorStatus A Optimus\OptimusBundle\Servicios\ServicioSensorStatus instance.
+     */
+    protected function getServiceSensorstatusService()
+    {
+        return $this->services['service_sensorstatus'] = new \Optimus\OptimusBundle\Servicios\ServicioSensorStatus($this->get('doctrine.orm.default_entity_manager'), $this->get('service_ontologia'));
+    }
+
+    /**
+     * Gets the 'service_service_calculation_data_invoke' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceCalculationDataInvoke A Optimus\OptimusBundle\Servicios\ServiceCalculationDataInvoke instance.
+     */
+    protected function getServiceServiceCalculationDataInvokeService()
+    {
+        return $this->services['service_service_calculation_data_invoke'] = new \Optimus\OptimusBundle\Servicios\ServiceCalculationDataInvoke();
+    }
+
+    /**
+     * Gets the 'service_tarifftype' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Optimus\OptimusBundle\Servicios\ServiceTariffType A Optimus\OptimusBundle\Servicios\ServiceTariffType instance.
+     */
+    protected function getServiceTarifftypeService()
+    {
+        return $this->services['service_tarifftype'] = new \Optimus\OptimusBundle\Servicios\ServiceTariffType();
     }
 
     /**
@@ -3360,6 +3669,7 @@ class appDevDebugProjectContainer extends Container
         $instance->addResource('xlf', ($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Component\\Security\\Core\\Exception/../Resources/translations\\security.tr.xlf'), 'tr', 'security');
         $instance->addResource('xlf', ($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Component\\Security\\Core\\Exception/../Resources/translations\\security.ua.xlf'), 'ua', 'security');
         $instance->addResource('php', ($this->targetDirs[3].'\\src\\Optimus\\OptimusBundle/Resources/translations\\messages.en.php'), 'en', 'messages');
+        $instance->addResource('php', ($this->targetDirs[3].'\\src\\Optimus\\OptimusBundle/Resources/translations\\messages.es.php'), 'es', 'messages');
 
         return $instance;
     }
@@ -3404,9 +3714,11 @@ class appDevDebugProjectContainer extends Container
         $instance->addExtension(new \Twig_Extension_Debug());
         $instance->addExtension(new \Symfony\Bundle\AsseticBundle\Twig\AsseticExtension($this->get('assetic.asset_factory'), $this->get('templating.name_parser'), true, array(), array(), new \Symfony\Bundle\AsseticBundle\DefaultValueSupplier($this)));
         $instance->addExtension(new \Doctrine\Bundle\DoctrineBundle\Twig\DoctrineExtension());
+        $instance->addExtension(new \Optimus\OptimusBundle\Twig\TCVExtension());
         $instance->addExtension(new \Symfony\Bridge\Twig\Extension\DumpExtension($this->get('var_dumper.cloner')));
         $instance->addExtension(new \Symfony\Bundle\WebProfilerBundle\Twig\WebProfilerExtension());
         $instance->addGlobal('app', $this->get('templating.globals'));
+        $instance->addGlobal('optimus_instance', 'Sant Cugat');
 
         return $instance;
     }
@@ -3779,6 +4091,7 @@ class appDevDebugProjectContainer extends Container
         $this->services['security.access_map'] = $instance = new \Symfony\Component\Security\Http\AccessMap();
 
         $instance->add(new \Symfony\Component\HttpFoundation\RequestMatcher('^/login'), array(0 => 'IS_AUTHENTICATED_ANONYMOUSLY'), NULL);
+        $instance->add(new \Symfony\Component\HttpFoundation\RequestMatcher('^/semantic-framework'), array(0 => 'IS_AUTHENTICATED_ANONYMOUSLY'), NULL);
         $instance->add(new \Symfony\Component\HttpFoundation\RequestMatcher('^/'), array(0 => 'ROLE_USER'), NULL);
         $instance->add(new \Symfony\Component\HttpFoundation\RequestMatcher('^/adminBuilding'), array(0 => 'ROLE_ADMIN'), NULL);
         $instance->add(new \Symfony\Component\HttpFoundation\RequestMatcher('^/adminPartitions'), array(0 => 'ROLE_ADMIN'), NULL);
@@ -3802,7 +4115,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getSecurity_Authentication_ManagerService()
     {
-        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('security.user.provider.concrete.main'), new \Symfony\Component\Security\Core\User\UserChecker(), 'secured_area', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('558bd37d69248'), 2 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('558bd37d69248')), true);
+        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('security.user.provider.concrete.main'), new \Symfony\Component\Security\Core\User\UserChecker(), 'secured_area', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('572d2d910a633'), 2 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('572d2d910a633')), true);
 
         $instance->setEventDispatcher($this->get('debug.event_dispatcher'));
 
@@ -4002,7 +4315,7 @@ class appDevDebugProjectContainer extends Container
             'kernel.root_dir' => $this->targetDirs[2],
             'kernel.environment' => 'dev',
             'kernel.debug' => true,
-            'kernel.name' => 'app',
+            'kernel.name' => 'ap_',
             'kernel.cache_dir' => __DIR__,
             'kernel.logs_dir' => ($this->targetDirs[2].'\\logs'),
             'kernel.bundles' => array(
@@ -4025,124 +4338,62 @@ class appDevDebugProjectContainer extends Container
             'database_driver' => 'pdo_mysql',
             'database_host' => '127.0.0.1',
             'database_port' => NULL,
-            'database_name' => 'symfony',
-            'database_user' => 'root',
-            'database_password' => NULL,
+            'database_name' => 'optimus_santcugat',
+            'database_user' => 'optimus',
+            'database_password' => 'dssoptimus',
             'mailer_transport' => 'smtp',
             'mailer_host' => '127.0.0.1',
             'mailer_user' => NULL,
             'mailer_password' => NULL,
             'locale' => 'en',
             'secret' => 'ThisTokenIsNotSoSecretChangeIt',
-            'optimus_instancia' => 'spain',
-            'optimus_endpoint' => 'http://winarc.housing.salle.url.edu:8080/sparql',
-            'optimus_graph' => '',
-            'optimus_sensors' => 14,
-            'optimus_sensor_1' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/sunnyportal_energy_production',
-                'name' => 'Energy production',
-                'display' => 'yes',
-                'color' => '#594a0',
-            ),
-            'optimus_sensor_2' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/sunnyportal_solar_radiation',
-                'name' => 'Solar radiation',
-                'display' => 'yes',
-                'color' => '#f669a4',
-            ),
-            'optimus_sensor_3' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_acconsumption',
-                'name' => 'Acconsumption',
-                'display' => 'yes',
-                'color' => '#19c5b5',
-            ),
-            'optimus_sensor_4' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_totalenergy',
-                'name' => 'Total energy',
-                'display' => 'yes',
-                'color' => '#afaae1',
-            ),
-            'optimus_sensor_5' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_unifler1consumption',
-                'name' => 'Unifler consumption - 1',
-                'display' => 'yes',
-                'color' => '#82BEE5',
-            ),
-            'optimus_sensor_6' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_unifler2consumption',
-                'name' => 'Unifler consumption - 2',
-                'display' => 'no',
-                'color' => '#82BEE5',
-            ),
-            'optimus_sensor_7' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_2ndlightsconsumption',
-                'name' => 'Light consumption - 2',
-                'display' => 'yes',
-                'color' => '#F0ABA1',
-            ),
-            'optimus_sensor_8' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_3ndlightsconsumption',
-                'name' => 'Light consumption - 3',
-                'display' => 'no',
-                'color' => '#82BEE5',
-            ),
-            'optimus_sensor_9' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_2ndtotalconsumption',
-                'name' => 'Total consumption - 2',
-                'display' => 'yes',
-                'color' => '#F7548D',
-            ),
-            'optimus_sensor_10' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_3ndtotalconsumption',
-                'name' => 'Total consumption - 3',
-                'display' => 'no',
-                'color' => '#82BEE5',
-            ),
-            'optimus_sensor_11' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_temperature1',
-                'name' => 'Temperature - 1',
-                'display' => 'yes',
-                'color' => '#F9E654',
-            ),
-            'optimus_sensor_12' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_temperature2',
-                'name' => 'Temperature - 2',
-                'display' => 'no',
-                'color' => '#82BEE5',
-            ),
-            'optimus_sensor_13' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_humidity',
-                'name' => 'Humidity',
-                'display' => 'yes',
-                'color' => '#867ADD',
-            ),
-            'optimus_sensor_14' => array(
-                'url' => 'http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/energea_co2',
-                'name' => 'CO2',
-                'display' => 'yes',
-                'color' => '#47CDB5',
-            ),
-            'optimus_actionplans' => 4,
+            'optimus_instance' => 'Sant Cugat',
+            'optimus_endpoint' => 'http://optimusdss.epu.ntua.gr:8890/sparql',
+            'optimus_graph' => 'http://optimus_santcugat',
+            'optimus_sensors' => 0,
+            'optimus_actionplans' => 6,
             'action_plan_1' => array(
                 'name' => 'Scheduling and management of the occupancy',
                 'status' => 0,
                 'type' => 1,
+                'description' => 'Reduction of the building energy consumption by changing the location of building occupants, so as to use the minimum number of thermal zones and turn off the heating/cooling system in the empty zones.',
             ),
             'action_plan_2' => array(
-                'name' => 'Optimum start/stop of the heating/cooling system',
+                'name' => 'Scheduling the set-point temperature (Thermal Comfort Validation and Adaptive Comfort Concept)',
                 'status' => 0,
                 'type' => 2,
+                'description' => 'Support of the energy manager in adjusting the temperature set-point, taking into consideration thermal comfort parameters. The target is to optimize energy use, while maintaining comfort levels in accepted ranges (using the Predicted Mean Vote - PMV - index).',
             ),
             'action_plan_3' => array(
-                'name' => 'Scheduling the set point temperature – adaptive comfort concept',
-                'status' => 0,
-                'type' => 3,
-            ),
-            'action_plan_4' => array(
-                'name' => 'Scheduling of the sale/consumption of the electricity produced through the PV system',
+                'name' => 'Optimum Start/Stop of the Heating/Cooling System',
                 'status' => 0,
                 'type' => 4,
+                'description' => 'Optimization of the boost time of the heating/cooling system taking into account the forecasting of the outdoor air temperature and the occupancy of the building.',
             ),
+            'action_plan_4' => array(
+                'name' => 'PV Maintenance ',
+                'status' => 0,
+                'type' => 5,
+                'description' => 'Detection of the need for maintenance of the PV system and communication with the user with an alert prompting for appropriate maintenance actions; identification of abnormalities and possible problems can be facilitated.',
+            ),
+            'action_plan_5' => array(
+                'name' => 'Scheduling of the Sale/Consumption of the RES Electricity Produced',
+                'status' => 0,
+                'type' => 6,
+                'description' => 'Optimization of selling/self-consumption of electricity produced by a PV system considering different scenarios of energy market (green strategy, finance strategy, intermediate strategy, peak strategy, load factor strategy).',
+            ),
+            'action_plan_6' => array(
+                'name' => 'Scheduling of the Energy Flows',
+                'status' => 0,
+                'type' => 7,
+                'description' => 'Efficient Management of Energy Flows linking buildings (e.g. Savona campus thermal and electrical demands), RES production (e.g. PV and CSP production) and dispatchable sources (e.g. storage).',
+            ),
+            'energy_demand_threshold_percentage' => 5,
+            'daily_penalty_energy_threshold' => 100000,
+            'pvm_num_panels' => 40,
+            'pvm_panels_surface_area' => 80,
+            'pvm_a_coefficient' => 1,
+            'pvm_ta_coefficient' => 1,
             'controller_resolver.class' => 'Symfony\\Bundle\\FrameworkBundle\\Controller\\ControllerResolver',
             'controller_name_converter.class' => 'Symfony\\Bundle\\FrameworkBundle\\Controller\\ControllerNameParser',
             'response_listener.class' => 'Symfony\\Component\\HttpKernel\\EventListener\\ResponseListener',
@@ -4581,7 +4832,7 @@ class appDevDebugProjectContainer extends Container
             'assetic.variables' => array(
 
             ),
-            'assetic.java.bin' => 'C:\\Windows\\system32\\java.EXE',
+            'assetic.java.bin' => 'C:\\ProgramData\\Oracle\\Java\\javapath\\java.EXE',
             'assetic.node.bin' => '/usr/bin/node',
             'assetic.ruby.bin' => '/usr/bin/ruby',
             'assetic.sass.bin' => '/usr/bin/sass',
@@ -4776,7 +5027,8 @@ class appDevDebugProjectContainer extends Container
                 ),
             ),
             'console.command.ids' => array(
-                0 => 'sensio_distribution.security_checker.command',
+                0 => 'app.command.test',
+                1 => 'sensio_distribution.security_checker.command',
             ),
         );
     }

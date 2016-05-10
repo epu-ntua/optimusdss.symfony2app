@@ -64,10 +64,10 @@ class BuildingPartitioning extends \Optimus\OptimusBundle\Entity\BuildingPartiti
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\BuildingPartitioning' . "\0" . 'id', 'fk_Building', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\BuildingPartitioning' . "\0" . 'partitionName', 'children', 'fk_BuildingPartitioning');
+            return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\BuildingPartitioning' . "\0" . 'id', 'fk_Building', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\BuildingPartitioning' . "\0" . 'partitionName', 'children', 'fk_BuildingPartitioning', 'energy_consumption', 'max_capacity');
         }
 
-        return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\BuildingPartitioning' . "\0" . 'id', 'fk_Building', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\BuildingPartitioning' . "\0" . 'partitionName', 'children', 'fk_BuildingPartitioning');
+        return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\BuildingPartitioning' . "\0" . 'id', 'fk_Building', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\BuildingPartitioning' . "\0" . 'partitionName', 'children', 'fk_BuildingPartitioning', 'energy_consumption', 'max_capacity');
     }
 
     /**
@@ -285,6 +285,50 @@ class BuildingPartitioning extends \Optimus\OptimusBundle\Entity\BuildingPartiti
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getChildren', array());
 
         return parent::getChildren();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getEnergyConsumption()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getEnergyConsumption', array());
+
+        return parent::getEnergyConsumption();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setEnergyConsumption($energy_consumption)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setEnergyConsumption', array($energy_consumption));
+
+        return parent::setEnergyConsumption($energy_consumption);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMaxCapacity()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getMaxCapacity', array());
+
+        return parent::getMaxCapacity();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setMaxCapacity($max_capacity)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setMaxCapacity', array($max_capacity));
+
+        return parent::setMaxCapacity($max_capacity);
     }
 
 }

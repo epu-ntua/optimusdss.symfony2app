@@ -64,10 +64,10 @@ class Sensor extends \Optimus\OptimusBundle\Entity\Sensor implements \Doctrine\O
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'url', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'color', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'display');
+            return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'url', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'color', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'display', 'fk_Building', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'urlService', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'status', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'lastData', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'description', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'units', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'predictionmodelparameters', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'aggregation');
         }
 
-        return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'url', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'color', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'display');
+        return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'url', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'color', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'display', 'fk_Building', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'urlService', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'status', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'lastData', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'description', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'units', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'predictionmodelparameters', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Sensor' . "\0" . 'aggregation');
     }
 
     /**
@@ -274,6 +274,182 @@ class Sensor extends \Optimus\OptimusBundle\Entity\Sensor implements \Doctrine\O
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDisplay', array());
 
         return parent::getDisplay();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setFkBuilding(\Optimus\OptimusBundle\Entity\Building $fkBuilding = NULL)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setFkBuilding', array($fkBuilding));
+
+        return parent::setFkBuilding($fkBuilding);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFkBuilding()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getFkBuilding', array());
+
+        return parent::getFkBuilding();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setUrlService($urlService)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setUrlService', array($urlService));
+
+        return parent::setUrlService($urlService);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getUrlService()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUrlService', array());
+
+        return parent::getUrlService();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setStatus($status)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setStatus', array($status));
+
+        return parent::setStatus($status);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getStatus()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getStatus', array());
+
+        return parent::getStatus();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setLastData($lastData)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setLastData', array($lastData));
+
+        return parent::setLastData($lastData);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getLastData()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getLastData', array());
+
+        return parent::getLastData();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setDescription($description)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setDescription', array($description));
+
+        return parent::setDescription($description);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDescription()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDescription', array());
+
+        return parent::getDescription();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setUnits($units)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setUnits', array($units));
+
+        return parent::setUnits($units);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getUnits()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUnits', array());
+
+        return parent::getUnits();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setPredictionmodelparameters($predictionmodelparameters)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setPredictionmodelparameters', array($predictionmodelparameters));
+
+        return parent::setPredictionmodelparameters($predictionmodelparameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPredictionmodelparameters()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getPredictionmodelparameters', array());
+
+        return parent::getPredictionmodelparameters();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAggregation($aggregation)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setAggregation', array($aggregation));
+
+        return parent::setAggregation($aggregation);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAggregation()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAggregation', array());
+
+        return parent::getAggregation();
     }
 
 }

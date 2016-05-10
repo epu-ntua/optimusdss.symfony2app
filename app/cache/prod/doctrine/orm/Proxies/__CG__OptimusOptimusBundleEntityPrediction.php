@@ -64,10 +64,10 @@ class Prediction extends \Optimus\OptimusBundle\Entity\Prediction implements \Do
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'dateCreate', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'dateUser');
+            return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'dateCreate', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'dateUser', 'fk_Building');
         }
 
-        return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'dateCreate', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'dateUser');
+        return array('__isInitialized__', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'id', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'name', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'dateCreate', '' . "\0" . 'Optimus\\OptimusBundle\\Entity\\Prediction' . "\0" . 'dateUser', 'fk_Building');
     }
 
     /**
@@ -252,6 +252,28 @@ class Prediction extends \Optimus\OptimusBundle\Entity\Prediction implements \Do
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDateUser', array());
 
         return parent::getDateUser();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setFkBuilding(\Optimus\OptimusBundle\Entity\Building $fkBuilding = NULL)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setFkBuilding', array($fkBuilding));
+
+        return parent::setFkBuilding($fkBuilding);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFkBuilding()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getFkBuilding', array());
+
+        return parent::getFkBuilding();
     }
 
 }
