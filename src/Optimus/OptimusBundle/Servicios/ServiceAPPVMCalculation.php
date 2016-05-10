@@ -4,6 +4,7 @@ namespace Optimus\OptimusBundle\Servicios;
 
 use Doctrine\ORM\EntityManager;
 
+
 use Optimus\OptimusBundle\Entity\APCalculation;
 use Optimus\OptimusBundle\Entity\APPVMOutput;
 use Optimus\OptimusBundle\Entity\APPVMOutputDay;
@@ -88,51 +89,17 @@ class ServiceAPPVMCalculation
 		// - This calculation need be done here because web services are only invoked one time in the night.
 		
 		$actionPlan = $aoRelSensorsActionPlan['actionPlan'];
-		//dump($aoRelSensorsActionPlan);
-		
 		
 		$start=\DateTime::createFromFormat('Y-m-d H:i:s', $from)->modify(" -1441 hour")->format("Y-m-d H:i:s");
-		//$start = $this->getDateString($start, 0);
-		//dump("Current Week: ");
-		//dump($from);
-		//dump("Service's Starting Week: ");
-		//dump($start);
-		
 		
 		// 1.Init data structure:	
 		$from = $this->getDateString($from, 0);
-       
-        // 2. Move date to this monday.
-    /*  $today = new \DateTime();
-        $today = $today->format("Y-m-d");
-        if($today == $from) {
-            $from = date('Y-m-d', strtotime($from. ' - 7 days'));
-        }  */
-        
-        
-        
 		$sCurrentDatetime = $from;
-		//dump("From: ");
-		//dump($sCurrentDatetime);
 		
 		$aValues=array("historical" => null, "predicted" => null, "hour" => null);
 		$window = 1441;
 		$horizon = 1441;
 		$nDays = 7;
-		
-	/*	for($iDay=0; $iDay<$nDays; $iDay++)
-		{
-			$currentDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $sCurrentDatetime.' 00:00:00')->modify("+".$iDay." day");
-			$sCurrentDateTime = $currentDateTime->format("Y-m-d H:i:s");
-			$sCurrentDate = explode(" ", $sCurrentDateTime)[0]; 
-			$sCurrentHour = explode(" ", $sCurrentDateTime)[1];
-			$aValues[]=array(self::$datetime_name=>$currentDateTime,
-							 self::$date_name=>$sCurrentDate,							 
-							 self::$alarmPower_name=>0, 		
-							 self::$pvproduced_name=>0,
-							 self::$pvpredicted_name=>0);
-		}		*/
-		
 		
 		// We are getting the sensors ID for sending them to the rapidminer service.
 		$sensors = ""; 
@@ -162,19 +129,14 @@ class ServiceAPPVMCalculation
 			$sensors = str_replace("__", "", $sensors);
 		}
 		
-		//dump($sensors);
-	
 		//echo "Calculating PV Maintenance action plan from ".$start."\n\n </br></br>";     
 
-
-
-		
 		$building=$this->em->getRepository('OptimusOptimusBundle:Building')->find($idBuilding);
 		switch ($building->getCity())
 		{
 			case "Savona":
 				if (strpos($building->getName(), 'School') !== false){
-					dump($building->getName());
+					//dump($building->getName());
 				$url = "http://optimusdss.epu.ntua.gr:8080/RAWS/process/Savona/ActionPlan_PV_maintenance_R_School";}
 				elseif (strpos($building->getName(), 'Campus') !== false)
 					$url = "http://optimusdss.epu.ntua.gr:8080/RAWS/process/Savona/ActionPlan_PV_maintenance_R_Campus";
@@ -191,11 +153,8 @@ class ServiceAPPVMCalculation
 		
 		$startR = substr_replace($start,"T",10,1);
 		$startR = $startR."Z";
-		//dump("Service's Starting Week: ");
-		//dump($startR);
-        //dump($url);
+		
 		// 2.1.Get values about: 1.Alarms and 2.Power: Prediction (Web Service)	
-		//$prevXml = $this->invokePredictData->PredictData($url, $start."T00:00:00Z", $window, $horizon, $sensors);
 		$prevXml = $this->invokePredictData->PredictData($url, $startR, $window, $horizon, $sensors);
 		
 		libxml_use_internal_errors(true);
@@ -206,7 +165,6 @@ class ServiceAPPVMCalculation
 			$aValues = $this->readXML_Maintenance($xml);
 		} else {
 			echo "Error invoking service\n\n </br></br>";
-			//var_dump($prevXml);
 		}
 		
         //dump($aValues);
@@ -215,93 +173,111 @@ class ServiceAPPVMCalculation
 		$lastCalculations = $this->em->getRepository('OptimusOptimusBundle:APCalculation')->findLastCalculationWithPVMOutput($actionPlan->getId());
 		if(count($lastCalculations) > 0){
 			$lastCalculationID = $lastCalculations[0]->getId();
-			//dump($lastCalculationID);
 			$lastPVMOutputHour = $this->em->getRepository('OptimusOptimusBundle:APPVMOutput')->findLastOutputByCalculation($lastCalculationID)[0]->getHour();
-			//dump($lastPVMOutputHour);
-			$startingHour = $lastPVMOutputHour->modify(" + 1 hour")->format("Y-m-d H:i:s");;
-			//dump($startingHour);
-			
+			$startingHour = $lastPVMOutputHour->modify(" + 1 hour")->format("Y-m-d H:i:s");;			
 
-			//$t1 = StrToTime ( $start." 00:00:00" );
 			$t1 = StrToTime ( $start );
 			$t2 = StrToTime ( $startingHour );
 			$diff = $t2 - $t1;
 			$iHourStart = $diff / ( 60 * 60 ) ;
-			//dump($iHourStart);
 		}
 		if($iHourStart<0){
 			$iHourStart = 0;
 		}
 		
-		// 3.Insert values on DB (APPVMOutput): -> for the previous week
-		for($iHour=$iHourStart; $iHour<count($aValues['hour']); $iHour++)
-		{
-			$value = $aValues['hour'][$iHour];
-
-			 
-			$output = new APPVMOutput();
-			$output->setFkApCalculation($calculation);	
-			
-			$value[self::$datetime_name] = str_replace("T"," ",$value[self::$datetime_name]);
-			$value[self::$datetime_name] = str_replace("Z","",$value[self::$datetime_name]);
-			//dump("Hour:");
-			//dump($value[self::$datetime_name]);
-			$dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $value[self::$datetime_name]);
-			$output->setHour($dateTime);
-						
-			//$output->setHour($value[self::$datetime_name]);
-			$output->setAlarmPower($value[self::$alarmPower_name]);
-			$output->setPvproduced($value[self::$pvproduced_name]);
-			$output->setPvpredicted($value[self::$pvpredicted_name]);
-			
-			$dayValue = $aValues['historical'][($iHour)/24];	
-			$output->setDayalert($dayValue['alert']);
-			//dump("Before");
-			$this->em->persist($output);
-			$this->em->flush();
-			//dump("After");
-			//Events alarms ==1
-		/*	if($value[self::$alarmPower_name]==1)
-			{
-				$dateAlarm=$value[self::$datetime_name];				
-				$text="Alarm Power active ".$dateAlarm->format('Y-m-d H:i:s');
-				
-				$this->events->createEvent($user, $text , "Action Plan -".$actionPlan->getName()."", $actionPlan->getId(), 1, $ip, $idBuilding, "alarm power");
+		$finalHour = count($aValues['hour']);
+		$cntr = 1;
+		while ($aValues['hour'][count($aValues['hour']) - $cntr][self::$pvproduced_name] == 0){
+			if($cntr%24 == 0){
+				$finalHour -= 24;
 			}
-			if($value[self::$alarmTemperature_name]==1)
-			{
-				$dateAlarm=$value[self::$datetime_name];
-				$text="Alarm Temperature active ".$dateAlarm->format('Y-m-d H:i:s');
-				
-				$this->events->createEvent($user, $text, "Action Plan -".$actionPlan->getName()."", $actionPlan->getId(), 1, $ip, $idBuilding, "alarm temperature");
-			}*/
+			$cntr++;
 		}
 		
-		for($iDay=0; $iDay<$nDays; $iDay++)
-		{
-			$sCurrentDate = $this->getDateString($from, $iDay);
-			$currentDate=\DateTime::createFromFormat('Y-m-d', $sCurrentDate );
+		
+		$this->em->getConnection()->beginTransaction();
+		// 3.Insert values on DB (APPVMOutput): -> for the previous week
+		// Try and make the transaction
+		try {   
+			for($iHour=$iHourStart; $iHour<$finalHour; $iHour++)
+			{
+				$value = $aValues['hour'][$iHour];
 
-			// 4.To manage inputs from users:	
-			$outputDay = new APPVMOutputDay();
-			$outputDay->setDate($currentDate);
-			
-			$lastOutputDay = $this->em->getRepository('OptimusOptimusBundle:APPVMOutputDay')->findLastOutputByDay($sCurrentDate); //
-			//dump($lastOutputDay);
-			if($lastOutputDay != null){
-				$outputDay->setStatus($lastOutputDay[0]->getStatus());
-			}
-			else{
-				$outputDay->setStatus(0);	
-			}
-			
-			$outputDay->setAlert($aValues['predicted'][$iDay]['alert']);		// Predicted Alert 
-			$outputDay->setFkApCalculation($calculation);
+				$output = new APPVMOutput();
+				$output->setFkApCalculation($calculation);	
+				
+				$value[self::$datetime_name] = str_replace("T"," ",$value[self::$datetime_name]);
+				$value[self::$datetime_name] = str_replace("Z","",$value[self::$datetime_name]);
 
-			$this->em->persist($outputDay);
+				$dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $value[self::$datetime_name]);
+				$output->setHour($dateTime);
+							
+				$output->setAlarmPower($value[self::$alarmPower_name]);
+				$output->setPvproduced($value[self::$pvproduced_name]);
+				$output->setPvpredicted($value[self::$pvpredicted_name]);
+				
+				$dayValue = $aValues['historical'][($iHour)/24];	
+				$output->setDayalert($dayValue['alert']);
+				$this->em->persist($output);
+				$this->em->flush();
+				
+				//Events alarms ==1
+			/*	if($value[self::$alarmPower_name]==1)
+				{
+					$dateAlarm=$value[self::$datetime_name];				
+					$text="Alarm Power active ".$dateAlarm->format('Y-m-d H:i:s');
+					
+					$this->events->createEvent($user, $text , "Action Plan -".$actionPlan->getName()."", $actionPlan->getId(), 1, $ip, $idBuilding, "alarm power");
+				}
+				if($value[self::$alarmTemperature_name]==1)
+				{
+					$dateAlarm=$value[self::$datetime_name];
+					$text="Alarm Temperature active ".$dateAlarm->format('Y-m-d H:i:s');
+					
+					$this->events->createEvent($user, $text, "Action Plan -".$actionPlan->getName()."", $actionPlan->getId(), 1, $ip, $idBuilding, "alarm temperature");
+				}*/
+			}
+			
+			for($iDay=0; $iDay<$nDays; $iDay++)
+			{
+				$sCurrentDate = $this->getDateString($from, $iDay);
+				$currentDate=\DateTime::createFromFormat('Y-m-d', $sCurrentDate );
+
+				// 4.To manage inputs from users:	
+				$outputDay = new APPVMOutputDay();
+				$outputDay->setDate($currentDate);
+				
+				$lastOutputDay = $this->em->getRepository('OptimusOptimusBundle:APPVMOutputDay')->findLastOutputByDay($sCurrentDate); //
+				//dump($lastOutputDay);
+				if($lastOutputDay != null){
+					$outputDay->setStatus($lastOutputDay[0]->getStatus());
+				}
+				else{
+					$outputDay->setStatus(0);	
+				}
+				
+				$outputDay->setAlert($aValues['predicted'][$iDay]['alert']);		// Predicted Alert 
+				$outputDay->setFkApCalculation($calculation);
+
+				$this->em->persist($outputDay);
+				$this->em->flush();
+			}
+			
+			// Try and commit the transaction
+			$this->em->getConnection()->commit();
+		}catch (\Exception $e) {
+			// Rollback the failed transaction attempt
+			$this->em->getConnection()->rollback();
+			//$this->em->getRepository('OptimusOptimusBundle:APCalculation')->deleteCalculationById($calculation);
+			$apcalculation = $this->em->getRepository('OptimusOptimusBundle:APCalculation')->find($calculation);
+			$this->em->remove($apcalculation);
 			$this->em->flush();
+			throw $e;
 		}
+		
 	}
+	
+	
 	
 	private function readXML_Maintenance($xml)
 	{
@@ -364,6 +340,8 @@ class ServiceAPPVMCalculation
 		return $aValues;
 	}
 	
+	
+	
 	private function getDateString($from, $iDay)
 	{
 		$currentDay=\DateTime::createFromFormat('Y-m-d H:i:s', $from);
@@ -374,34 +352,17 @@ class ServiceAPPVMCalculation
 	}
 
 	
+	
 	public function getDataVariablesInput($buildingName)
 	{
 		$aVariablesInput=array();
 		
-   
-    	//$aVariablesInput[].=self::$sensor_1_temperature_name;	
-        //$aVariablesInput[].=self::$sensor_2_humidity_name;	
-        //$aVariablesInput[].=self::$sensor_3_windspeed_name;	
-        //$aVariablesInput[].=self::$sensor_4_winddirection_name;	
-        //$aVariablesInput[].=self::$sensor_5_pressure_name;	
-        //$aVariablesInput[].=self::$sensor_6_solarradiation_name;	
-        //$aVariablesInput[].=self::$sensor_7_cloudcover_name;	
-        //$aVariablesInput[].=self::$sensor_8_rainfall_name;	
-        //$aVariablesInput[].=self::$sensor_9_snowfall_name;	
-        //$aVariablesInput[].=self::$sensor_10_weathercondition_name;	
-        //$aVariablesInput[].=self::$sensor_11_confidencelevel_name;	
-        //$aVariablesInput[].=self::$sensor_12_energyproduction_name;	
-		
-		
-		
-		//$building=$this->em->getRepository('OptimusOptimusBundle:Building')->find($idBuilding);
-		if (strpos($buildingName, 'School') !== false){ 
+   		if (strpos($buildingName, 'School') !== false){ 
 			$aVariablesInput[].=self::$sensor_14_energyproductionph3_name;	
 			$aVariablesInput[].=self::$sensor_13_energyproductionph2_name;	
 		}
 		$aVariablesInput[].=self::$sensor_12_energyproductionph1_name;
 		$aVariablesInput[].=self::$sensor_6_solarradiation_name;
-        
         
 		return $aVariablesInput;
 	}
