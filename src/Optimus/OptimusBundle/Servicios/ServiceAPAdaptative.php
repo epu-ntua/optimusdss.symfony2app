@@ -27,13 +27,20 @@ class ServiceAPAdaptative {
 
     private function calculate_set_point_temp($i) {
         $rmt = $this->data[$i][1];
-        if ($rmt < 14.0) {
-            $spt = 21.5;
-        } elseif ($rmt < 22.5) {
-            $spt = 0.5861 * $rmt + 12.531;
-        } else {
-            $spt = 26.0;
-        }
+		/*	if ($rmt < 14.0) {
+				$spt = 21.5;
+			} elseif ($rmt < 22.5) {
+				$spt = 0.5861 * $rmt + 12.531;
+			} else {
+				$spt = 26.0;
+			}
+		*/
+		if ($rmt <= 10.0) {
+			$spt = 22.5;
+		} 
+		else {
+			$spt = 0.302 * $rmt + 19.39;
+		}
         return number_format((float)$spt, 1, '.', '');
     }
 
