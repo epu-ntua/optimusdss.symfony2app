@@ -46,7 +46,6 @@ class ServiceAPAdaptative {
     }
 
     private function calculate_dmt($i, $input, $date, $calculation) {
-		//dump($input[0]);
         $sum = 0.0;
         $count = $i *24 + 23;
         for ($index = 23; $index >= 0; $index--) {
@@ -95,15 +94,9 @@ class ServiceAPAdaptative {
         $start_date = \DateTime::createFromFormat('Y-m-d H:i:s', $this_date)->modify("-7 day");
         $end_date=\DateTime::createFromFormat('Y-m-d H:i:s', $this_date)->modify("+6 day");
 
-        //$service = new ServiceOntologia($this->mEndpoint, $this->graph, $this->em);
-		/*dump($start_date);
-		dump($end_date);
-		dump($this->window);
-		dump($idSensor); */
-        //$array_ret = $service->getDataFromSensorList($start_date, $end_date, 2*$this->window, $idSensor);
+		
 		$array_ret = $this->ontologia->getDataFromSensorList($start_date, $end_date, 2*$this->window, $idSensor);
-		dump($array_ret);
-		//dump($array_ret);
+		
         /*
         for($i = 0; $i < count($array_ret); $i++) {
             $row = $array_ret[$i][0];
