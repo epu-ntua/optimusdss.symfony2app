@@ -9,10 +9,9 @@ use Optimus\OptimusBundle\Servicios\ServiceOntologia;
 
 class ServiceAPAdaptative {
     protected $em;
+	protected $ontologia;
     //constant value
-    const c = array(1, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2);
-    protected $mEndpoint = "http://winarc.housing.salle.url.edu:8080/sparql";
-    protected $graph = "http://optimus-test";
+    protected $c = array(1, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2);
     protected $window = 168;
     protected $data = array();
 
@@ -20,9 +19,11 @@ class ServiceAPAdaptative {
 
     public function getOutdoorTemperatureName(){return self::$sensor_outdoorTemperature_name;}
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em,
+								ServiceOntologia $ontologia)
     {       
 		$this->em=$em;
+		$this->ontologia=$ontologia;
     }
 
     private function calculate_set_point_temp($i) {
@@ -45,6 +46,7 @@ class ServiceAPAdaptative {
     }
 
     private function calculate_dmt($i, $input, $date, $calculation) {
+		//dump($input[0]);
         $sum = 0.0;
         $count = $i *24 + 23;
         for ($index = 23; $index >= 0; $index--) {
@@ -58,7 +60,7 @@ class ServiceAPAdaptative {
     private function calculate_rmt($i) {
         $rmt = 0.0;
         for ($j = 7; $j >= 1; $j--) {
-            $rmt += $this->data[$i - $j][0] * self::c[$j-1];
+            $rmt += $this->data[$i - $j][0] * $this->c[$j-1];
         }
         $rmt /= 3.8;
         $this->data[$i][1] = number_format((float)$rmt, 1, '.', '');
@@ -93,9 +95,15 @@ class ServiceAPAdaptative {
         $start_date = \DateTime::createFromFormat('Y-m-d H:i:s', $this_date)->modify("-7 day");
         $end_date=\DateTime::createFromFormat('Y-m-d H:i:s', $this_date)->modify("+6 day");
 
-        $service = new ServiceOntologia($this->mEndpoint, $this->graph, $this->em);
-
-        $array_ret = $service->getDataFromSensorList($start_date, $end_date, 2*$this->window, $idSensor);
+        //$service = new ServiceOntologia($this->mEndpoint, $this->graph, $this->em);
+		/*dump($start_date);
+		dump($end_date);
+		dump($this->window);
+		dump($idSensor); */
+        //$array_ret = $service->getDataFromSensorList($start_date, $end_date, 2*$this->window, $idSensor);
+		$array_ret = $this->ontologia->getDataFromSensorList($start_date, $end_date, 2*$this->window, $idSensor);
+		dump($array_ret);
+		//dump($array_ret);
         /*
         for($i = 0; $i < count($array_ret); $i++) {
             $row = $array_ret[$i][0];
