@@ -29,7 +29,7 @@ services:
 
     service_apadaptative:
         class: Optimus\OptimusBundle\Servicios\ServiceAPAdaptative
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia"]
 
     service_aptsv:
         class: Optimus\OptimusBundle\Servicios\ServiceAPTSV
