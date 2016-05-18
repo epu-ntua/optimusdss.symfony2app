@@ -10,7 +10,7 @@ use Optimus\OptimusBundle\Servicios\ServiceOntologia;
 class ServiceAPAdaptative {
     protected $em;
     //constant value
-    const c = 0.8;
+    const c = array(1, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2);
     protected $mEndpoint = "http://winarc.housing.salle.url.edu:8080/sparql";
     protected $graph = "http://optimus-test";
     protected $window = 168;
@@ -58,10 +58,9 @@ class ServiceAPAdaptative {
     private function calculate_rmt($i) {
         $rmt = 0.0;
         for ($j = 7; $j >= 1; $j--) {
-            $rmt *= self::c;
-            $rmt += $this->data[$i - $j][0];
+            $rmt += $this->data[$i - $j][0] * self::c[$j-1];
         }
-        $rmt = (1-self::c) * $rmt;
+        $rmt /= 3.8;
         $this->data[$i][1] = number_format((float)$rmt, 1, '.', '');
     }
 
