@@ -57,7 +57,7 @@ class WeeklyReportsController extends Controller
 		//Dates
 		
 		$monday=$data['weeklyReport']->getMonday();
-		dump($monday);
+		//dump($monday);
 		$startDate=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Monday this week")->format("Y-m-d");
 		$endDate=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Saturday this week")->format("Y-m-d");
 		$data['sundayDate']=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Sunday this week")->format("Y-m-d");
@@ -82,7 +82,7 @@ class WeeklyReportsController extends Controller
 						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->get('service_apspm_presenter')->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
 					break;
 					
-					case 3:
+					case 3:						
 					break;
 					
 					case 4:
@@ -98,6 +98,9 @@ class WeeklyReportsController extends Controller
 					break;
 					
 					case 7:
+						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->get('service_apsource_presenter')->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
+					break;case 8:
+						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->get('service_apeconomizer_presenter')->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
 					break;
 				}
 				//getData weeklyReportActionsPlans
@@ -115,6 +118,7 @@ class WeeklyReportsController extends Controller
 			'C:\xampp\htdocs\optimus\web\bundles\optimus\pdf\testPDF_1.pdf');*/
 		
 		//View
+		dump($data);
 		return $this->render('OptimusOptimusBundle:Reports:basicForm.html.twig', $data);
 	}
 	

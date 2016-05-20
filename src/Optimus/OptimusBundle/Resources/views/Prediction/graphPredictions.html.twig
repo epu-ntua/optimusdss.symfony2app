@@ -312,15 +312,16 @@
 					xaxis:{					
 						mode: "time", min: new Date("{{ startDate | date('F j, Y H:i:s') }}"), max: new Date("{{ endDate | date('F j, Y H:i:s') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
 						{% if lp_i==0 %}  
-							position:'top', 
+							//position:'top',
+							show:false,							
 						{% endif %}					
 						{% if lp_i < ((dataFinal | length)-1) and lp_i!=0 %} 					
 							show:false, 
 						{% else %}
-							show:true,
-							timeformat: "%a \n %d.%m",
-							labelWidth: 50,
-							minTickSize: [1, "hour"], reserveSpace:true				
+							show:false,
+							//timeformat: "%a \n %d.%m",
+							//labelWidth: 50,
+							//minTickSize: [1, "hour"], reserveSpace:true				
 						{% endif %} 
 					},
 					yaxis:{min:{{ minY }}, max:{{ maxY }}, tickDecimals: 2,  panRange:[{{ panYmin}},{{ panYmax}}], labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, {{ maxY }}], font:{size: 9, family: "sans-serif", color:"#626262"}},
@@ -426,47 +427,58 @@
 </script>
     
 	<div id="left">		
-		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}
-		{{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding})) }}
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
 	</div>
 	<div id="right">
 	
 		<div id="topRight">
-			<p><strong>
-				<span style="text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
-				<span style="text-decoration:underline;" onclick="location.href='{{ path('selectGraph',{'idBuilding':idBuilding}) }}';">{{nameBuilding}}</span> > 
-				Historical and forecasted data
-			</strong></p>					
+			<p> {{ nameBuilding }}</p>	
+			
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li style="background-color:#e8f3f9;"><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
+			</ul>					
 		</div>
 	
 		<div id="centerRight">
-				<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
+				<!--<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
 					<div style="width:625px;float:left;">
 						<p class="titleContentDescription"><strong>{%trans%} Historical and Forecasted data {%endtrans%}</strong></p>
 					</div>
 					<div style="float:left; text-align:right;">
 						<p style="margin:3px 10px;"><span style="color:#2e75b6">{%trans%} Last forecast calculated{%endtrans%}:</span> <span><strong>{{ lastDateForecasted }}</strong></span></p>
-						<!--<p style="margin:3px 10px;"><span style="color:#2e75b6">Last data received:</span> <span> <strong>15/04/2014 8:00</strong> </span></p>-->
+						
 					</div>
-				</div>
+				</div>-->
+				
 				<!--<div id="indicators" style="background-color:#d0cece; width:100%;  overflow:hidden; border-bottom:1px solid #7f7f7f; border-top:1px solid #7f7f7f;">
 					<p style="width:847px; border-right:1px solid #7f7f7f; float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px;"><strong>Indicators</strong></p>
 					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3;">+</p>
 				</div>-->	
 				
-				<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa; border-top:0px;">
-					<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:60px; border-right:1px solid #aaa;"><strong>{%trans%}Dates{%endtrans%}</strong></p>
+				<div id="indicators">
+					<p class="boxContent borderRight">
+						<img src="{{asset('bundles/optimus/img/Calendar.png')}}" />
+					</p>
 					
-					<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #aaa; text-align:center; background-color: #e8eef8;">
+					<p class="dates boxContent borderRight">
 						<span id="startDate">{{ startDate }}</span> / 
 						<span id="endDate">{{ endDate }}</span>
 					</p>
-					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #aaa; cursor:pointer;" onclick="displayCalendar();">+</p>
-							
-					<p class="buttonIndicator" onclick="createURLView();">{%trans%} View {%endtrans%}</p>
 					
-					<p class="buttonIndicator" onclick="createURLPredictor();">Calculate forecast</p>					
+					<p class="boxContent borderRight" style=" cursor:pointer;" onclick="displayCalendar();"><img src="{{asset('bundles/optimus/img/Plus.png')}}" /></p>
 					
+					<p class="boxContent borderRight"  style=" cursor:pointer;" onclick="createURLView();">
+						<img src="{{asset('bundles/optimus/img/View.png')}}" />
+					</p>
 				</div>
 				
 				<div id="contentGraficas" style="overflow:hidden; float:left; padding-top:25px; background-color:#f8f8f8;">
@@ -476,7 +488,7 @@
 					<!-- Graph Stack -->
 					<div style="float:left; margin-bottom: 30px; width:100%;">		
 						{% if mappingVariable is not empty %}
-							<div style="float:left; margin-left:45px;">
+							<div style="float:left;">
 								{% for z in mappingVariable %}
 									{% set lp_z=loop.index0 %}
 									<div style="float:left;"><p style="width:14px; height:14px; background-color:{{mappingVariable[lp_z].color}}; float:left; "></p><p style="float:left; margin-left:0;"> {{mappingVariable[lp_z].name |trans}} </p></div>
@@ -484,7 +496,7 @@
 								
 							</div>	
 						{% endif %}
-						<div id="placeholder_stack" style="{%if mappingVariable is empty%}display:none;{% endif %} height:200px; float:left; top:-20px; width:870px;">	</div>
+						<div id="placeholder_stack" style="{%if mappingVariable is empty%}display:none;{% endif %} height:300px; float:left;  width:1138px; margin-bottom:10px; background-color:#fff; padding: 0 0 30px 0;">	</div>
 						
 					</div>
 					
@@ -495,25 +507,25 @@
 						{% set loop_i=loop.index0 %}					
 						
 						{% if loop_i < (aVariables|length)-1 %}
-							{% set stilo=" height:60px;" %}
+							{% set stilo=" height:154px;" %} <!-- 60px -->
 						{% else %}
-							{% set stilo="min-height:100px;" %} 
+							{% set stilo="min-height:154px;" %} <!-- 100px -->
 						{% endif %}
 						
 						
 						{% if loop_i ==0  %}
-							{% set stilo2="width:500px;" %}							
+							{% set stilo2="width:769px;" %}	<!--500px -->						
 						{% elseif loop_i==(aVariables|length)-1 %}
-							{% set stilo2="width:500px;" %}	
+							{% set stilo2="width:769px;" %}	<!-- 500px -->
 						{% else %}
-							{% set stilo2="width:475px;" %} 
+							{% set stilo2="width:769px;" %} <!-- 475px -->
 						{% endif %}
 						
 						
 						<div style="float:left; width:100%; {{stilo}} ">
-							<p style="font-size:11px; font-weight:bold; text-transform:capitalize; float:left; width:350px; word-wrap: break-word; margin-right:10px; text-align:right;">{{ aVariables[loop_i] }} ({{ aUnitsVariable[loop_i] }})</p>
+							<p style="font-size:11px; font-weight:bold; text-transform:capitalize; float:left; width:350px; word-wrap: break-word; margin-right:10px; text-align:left;">{{ aVariables[loop_i] }} ({{ aUnitsVariable[loop_i] }})</p>
 							
-							<div id="placeHistoricPredictor_{{ loop_i }}" style=" height:100px; float:left; top:-20px; pointer-events:none; {{stilo2}}">	</div>
+							<div id="placeHistoricPredictor_{{ loop_i }}" style=" height:170px; float:left; top:-20px; pointer-events:none; {{stilo2}}">	</div>
 						</div>										
 					{% endfor %}
 					

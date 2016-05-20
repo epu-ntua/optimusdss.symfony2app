@@ -113,7 +113,7 @@
 			$("#form_{{i}} ").change (function( event ) { //> input[name*=filter]
 				console.log($("#form_{{i}}").serialize());
 				//$("#form_{{i}}").submit(function() {
-					console.log({{statusDay[i].statusDay}});
+					console.log({{statusDay[i].status}});
 					var url = "{{ path('changeSPMStatusDay' ,{'idOutputDay':statusDay[i].idOutputDay} ) }}"; // the script where you handle the form input.
 					$.ajax({
 						type: "POST",
@@ -194,30 +194,28 @@
     </style>
 
     <div id="left">
-        {{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}
-        {{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding, 'idActionPlan':idActionPlan})) }}
+        <ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
     </div>
     <div id="right">
         <div id="topRight">
-            <p>
-                <strong>
-                    <span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> >
-                    <span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> >
-                    {{ dataActionPlan_name }}
-                </strong>
-            </p>
+            <p>{{ nameBuilding }}</p>	
+			
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li style="background-color:#e8f3f9;"><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
         </div>
 
         <div id="centerRight">
-            <div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
-                <div style="float:left;">
-                    <p class="titleContentDescription"><strong>{%trans%} Action Plan {%endtrans%}:</strong> <span>{{ dataActionPlan_name }}</span></p>
-                    <p class="titleContentDescription"><strong>{%trans%} Description {%endtrans%}:</strong> <span style="font-size:12px;">{{ dataActionPlan_description }}</span></p>
-                </div>
-                <div style="float:left; text-align:right;">
-                    <p style="margin:10px 10px;"><span style="color:#2e75b6">{%trans%} Last forecast calculated {%endtrans%}:</span> <span><strong>{{ dataActionPlan_lastCalculation }}</strong></span></p>
-                </div>
-            </div>
+            <p class="titleDiv">{{ dataActionPlan_name }}</p>
+			<p>{{ dataActionPlan_description }}</p>
 
             <div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;  border-top:0px;">
                 <p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #aaa; text-align: right;"><strong>{%trans%} Dates {%endtrans%}:</strong></p>
@@ -472,13 +470,13 @@
                                     <form id="form_{{i}}" method="post">
 										<div class="inputsFilters" style=" float:left; margin-right:3px;">
 											<p style="font-size:11px; margin:0;">
-												<input type="radio" name="filter" value="0" {% if(statusDay[i].statusDay==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
+												<input type="radio" name="filter" value="0" {% if(statusDay[i].status==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
 											</p>
 											<p style="font-size:11px; margin:0;">
-												<input type="radio" name="filter" value="1" {% if(statusDay[i].statusDay==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
+												<input type="radio" name="filter" value="1" {% if(statusDay[i].status==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
 											</p>
 											<p style="font-size:11px; margin:0;">
-												<input type="radio" name="filter" value="2" {% if(statusDay[i].statusDay==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
+												<input type="radio" name="filter" value="2" {% if(statusDay[i].status==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
 											</p>
 											<input type="hidden" value="{{idActionPlan}}" name="idActionPlan" id="idActionPlan" />
 										</div>
