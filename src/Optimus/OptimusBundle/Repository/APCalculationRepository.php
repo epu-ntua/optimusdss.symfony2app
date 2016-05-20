@@ -56,6 +56,28 @@ class APCalculationRepository extends EntityRepository{
         $query->setMaxResults(1);
         return $query->getResult();
 	}
+	
+	public function getDQLLastCalculationWithESOutput($idActionPlan)
+	{		
+		$dqlQuery = 'SELECT apcalculation ';
+        $dqlQuery .= ' FROM '.$this->_entityName.' apcalculation';
+        $dqlQuery .= " WHERE '".$idActionPlan."'=apcalculation.fk_actionplan ";
+		$dqlQuery .= " AND EXISTS ( SELECT apflowsoutput FROM Optimus\OptimusBundle\Entity\APFlowsOutput apflowsoutput WHERE apcalculation.id = apflowsoutput.fkApCalculation ) ";
+        $dqlQuery .= ' ORDER BY apcalculation.dateCreation DESC ';
+		//dump($dqlQuery);		
+        return $dqlQuery;		
+    }
+	
+	public function findLastCalculationWithESOutput($idActionPlan)
+	{
+		$em = $this->getEntityManager();		
+		// IMPORTANT: By default Doctrine does not support all the functions of a specific vendor, such as the DATE_ADD. 
+		$dqlQuery = $this->getDQLLastCalculationWithESOutput($idActionPlan);
+		//dump($dqlQuery);
+        $query = $em->createQuery($dqlQuery);
+        $query->setMaxResults(1);
+        return $query->getResult();
+	}
 }
 
 ?>
