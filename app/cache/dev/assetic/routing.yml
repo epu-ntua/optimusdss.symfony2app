@@ -1,5 +1,0 @@
-_assetic:
-    resource: .
-    type: assetic
-_app:
-    resource: 'C:\xampp\htdocs\optimusDSS\app/config/routing_dev.yml'
