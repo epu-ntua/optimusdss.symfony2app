@@ -26,10 +26,10 @@ class ServiceBuildingSensorsRTime
 	private static $sensor_indoorTemperature_name = "Indoor temperature";
 	private static $sensor_outdoorTemperature_name = "Outdoor temperature";
 	
-	private static $sensor_energyProduction_color = "#A9D18E";	
-	private static $sensor_energyConsumption_color = "#B3C6E7"; 
-	private static $sensor_co2_color = "#C9C9C9"; 
-	private static $sensor_energyCost_color = "#FFD966";
+	private static $sensor_energyProduction_color = "#01d98e";	
+	private static $sensor_energyConsumption_color = "#8900e9"; 
+	private static $sensor_co2_color = "#9f9d9e"; 
+	private static $sensor_energyCost_color = "#f39a02";
 		
 	private static $sensor_energyProduction_units = "kWh";	
 	private static $sensor_energyConsumption_units = "kWh"; 
@@ -76,6 +76,16 @@ class ServiceBuildingSensorsRTime
 		return $data;
 	}
 
+	public function getColorsVariables()
+	{
+		$data = array();
+		$data[self::$sensor_energyCost_name] = self::$sensor_energyCost_color;
+		$data[self::$sensor_co2_name] = self::$sensor_co2_color;
+		$data[self::$sensor_energyConsumption_name] = self::$sensor_energyConsumption_color;
+		$data[self::$sensor_energyProduction_name] = self::$sensor_energyProduction_color;
+		
+		return $data;
+	}
 	
 	public function getVariablesGraphStack()
 	{

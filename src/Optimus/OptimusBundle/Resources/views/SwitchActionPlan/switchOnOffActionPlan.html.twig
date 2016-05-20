@@ -215,9 +215,9 @@
 		
 		str+="<table border='0' style='font-size: 12px; cursor: auto;'>";
 		
-		str+="<tr class='headerDays' ><td></td><td colspan='3'>{{ (dataActionPlan[0].nameAbbreviatedDay) }} {{ (dataActionPlan[0].abbreviatedDay) }}</td><td colspan='3'>{{ (dataActionPlan[1].nameAbbreviatedDay) }} {{ (dataActionPlan[1].abbreviatedDay) }}</td><td  colspan='3'>{{ (dataActionPlan[2].nameAbbreviatedDay) }} {{ (dataActionPlan[2].abbreviatedDay) }}</td><td colspan='3'>{{ (dataActionPlan[3].nameAbbreviatedDay) }} {{ (dataActionPlan[3].abbreviatedDay) }}</td><td colspan='3'>{{ (dataActionPlan[4].nameAbbreviatedDay) }} {{ (dataActionPlan[4].abbreviatedDay) }}</td><td colspan='3'>{{ (dataActionPlan[5].nameAbbreviatedDay) }} {{ (dataActionPlan[5].abbreviatedDay) }}</td><td colspan='3'>{{ (dataActionPlan[6].nameAbbreviatedDay) }} {{ (dataActionPlan[6].abbreviatedDay) }}</td></tr>";//<td>Total</td>
+		str+="<tr class='headerDays' style='font-weight:bold; text-align:center;'><td></td><td colspan='3' style='text-align:center;'>{{ (dataActionPlan[0].nameAbbreviatedDay) }}</br> {{ (dataActionPlan[0].abbreviatedDay) }}</td><td colspan='3' style='text-align:center;'>{{ (dataActionPlan[1].nameAbbreviatedDay) }}</br> {{ (dataActionPlan[1].abbreviatedDay) }}</td><td  colspan='3' style='text-align:center;'>{{ (dataActionPlan[2].nameAbbreviatedDay) }}</br> {{ (dataActionPlan[2].abbreviatedDay) }}</td><td colspan='3' style='text-align:center;'>{{ (dataActionPlan[3].nameAbbreviatedDay) }}</br> {{ (dataActionPlan[3].abbreviatedDay) }}</td><td colspan='3' style='text-align:center;'>{{ (dataActionPlan[4].nameAbbreviatedDay) }}</br> {{ (dataActionPlan[4].abbreviatedDay) }}</td><td colspan='3' style='text-align:center;'>{{ (dataActionPlan[5].nameAbbreviatedDay) }}</br> {{ (dataActionPlan[5].abbreviatedDay) }}</td><td colspan='3' style='text-align:center;'>{{ (dataActionPlan[6].nameAbbreviatedDay) }}</br> {{ (dataActionPlan[6].abbreviatedDay) }}</td></tr>";//<td>Total</td>
 		
-		str+="<tr style='text-align:center; line-height: 3px; height:24px;'><td style='border-left:1px solid'>Partitions</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td></tr>"; //<td>Total</td>
+		str+="<tr style='text-align:center; line-height: 3px; height:24px;'><td style='border-left:1px solid #efefef;'></td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td><td style='border-right:0;'>start</td><td style='border-right:0;'>stop</td><td>º</td></tr>"; //<td>Total</td>
 		
 		$( ".jstree-anchor" ).each(function() {
 			var attrId=$(this).attr("id");
@@ -236,7 +236,7 @@
 					{% endfor %}
 					
 					{% if  partition.sensors==false %}		{#partition.partition.getFkBuildingPartitioning()!=null#} //partition.childs==true or				
-						str+="<tr style='border:1px solid; height:24px;'> <td style='min-width:200px;text-align:left;'><p style='margin:0; margin-left:"+level+"px;'> {{partition.partition.getPartitionName()}}</p></td><td colspan='21'></td></tr>";	//<td style='border-bottom:0px; height:22px;'>Total</td>		
+						str+="<tr style='border:1px solid #efefef; height:24px; border-right: 2px solid #efefef; text-align:left; padding-left:15px; font-weight:bold;letter-spacing:1px; text-transform:uppercase;'> <td style='min-width:200px;text-align:left;'><p style='margin:0; font-size:11px; color:#0069b4; margin-left:"+level+"px;'> {{partition.partition.getPartitionName()}}</p></td><td colspan='21'></td></tr>";	//<td style='border-bottom:0px; height:22px;'>Total</td>		
 					{% else %}
 						console.log({{partition.id}});
 						//check baseline
@@ -244,9 +244,9 @@
 						else 										$("#"+id[0]+"_anchor").css("height","24px");
 						
 						//Selected
-						str+="<tr style='border:1px solid;'><td rowspan='1' width='10%' style='text-align:left;height:24px; background-color:#A9D08E; min-width:200px;'><p style='margin:0; margin-left:"+level+"px;'>  {{partition.partition.getPartitionName()}}</p></td>";
+						str+="<tr style='border:1px solid #efefef;'><td rowspan='1' width='10%' style='text-align:left;height:24px;  min-width:200px;'><p style='margin:0; margin-left:"+level+"px;'>  {{partition.partition.getPartitionName()}}</p></td>";
 							//Heating
-							str+="<td colspan='21' width='80%' style='padding-right:0px; border-bottom: 1px ;'><table style='line-height: 3px; height:12px; border:0px; font-size:10px; ' class='heating' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'> <tr width='100%' id='{{partition.id}}_heating' border='0'>  ";
+							str+="<td colspan='21' width='80%' style='padding-right:0px; border-bottom: 1px #efefef;'><table style='line-height: 3px; height:12px; border:0px; font-size:10px; ' class='heating' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'> <tr width='100%' id='{{partition.id}}_heating' border='0'>  ";
 						
 							{% for i in 0..6 %}
 								{% if i==6 %}
@@ -334,7 +334,7 @@
 						str+="</tr>"; //<td rowspan='1' width='10%' style='background-color:#A9D08E;'>2888 KW</td>
 						
 						//Baseline
-						str+="<tr style='border:1px solid;' class='row_baseline'><td rowspan='1' width='10%' style='height:24px; background-color:#F8CBAD;'>Baseline</td>";
+						str+="<tr style='border:1px solid #efefef;' class='row_baseline'><td rowspan='1' width='10%' style='height:24px; background-color:#F8CBAD;'>Baseline</td>";
 							//Heating
 							str+="<td colspan='21' width='80%' style='padding-right:0px; border-bottom:1px;'><table style='line-height: 3px; height:12px; border:0px; font-size:10px; background-color:#FCD8D8;' class='heating' cellpadding='0' cellspacing='0' width='100%' style='mso-table-lspace: 0pt; mso-table-rspace: 0pt;'> <tr width='100%' id='{{partition.id}}_heating' border='0'>  ";
 						
@@ -388,7 +388,7 @@
 	{
 		str="";
 		{% for i in 0..6 %}
-			str+="	<td colspan='3' style='text-align: left; {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} background-color:#d9d9d9; {% endif %}'>		<form id='form_{{i}}' method='post'><div class='inputsFilters' style=' float:left; margin-right:3px;'><p style='font-size:11px; margin:0;'>	<input onclick='sendFormStatus({{i}}, {{dataActionPlan[i].idOutputDay}});' type='radio' name='filter' value='0' {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} disabled='disabled'{% endif %} {% if(dataActionPlan[i].status==0) %} checked='checked' {% endif %} >{%trans%} Unknown {%endtrans%}</p><p style='font-size:11px; margin:0;'>							<input onclick='sendFormStatus({{i}}, {{dataActionPlan[i].idOutputDay}});' type='radio' name='filter' value='1' {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} disabled='disabled'{% endif %} {% if(dataActionPlan[i].status==1) %} checked='checked' {% endif %} >{%trans%} Accepted {%endtrans%}		</p>	<p style='font-size:11px; margin:0;'>		<input onclick='sendFormStatus({{i}}, {{dataActionPlan[i].idOutputDay}});' type='radio' name='filter' value='2' {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} disabled='disabled'{% endif %} {% if(dataActionPlan[i].status==2) %} checked='checked' {% endif %} >{%trans%} Declined {%endtrans%}	</p>	<input type='hidden' value='{{dataActionPlan[i].day|date('Y-m-d') }}' name='day' id='day' />	<input type='hidden' value='{{idActionPlan}}' name='idActionPlan' id='idActionPlan' />		</div>	</form>			</td>";
+			str+="	<td colspan='3' style='text-align: left; {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} background-color:#efefef; {% endif %}'>		<form id='form_{{i}}' method='post'><div class='inputsFilters' style=' float:left; margin-right:3px;'><p style='font-size:11px; margin:0;'>	<input onclick='sendFormStatus({{i}}, {{dataActionPlan[i].idOutputDay}});' type='radio' name='filter' value='0' {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} disabled='disabled'{% endif %} {% if(dataActionPlan[i].status==0) %} checked='checked' {% endif %} >{%trans%} Unknown {%endtrans%}</p><p style='font-size:11px; margin:0;'>							<input onclick='sendFormStatus({{i}}, {{dataActionPlan[i].idOutputDay}});' type='radio' name='filter' value='1' {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} disabled='disabled'{% endif %} {% if(dataActionPlan[i].status==1) %} checked='checked' {% endif %} >{%trans%} Accepted {%endtrans%}		</p>	<p style='font-size:11px; margin:0;'>		<input onclick='sendFormStatus({{i}}, {{dataActionPlan[i].idOutputDay}});' type='radio' name='filter' value='2' {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} disabled='disabled'{% endif %} {% if(dataActionPlan[i].status==2) %} checked='checked' {% endif %} >{%trans%} Declined {%endtrans%}	</p>	<input type='hidden' value='{{dataActionPlan[i].day|date('Y-m-d') }}' name='day' id='day' />	<input type='hidden' value='{{idActionPlan}}' name='idActionPlan' id='idActionPlan' />		</div>	</form>			</td>";
 		{% endfor %}
 		
 		return str;
@@ -483,20 +483,32 @@
 </script>
     
 	<div id="left">	
-		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}
-		{{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding, 'idActionPlan':idActionPlan})) }}
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
 	</div>
 	<div id="right">
 		<div id="topRight">
-			<p><strong>
-				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
-				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> > 
-				{{ dataActionPlan_name }} 
-				</strong></p>					
+			<p>{{ nameBuilding }}</p>	
+			
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li style="background-color:#e8f3f9;"><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
+			</ul>					
 		</div>
 	
 		<div id="centerRight">
-			<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
+			
+			<p class="titleDiv">{{ dataActionPlan_name }}</p>
+			<p>{{ dataActionPlan_description }}</p>
+		
+			<!--<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
 				<div style="float:left;">
 					<p class="titleContentDescription"><strong>{%trans%} Action Plan {%endtrans%}:</strong> <span>{{ dataActionPlan_name }} </span></p>
 					<p class="titleContentDescription"><strong>{%trans%}Description{%endtrans%}:</strong> <span style="font-size:12px;">{{ dataActionPlan_description }}</span></p>
@@ -504,7 +516,8 @@
 				<div style="float:left; text-align:right;">
 					<p style="margin:10px 10px;"><span style="color:#2e75b6">{%trans%} Last forecast calculated {%endtrans%}:</span> <span><strong>{{ dataActionPlan_lastCalculation }}</strong></span></p>					
 				</div>
-			</div>
+			</div>-->
+			
 			<!--<div id="indicators" style="background-color:#d0cece; width:100%;  overflow:hidden; border-bottom:1px solid #7f7f7f; border-top:1px solid #7f7f7f;">
 				<p style="width:847px; border-right:1px solid #7f7f7f; float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px;"><strong>Indicators</strong></p>
 				<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3;">+</p>
@@ -526,19 +539,22 @@
 				<p style="cursor:pointer;" onclick="changeStrategy('intermediate');">{%trans%} INTERMEDIATE {%endtrans%}</p>
 			</div>
 				
-			<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;  border-top:0px;">
-				<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #aaa; text-align: right;"><strong>{%trans%} Dates {%endtrans%}:</strong></p>
+			<div id="indicators">
+				<p class="boxContent borderRight">
+					<img src="{{asset('bundles/optimus/img/Calendar.png')}}" />
+				</p>
 				
-				<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #aaa; text-align:center; background-color: #e8eef8;">
+				<p class="dates boxContent borderRight">
 					<span id="startDate">{{ startDate }}</span> / 
 					<span id="endDate">{{ endDate }}</span>
 				</p>
-				<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #aaa; cursor:pointer;" onclick="displayCalendar();">+</p>
 				
-				<p class="buttonIndicator" onclick="createURLView();">{%trans%} View {%endtrans%}</p>
+				<p class="boxContent borderRight" style=" cursor:pointer;" onclick="displayCalendar();"><img src="{{asset('bundles/optimus/img/Plus.png')}}" /></p>
 				
-				<!--<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">{%trans%} Calculate {%endtrans%}</p>-->
-				<!--<p>Selected Day: {{  "now"|date("Y-m-d")  }}</p>-->
+				<p class="boxContent borderRight"  style=" cursor:pointer;" onclick="createURLView();">
+					<img src="{{asset('bundles/optimus/img/View.png')}}" />
+				</p>
+								
 			</div>
 			
 			<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
@@ -552,7 +568,7 @@
 					<!-- Tree -->
 					<div id="jstree_demo_div" style="float:left; width:16%; font-size: 12px; font-weight: bold; padding:47px 0 0 20px; margin-bottom:30px; display:none;">	</div>
 					<!-- Table-->
-					<div id="tableSwitch" style="margin-bottom: 20px; float:left; width:100%;  display:block; padding:0; line-height: 24px; border-bottom:1px solid;">
+					<div id="tableSwitch" style="margin-bottom: 20px; float:left; width:100%;  display:block; padding:0; line-height: 24px; border-bottom:1px solid #efefef;">
 					
 					</div>
 					

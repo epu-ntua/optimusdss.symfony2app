@@ -6,7 +6,10 @@
    
 	<div id="container">
 		<div id="header" >
-			<h3 {% if is_granted('ROLE_ADMIN') %} onclick="location.href='{{ path('selectOptions') }}';" {% else %}  onclick="location.href='{{ path('init') }}';" {% endif %} style="cursor:pointer;">OPTIMUS DSS - {{ optimus_instance }} </h3>
+			<img alt="Logo Optimus" title="Logo Optimus" src="{{asset('bundles/optimus/img/Logo-Optimus.png')}}"/>
+			
+			<h3 {% if is_granted('ROLE_ADMIN') %} onclick="location.href='{{ path('selectOptions') }}';" {% else %}  onclick="location.href='{{ path('init') }}';" {% endif %} style="cursor:pointer;"> {{ optimus_instance }} </h3>
+			
 			{% if is_granted('ROLE_USER') %}
 				{% include 'OptimusOptimusBundle:Login:logged.html.twig' %}
 			{% endif %}

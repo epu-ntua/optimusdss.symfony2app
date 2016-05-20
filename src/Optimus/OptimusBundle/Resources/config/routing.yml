@@ -70,6 +70,10 @@ init:
    path:     /init
    defaults: { _controller: OptimusOptimusBundle:Init:index }
 
+cityDashboard:
+   path:     /city-dashboard
+   defaults: { _controller: OptimusOptimusBundle:Init:cityDashboard }
+
 selectOptions:
    path:     /select-options
    defaults: { _controller: OptimusOptimusBundle:Init:selectOptions }
@@ -77,6 +81,14 @@ selectOptions:
 selectGraph:
    path:     /select-graph/{idBuilding}
    defaults: { _controller: OptimusOptimusBundle:Init:selectGraph }
+
+buildingDashboard:
+   path:     /building-dashboard/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Init:buildingDashboard }
+
+listActionPlans:
+   path:     /list-action-plans/{idBuilding}
+   defaults: { _controller: OptimusOptimusBundle:Init:listActionPlans }
 
 adminBuilding:
    path:     /admin-buildings
@@ -246,3 +258,15 @@ changeEconomizerInternalDay:
     path:    /change-internal-economizer
     defaults: { _controller: OptimusOptimusBundle:EconomizerActionPlan:changeInternalDay }
     requirements: { _method: post }
+
+tableReports:
+    pattern:  /table-reports/{idBuilding}/{insertDB}
+    defaults: { _controller: OptimusOptimusBundle:WeeklyReports:tableReports}
+
+openFormReport:
+    pattern:  /open-form-report/{idBuilding}/{idWeeklyReport}
+    defaults: { _controller: OptimusOptimusBundle:WeeklyReports:openFormReport}
+
+saveDataFormReport:
+    pattern:  /save-data-form-report/{idBuilding}/{idWeeklyReport}
+    defaults: { _controller: OptimusOptimusBundle:WeeklyReports:saveDataFormReport}

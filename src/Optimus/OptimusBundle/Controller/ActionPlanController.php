@@ -22,6 +22,7 @@ class ActionPlanController extends Controller
 		//else 			$data['allData']['endDate']="2015-03-17";
 		else 			$data['endDate']="2015-04-18";*/
 		
+		
 		if($from=='')
 		{
 			$dateActual=new \DateTime();			
