@@ -84,7 +84,7 @@ parameters:
 
     OPTIMUS_SENSORS: 0
 
-    optimus_actionPlans: 6
+    optimus_actionPlans: 8
 
     action_plan_1:
         name: "Scheduling and management of the occupancy"
@@ -121,6 +121,18 @@ parameters:
         status: 0
         type: 7
         description: "Efficient Management of Energy Flows linking buildings (e.g. Savona campus thermal and electrical demands), RES production (e.g. PV and CSP production) and dispatchable sources (e.g. storage)."
+
+    action_plan_7:
+        name: "Scheduling of the Energy Flows"
+        status: 0
+        type: 7
+        description: "Efficient Management of Energy Flows linking buildings (e.g. Savona campus thermal and electrical demands), RES production (e.g. PV and CSP production) and dispatchable sources (e.g. storage)."
+
+    action_plan_8:
+        name: "Management of air side Economizer"
+        status: 0
+        type: 8
+        description: "Management of air side Economizer."
 
     energy_demand_threshold_percentage: 5
     daily_penalty_energy_threshold: 100000
