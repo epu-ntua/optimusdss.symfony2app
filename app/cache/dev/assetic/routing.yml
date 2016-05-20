@@ -1,5 +1,0 @@
-_assetic:
-    resource: .
-    type: assetic
-_app:
-    resource: 'C:\DSS\wwwRoot\zaanstad\app/config/routing_dev.yml'

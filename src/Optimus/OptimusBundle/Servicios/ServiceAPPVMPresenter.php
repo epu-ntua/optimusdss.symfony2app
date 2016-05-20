@@ -386,6 +386,40 @@ class ServiceAPPVMPresenter
 		
 		return $numUnk;
 	}
+
+	//Get Status week 
+	public function getStatusWeek($idActionPlan, $startDate, $endDate)
+	{
+		$initDay=$startDate." 00:00:00";
+		$finalDay=\DateTime::createFromFormat('Y-m-d H:i:s', $endDate." 00:00:00")->modify("+1 day")->format("Y-m-d H:i:s");
+		
+		$aDays=$this->getDaysFromDate($initDay, $finalDay);		
+		$numDays=count($aDays);
+		$aStatusWeek=array();
+
+		for($i=0; $i < $numDays; $i++)
+		{
+			$qCalculation=$this->em->getRepository('OptimusOptimusBundle:APCalculation')->findCalculationByDate($aDays[$i], $idActionPlan);
+			$currentDayFormat=explode(" ", $aDays[$i])[0];
+			
+			
+			if($qCalculation != null)
+			{
+				$idCalculation=$qCalculation[0]->getId();			
+					
+				$outputDay = $this->em->getRepository('OptimusOptimusBundle:APPVMOutputDay')->findOutputByDay($idCalculation, $currentDayFormat); 
+				
+				if($outputDay)
+				{
+					$aStatusWeek[]=array('status'=>$outputDay[0]->getStatus(), 'idOutputDay'=>$outputDay[0]->getId());
+					
+				}else	$aStatusWeek[]=array('status'=>0, 'idOutputDay'=>0);
+				
+			}else	$aStatusWeek[]=array('status'=>0, 'idOutputDay'=>0);
+		}
+		
+		return $aStatusWeek;
+	}
 }
 
 ?>

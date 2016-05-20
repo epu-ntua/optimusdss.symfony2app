@@ -197,13 +197,14 @@
 	width:100px; 
 	height:70px; 
 	position:absolute; 
-	left: 542px; 
-	border: 1px solid; 
+	left: 1050px; 
+	border: 1px solid #efefef; 
 	display:none; 
 	z-index:9999; 
-	background-color:#d0cece;
-	top: 143px;
+	background-color:#fff;
+	top: 153px;
 }
+#menuStrategies p:hover{background-color:#e8f3f9;}
 
 .selectedDayCell
 {
@@ -214,23 +215,33 @@
 </style>
  
 	<div id="left">					
-		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding,'idAPType':idAPType})) }}	
-		{{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding, 'idActionPlan':idActionPlan})) }}
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
 	</div>
 	
 	<div id="right">
 		<div id="topRight">
-			<p>
-				<strong>
-				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
-				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding,'idAPType':idAPType} ) }}';">{{ nameBuilding }}</span> > 
-				{{ dataActionPlan_name }}
-				</strong>
-			</p>					
+			<p>{{ nameBuilding }}</p>	
+			
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li class="active"><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
+			</ul>					
 		</div>
 	
-		<div id="centerRight" style="position: relative;">
-				<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
+		<div id="centerRight">
+				
+				<p class="titleDiv">{{ dataActionPlan_name }}</p>
+				<p>{{ dataActionPlan_description }}</p>
+				
+				<!--<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;">
 					<div style="float:left;">
 						<p class="titleContentDescription"><strong>{%trans%} Action Plan {%endtrans%}:</strong> <span>{{ dataActionPlan_name }}</span></p>
 						<p class="titleContentDescription"><strong>{%trans%} Description {%endtrans%}:</strong> <span style="font-size:12px;">{{ dataActionPlan_description }}</span></p>
@@ -238,41 +249,33 @@
 					<div style="float:left; text-align:right;">
 						<p style="margin:10px 10px;"><span style="color:#2e75b6">{%trans%} Last forecast calculated {%endtrans%}:</span> <span><strong>{{ dataActionPlan_lastCalculation }}</strong></span></p>					
 					</div>
-				</div>
-				<!--<div id="indicators" style="background-color:#d0cece; width:100%;  overflow:hidden; border-bottom:1px solid #7f7f7f; border-top:1px solid #7f7f7f;">
-					<p style="width:847px; border-right:1px solid #7f7f7f; float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px;"><strong>Indicators</strong></p>
-					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3;">+</p>
-				</div>-->	
+				</div>-->
+									
 				
-				<!--<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa; border-top:0px;">	
 					
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #aaa;  text-align: right;"><strong>Profile:</strong></p>
-					
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:150px; border-right:1px solid #aaa;  text-align: right;">Summer profile</p>
-					
-					<p style="float:left; margin: 0 0 0 120px; height:15px; padding:10px; width:201px; border-right:1px solid #7f7f7f;  text-align: right;"><strong>Num. panels:</strong></p><p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right;">25</p>
-					
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #aaa;  text-align: right;"><strong>Visualization:</strong></p><p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #aaa;  text-align: right;">Daily</p>						
-				</div>-->	
 						
 				
-				<div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;  border-top:0px;">
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #aaa; text-align: right;"><strong>{%trans%} Dates {%endtrans%}:</strong></p>
+				<div id="indicators">
+					<p class="boxContent borderRight">
+						<img src="{{asset('bundles/optimus/img/Calendar.png')}}" />
+					</p>
 					
-					<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #aaa; text-align:center; background-color: #e8eef8;">
+					<p class="dates boxContent borderRight">
 						<span id="startDate">{{ startDate }}</span> / 
 						<span id="endDate">{{ endDate }}</span>
 					</p>
-					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #aaa; cursor:pointer;" onclick="displayCalendar();">+</p>
 					
-					<p class="buttonIndicator" onclick="createURLView();">{%trans%} View {%endtrans%}</p>
+					<p class="boxContent borderRight" style=" cursor:pointer;" onclick="displayCalendar();"><img src="{{asset('bundles/optimus/img/Plus.png')}}" /></p>
+					
+					<p class="boxContent borderRight"  style=" cursor:pointer;" onclick="createURLView();">
+						<img src="{{asset('bundles/optimus/img/View.png')}}" />
+					</p>
 					
 					<!--<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">{%trans%} Calculate {%endtrans%}</p>-->
 					
 					<!--<p>Selected Day: {{  "now"|date("Y-m-d")  }}</p>-->
 					
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #aaa;  text-align: right;">{%trans%} Strategy selected {%endtrans%}</p>
-					<p class="strategyActual" style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #aaa;  text-align: right; cursor:pointer;">					
+					<p class="strategyActual" style="">{%trans%} Strategy selected: {%endtrans%}					
 						<!-- Retrieve the strategy for the present day (default) -->
 						{% if dataActionPlan[0].strategy == "green" %}
 							<span class="textStrategyActual">{%trans%} GREEN {%endtrans%}</span>
@@ -316,81 +319,70 @@
 					<!-- tabla de valores -->
 					<div class="contentTableResults">
 						{% if( dataActionPlan != null) %}
-						<table id="tablaActionPlan" border="0" style="font-size: 11px;">
-							<thead>
-								<!--<tr class="headerTemp">
-									<th class="firstColumnHeaderTemp" colspan="2">Ext. Temp</th>
-									<th>12º C</th>
-									<th>13º C</th>
-									<th>14º C</th>
-									<th>15º C</th>
-									<th>16º C</th>
-									<th>17º C</th>
-									<th>18º C</th>
-								</tr>
-							</thead>-->
+						<table id="tablaActionPlan" border="0" style="font-size: 12px;">
+							
 							<tbody>
-								<tr class="headerDays">
-									<td colspan="2" style="border-right: 2px solid;"></td>
-									<td>
+								<tr class="headerDays" style="font-weight:bold;">
+									<td colspan="2" style="border-right: 2px solid #efefef;"></td>
+									<td style='text-align:center;'>
 									{% if dataActionPlan is defined %}	
 										{% if dataActionPlan[0] is defined %}	
-											{{ (dataActionPlan[0].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[0].nameAbbreviatedDay) }}</br>
 											{{ (dataActionPlan[0].abbreviatedDay) }}
 										{% endif %}
 									{% endif %}
 									</td>
-									<td>
+									<td style='text-align:center;'>
 									{% if dataActionPlan is defined %}	
 										{% if dataActionPlan[1] is defined %}	
-											{{ (dataActionPlan[1].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[1].nameAbbreviatedDay) }}</br>
 											{{ (dataActionPlan[1].abbreviatedDay) }}
 										{% endif %}
 									{% endif %}
 									</td>
-									<td>
+									<td style='text-align:center;'>
 									{% if dataActionPlan is defined %}	
 										{% if dataActionPlan[2] is defined %}	
-											{{ (dataActionPlan[2].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[2].nameAbbreviatedDay) }}</br>
 											{{ (dataActionPlan[2].abbreviatedDay) }}
 										{% endif %}
 									{% endif %}
 									</td>
-									<td>
+									<td style='text-align:center;'>
 									{% if dataActionPlan is defined %}	
 										{% if dataActionPlan[3] is defined %}	
-											{{ (dataActionPlan[3].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[3].nameAbbreviatedDay) }}</br>
 											{{ (dataActionPlan[3].abbreviatedDay) }}
 										{% endif %}
 									{% endif %}
 									</td>
-									<td>
+									<td style='text-align:center;'>
 									{% if dataActionPlan is defined %}	
 										{% if dataActionPlan[4] is defined %}	
-											{{ (dataActionPlan[4].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[4].nameAbbreviatedDay) }}</br>
 											{{ (dataActionPlan[4].abbreviatedDay) }}
 										{% endif %}
 									{% endif %}
 									</td>
-									<td>
+									<td style='text-align:center;'>
 									{% if dataActionPlan is defined %}	
 										{% if dataActionPlan[5] is defined %}	
-											{{ (dataActionPlan[5].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[5].nameAbbreviatedDay) }}</br>
 											{{ (dataActionPlan[5].abbreviatedDay) }}
 										{% endif %}
 									{% endif %}
 									</td>
-									<td>
+									<td style='text-align:center;'>
 									{% if dataActionPlan is defined %}	
 										{% if dataActionPlan[6] is defined %}	
-											{{ (dataActionPlan[6].nameAbbreviatedDay) }}
+											{{ (dataActionPlan[6].nameAbbreviatedDay) }}</br>
 											{{ (dataActionPlan[6].abbreviatedDay) }}
 										{% endif %}
 									{% endif %}
 									</td>								
 								</tr>
 								<tr>
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Electricity produced through PV system  {%endtrans%}(kWh) </td>
+									<td colspan="2" style=" border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">{%trans%} Electricity produced through PV system  {%endtrans%}(kWh) </td>
 									{% for i in 0..6 %}
 										<td style="background-color: #d9e1f2; 
 										{%if( dataActionPlan[i].day<='now'|date('Y-m-d H:i:s'))%} background-color: #f2f2f2; {% endif %}">
@@ -398,43 +390,43 @@
 									{% endfor %}
 								</tr>
 								<tr>
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Energy demand  {%endtrans%} (kWh)</td>
+									<td colspan="2" style=" border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">{%trans%} Energy demand  {%endtrans%} (kWh)</td>
 									{% for i in 0..6 %}
 										<td>{{ dataActionPlan[i].day_consumption|round(1, 'floor') }}</td>				
 									{% endfor %}
 								</tr>
-								<tr style="border-bottom:1px solid;">
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Difference between energy demand and electricity produced{%endtrans%} (kWh) </td>
+								<tr style="border-bottom:1px solid #efefef;">
+									<td colspan="2" style=" border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">{%trans%} Difference between energy demand and electricity produced{%endtrans%} (kWh) </td>
 									{% for i in 0..6 %}
 										<td>{{ dataActionPlan[i].day_difference|round(1, 'floor') }}</td>				
 									{% endfor %}							
 								</tr>
 								<tr>
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Purchase energy price {%endtrans%}(€/kWh) </td>
+									<td colspan="2" style=" border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">{%trans%} Purchase energy price {%endtrans%}(€/kWh) </td>
 									{% for i in 0..6 %}
 										<td>{{ dataActionPlan[i].purchase_price }}</td>				
 									{% endfor %}								
 								</tr>
 								<tr>
-									<td class="lastFirstBlock" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Selling energy price{%endtrans%} (€/kWh) </td>
+									<td class="lastFirstBlock" colspan="2" style=" border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">{%trans%} Selling energy price{%endtrans%} (€/kWh) </td>
 									{% for i in 0..6 %}
 										<td class="lastFirstBlock">{{ dataActionPlan[i].selling_price }}</td>				
 									{% endfor %}							
 								</tr>
 								<tr id="showSchedule">
-									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9"> &#9660; {%trans%} show schedule (per hours) {%endtrans%}</td>
+									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid #efefef; border-bottom:2px solid #efefef; padding-left:15px;" colspan="9"> &#9660; {%trans%} show schedule (per hours) {%endtrans%}</td>
 								</tr>
 								
 								<!-- FIRST COLUMN -->
 								<tr class="showDiv">
-									<td class="firstCellShowDiv" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Daily Energy Cost {%endtrans%}<br><br>{%trans%} (Production in KW/h)  {%endtrans%}</td>
+									<td class="firstCellShowDiv" rowspan="25" style=" border-bottom: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">{%trans%} Daily Energy Cost {%endtrans%}<br><br>{%trans%} (Production in KW/h)  {%endtrans%}</td>
 								</tr>
 								
 								{% for i in 0..23 %}
 								<tr class="showDiv">
 								
 									<!-- TIME COLUMN -->
-									<td class="secondCellShowDiv" style="background-color: #d9e1f2; border-right: 2px solid; {%if(i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
+									<td class="secondCellShowDiv" style=" border-right: 2px solid #efefef; {%if(i==23)%} border-bottom: 2px solid #efefef; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
 															
 									<!-- WEEK DAYS COLUMNS -->
 									
@@ -466,7 +458,7 @@
 																{% endif %}
 														  style="background-color:#{{ dataActionPlan[j].calculation[i].color_suggestion }};
 																{% if(i==23)%} 
-																   border-bottom: 2px solid; 
+																   border-bottom: 2px solid #efefef; 
 													   {% endif %} 
 																{{bold}}" title='{{ valueCellByHour }} ({{ dataActionPlan[j].strategy }}) {{title}}'>
 											  {% elseif dataActionPlan[j].calculation[i].suggestion == 0 %}
@@ -477,7 +469,7 @@
 														  {% endif %}
 														  style="background-color:#{{ dataActionPlan[j].calculation[i].color_suggestion }};
 																{% if(i==23)%} 
-																   border-bottom: 2px solid; 
+																   border-bottom: 2px solid #efefef; 
 																{% endif %} 
 																{{bold}}" title='{{ valueCellByHour }} ({{ dataActionPlan[j].strategy }}) {{title}}'>
 													{% else %}
@@ -488,7 +480,7 @@
 															{% endif %}
 															style="background-color:#{{ dataActionPlan[j].calculation[i].color_suggestion }};
 															{% if(i==23)%} 
-																		border-bottom: 2px solid; 
+																		border-bottom: 2px solid #efefef; 
 															{% endif %} 
 															{{bold}}" title='{{ valueCellByHour }} {{title}}'>
 													{% endif %}
@@ -498,10 +490,10 @@
 											</td>	
 																
 											{% else %}	
-												<td style="background-color:#777777;{%if(i==23)%} border-bottom: 2px solid; {% endif %}"> {%trans%}no data{%endtrans%}</td>
+												<td style="background-color:#f2f2f2; color: #949494;{%if(i==23)%} border-bottom: 2px solid #efefef; {% endif %}"> {%trans%}no data{%endtrans%}</td>
 											{% endif %}
 										{% else %}
-											<td style="background-color:#777777;{%if(i==23)%} border-bottom: 2px solid; {% endif %}"> {%trans%} no data {%endtrans%}</td>
+											<td style="background-color:#f2f2f2; color: #949494;{%if(i==23)%} border-bottom: 2px solid #efefef; {% endif %}"> {%trans%} no data {%endtrans%}</td>
 										{% endif %}
 									{% endfor %}
 							
@@ -521,14 +513,14 @@
 									<!-- ROW 1: e.g. AUTO-CONSUMPTION -->
 									
 									<!-- FIRST COLUMNS Part A -->
-									<td class="scheduleStart" rowspan="{{ dataActionPlan[0].options|length-1 }}" style="background-color: #d9e1f2; border-bottom:2px solid; border-right: 0 none;">
+									<td class="scheduleStart" rowspan="{{ dataActionPlan[0].options|length-1 }}" style="border-bottom:2px solid #efefef; border-right: 0 none; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">
 									<strong>{%trans%} Schedule stretch {%endtrans%} {{iStretch+1}}</strong>
 									</td>
 									
 									<!-- FIRST COLUMNS Part B - ROW 1 -->
-								 <td style="width:150px; background-color: #d9e1f2; border-right: 2px solid;
+								 <td style="width:150px;  border-right: 2px solid #efefef;
 									{% if(dataActionPlan[0].options|length-1 == 1) %}
-									  border-bottom: 2px solid;
+									  border-bottom: 2px solid #efefef;
 									{% endif %}									
 									">
 									{{ dataActionPlan[0].options[1] }}
@@ -537,7 +529,7 @@
 										 <td 
 											{% if( dataActionPlan[j].day=='now'|date('Y-m-d')) %} class="selectedDayCell value" {% else %} class="value" {% endif %}
 											{% if( dataActionPlan[j].day<'now'|date('Y-m-d')) %} style="background-color: #a6a6a6; {% else %} style="background-color: #AAEEAA;{% endif %}
-											{% if(dataActionPlan[0].options|length-1 == 1) %}	border-bottom: 2px solid;{% endif %}
+											{% if(dataActionPlan[0].options|length-1 == 1) %}	border-bottom: 2px solid #efefef;{% endif %}
 									 ">
 											{% for p in 0..dataActionPlan[j].interval|length-1 %}
 												{% if( dataActionPlan[j].interval != null) %}
@@ -555,9 +547,9 @@
 								{% if(dataActionPlan[0].options|length > 2) %}								
 								<tr>
 									<!-- FIRST COLUMNS Part B - ROW 2 -->
-         <td style="width:150px; background-color: #d9e1f2; border-right: 2px solid;
+         <td style="width:150px;  border-right: 2px solid #efefef;
 									{% if(dataActionPlan[0].options|length-1 == 2) %}
-									  border-bottom: 2px solid;
+									  border-bottom: 2px solid #efefef;
 									{% endif %}									
 									">					
 									{{ dataActionPlan[0].options[2] }}
@@ -566,7 +558,7 @@
 										<td 
 											{% if( dataActionPlan[j].day=='now'|date('Y-m-d')) %} class="selectedDayCell value" {% else %} class="value" {% endif %}
 											{% if( dataActionPlan[j].day<'now'|date('Y-m-d')) %} style="background-color: #a6a6a6; {% else %} style="background-color: #AAEEAA;{% endif %}
-											{% if(dataActionPlan[0].options|length-1 == 2) %}	border-bottom: 2px solid;{% endif %}
+											{% if(dataActionPlan[0].options|length-1 == 2) %}	border-bottom: 2px solid #efefef;{% endif %}
 									 ">
 											{% for p in 0..dataActionPlan[j].interval|length-1 %}
 												{%if( dataActionPlan[j].interval != null) %}
@@ -584,9 +576,9 @@
 							 {% if(dataActionPlan[0].options|length > 3) %}								
 								<tr>
 									<!-- FIRST COLUMNS Part B - ROW 3 -->
-									<td style="width:150px; background-color: #d9e1f2; border-right: 2px solid;
+									<td style="width:150px;  border-right: 2px solid #efefef;
 									{% if(dataActionPlan[0].options|length-1 == 3) %}
-									  border-bottom: 2px solid;
+									  border-bottom: 2px solid #efefef;
 									{% endif %}									
 									">					
 									{{ dataActionPlan[0].options[3] }}
@@ -595,7 +587,7 @@
 										<td 
 											{% if( dataActionPlan[j].day=='now'|date('Y-m-d')) %} class="selectedDayCell value" {% else %} class="value" {% endif %}
 											{% if( dataActionPlan[j].day<'now'|date('Y-m-d')) %} style="background-color: #a6a6a6; {% else %} style="background-color: #AAEEAA;{% endif %}
-											{% if(dataActionPlan[0].options|length-1 == 3) %}	border-bottom: 2px solid;{% endif %}
+											{% if(dataActionPlan[0].options|length-1 == 3) %}	border-bottom: 2px solid #efefef;{% endif %}
 										">
 											{% for p in 0..dataActionPlan[j].interval|length-1 %}
 												{%if( dataActionPlan[j].interval != null) %}
@@ -613,9 +605,9 @@
 								{% if(dataActionPlan[0].options|length > 4) %}
 								<tr>
 									<!-- FIRST COLUMNS Part B - ROW 4 -->
-									<td style="width:150px; background-color: #d9e1f2; border-right: 2px solid; 									
+									<td style="width:150px; border-right: 2px solid #efefef; 									
 									{% if(dataActionPlan[0].options|length-1 == 4) %}
-									  border-bottom: 2px solid;
+									  border-bottom: 2px solid #efefef;
 									{% endif %}									
 									">					
 									{{ dataActionPlan[0].options[4] }}
@@ -625,7 +617,7 @@
 											<td 
 											{% if( dataActionPlan[j].day=='now'|date('Y-m-d')) %} class="selectedDayCell value" {% else %} class="value" {% endif %}
 											{% if( dataActionPlan[j].day<'now'|date('Y-m-d')) %} style="background-color: #a6a6a6; {% else %} style="background-color: #AAEEAA;{% endif %}
-											{% if(dataActionPlan[0].options|length-1 == 4) %}	border-bottom: 2px solid;{% endif %}
+											{% if(dataActionPlan[0].options|length-1 == 4) %}	border-bottom: 2px solid #efefef;{% endif %}
 										">
 											{% for p in 0..dataActionPlan[j].interval|length-1 %}
 												{%if( dataActionPlan[j].interval != null) %}
@@ -674,10 +666,10 @@
 								</tr>-->
 								
 								<tr>
-									<td class="value" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
+									<td class="value" colspan="2" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
 									
 									{% for i in 0..6 %}
-										<td style="text-align: left; {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} background-color:#d9d9d9; {% endif %}">
+										<td style="text-align: left; {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} background-color:#f2f2f2; color:#949494; {% endif %}">
 											<form id="form_{{i}}" method="post">
 									 
 												<div class="inputsFilters" style=" float:left; margin-right:3px;">

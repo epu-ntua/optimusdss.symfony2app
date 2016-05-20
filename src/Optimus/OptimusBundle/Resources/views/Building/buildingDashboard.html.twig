@@ -1,0 +1,455 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+			
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.dashes.js') }}"></script>
+	<script language="javascript" type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.stack.js') }}"></script>
+{% endblock %}
+
+{% block content %} 
+
+<script type="text/javascript">
+/* ---------------- Graph Stack---------------*/
+	$(function(){
+		var stack = true,	bars = false,	lines = true,	steps = false;
+			
+		var stackSensors=["Energy production", "Total consumption", "CO2"];
+	
+		{% set maxY=0 %}
+		{% set minY=0 %}
+		{% set startPredictor=startDate | date('F j, Y H:i:s') %}
+		{% set endPredictor=endDate | date('F j, Y H:i:s') %}
+		{% set initPred = true %}
+		var dataset=[];
+		var aHeight = [];
+		aHeight["Energy cost"] = 70;
+		aHeight["CO2"] = 70;
+		aHeight["Energy consumption"] = 260;
+		aHeight["Produced renewable energy"] = 50;
+			
+		{% for z in mappingVariable %}
+			{% set lp_z=loop.index0 %}				
+
+			var dataVariable=[];			
+			
+			{% if mappingVariable[lp_z].data is not empty %}
+				{% for j in mappingVariable[lp_z].data %}
+					{% set lp_j=loop.index0 %}							
+					
+					
+					{% set date = mappingVariable[lp_z].data[lp_j].date | date("F j, Y H:i:s") %}
+					
+					var value = 0;
+					{% if mappingVariable[lp_z].maxValue != 0 %}
+						value = {{mappingVariable[lp_z].data[lp_j].value}} * aHeight["{{mappingVariable[lp_z].name}}"] / {{mappingVariable[lp_z].maxValue}}
+
+					{% endif %}					 
+					
+					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(2)+" {{mappingVariable[lp_z].units}}"]);	
+
+					//dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  {{mappingVariable[lp_z].data[lp_j].value}} {{mappingVariable[lp_z].units}}"]);			
+					
+				{% endfor %}		
+			{% endif %}
+			
+			dataset.push({data:dataVariable, label: "{{mappingVariable[lp_z].name}}", color:"{{mappingVariable[lp_z].color}}", dashes: { show: false, dashLength:[3, 3], lineWidth: 1, color:"{{mappingVariable[lp_z].color}}"}, shadowSize: 0, stack: {{mappingVariable[lp_z].stack}}});
+		
+		{% endfor %}	
+		
+		console.log(dataset);
+			
+		var plot2 = $.plot("#placeholder_stack", dataset,{
+			series: {
+				stack: stack,
+				lines: {
+					show: lines,
+					fill: true,
+					steps: steps,
+					lineWidth: 1.1,
+					strokeStyle: "#eee"
+				},
+				points: {
+					show: false
+				},
+				shadowSize: 1
+			}, 
+			 
+			grid: {
+				canvasText:{show:true},
+				hoverable: true,
+				backgroundColor: { colors: [ "#fff", "#fff" ] },
+				borderColor: "#fff",
+				borderWidth: {
+					top: 1,
+					right: 1,
+					bottom: 1,
+					left: 1
+				},
+				/*markings: [
+					{ color: "#d8eff7", lineWidth: 5, xaxis: { from:  new Date("{{ actualDate | date('F j, Y') }}"), to: new Date("{{ actualDate | date('F j, Y') }}") }}
+				], markingsLineWidth:5,*/
+			},
+			legend: {
+				show: false
+			},
+			crosshair: {
+				mode: "x"
+			},				
+			xaxis:{					
+					mode: "time", min: new Date("{{ startDate | date('F j, Y') }}"), max: new Date("{{ lastDay | date('F j, Y') }}"), tickLength: 1, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					show:true,
+					timeformat: "%a <br/> %d.%m", ticks:8,
+					//labelWidth: 50,
+					minTickSize: [1, "day"],	
+					autoscaleMargin: 3
+					//reserveSpace:true						
+				},
+			yaxis:{min:{{ minY }}, max: 400, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: false,  ticks:[{{ minY }}, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false},
+			//pan:{interactive:true, cursor: "move", frameRate: 20},
+			/*selection: {
+				mode: "x"
+			}*/
+		});	
+		
+		$("#placeholder_stack").bind("plothover", function (event, pos, item) {
+					if (item) {					
+						document.body.style.cursor = 'pointer';
+						if (previousPoint != item.dataIndex) {
+							previousPoint = item.dataIndex;
+							
+							//console.log(item);
+							$("#tooltip").remove();
+							var x = item.datapoint[0],
+								y = item.datapoint[1];
+								z = item.series.data[item.dataIndex+1][2];
+							showTooltip(item.pageX, item.pageY, z);
+						}
+					}else{
+						document.body.style.cursor = 'default';
+						$("#tooltip").remove();
+						previousPoint = null;
+					}
+				});
+		
+		plot2.setSelection({
+			xaxis: {
+				from: new Date("2015-05-11"), 
+				to: new Date("2015-05-14") 
+			}
+		});
+		
+		
+		/*------------------------------------------*/ 
+		
+		/* Graph Stack BARS User Activity */
+		var stack = true,	bars = true,	lines = false,	steps = false;
+			
+		var stackSensors=["Energy production", "Total consumption", "CO2"];
+		
+		var dataset=[];
+		var dAccepts = [];	
+		var dDeclines = [];	
+		var dUnknows = [];	
+		
+		{% set maxY=0 %}		
+		{% set valAccepts=0 %}		
+		{% set valDeclines=0 %}		
+		{% set valUnknows=0 %}		
+		
+		{% for z in dataDashboard[0].valuesDay %}
+			
+			{% set lp_z=loop.index0 %}
+			
+			{% set date = dataDashboard[0].valuesDay[lp_z].date | date("F j, Y") %}
+			
+			{% set valAccepts=dataDashboard[0].valuesDay[lp_z].accepts %}
+			{% set valDeclines=dataDashboard[0].valuesDay[lp_z].declines %}
+			{% set valUnknows=dataDashboard[0].valuesDay[lp_z].unknows %}
+			
+			{% set sumDay=dataDashboard[0].valuesDay[lp_z].accepts + dataDashboard[0].valuesDay[lp_z].declines + dataDashboard[0].valuesDay[lp_z].unknows %}
+			
+			{% if maxY < sumDay %}
+				{% set maxY=sumDay %}
+			{% endif %}
+			
+			var strAccepts="Accepts "+{{valAccepts}}+".";
+			var strDeclines="Declines "+{{valDeclines}}+".";
+			var strUnknows="Unknows "+{{valUnknows}}+".";
+			
+			dAccepts.push([new Date("{{date}}"), {{valAccepts}}, strAccepts]);
+			
+			dDeclines.push([new Date("{{date}}"), {{valDeclines}}, strDeclines]);
+			
+			dUnknows.push([new Date("{{date}}"), {{valUnknows}}, strUnknows]);
+			
+		{% endfor %}
+		
+		dataset.push({data:dAccepts, label: "Accepts", color:"#00ff00", dashes: { show: false}, shadowSize: 0, stack: 0 });
+		dataset.push({data:dDeclines, label: "Declines", color:"#ff0000", dashes: { show: false}, shadowSize: 0, stack: 0 });
+		dataset.push({data:dUnknows, label: "Unknows", color:"#ffff00",  dashes: { show: false}, shadowSize: 0, stack: 0 });
+		
+		console.log(dataset);
+			
+		var plot2 = $.plot("#placeholder_stackPila", dataset,{
+			series: {
+				stack: stack,
+				lines:{show:false},
+				bars: {
+					lineWidth: 0.5,
+					show: bars,
+					barWidth: 24 * 60 * 60 * 600
+				},				
+			}, 			 
+			grid: {
+				canvasText:{show:true},
+				hoverable: true,
+				backgroundColor: { colors: [ "#fff", "#fff" ] },
+				borderColor: "#bbb",
+				borderWidth: {
+					top: 1,
+					right: 1,
+					bottom: 1,
+					left: 1
+				},				
+			},
+			legend: {
+				show: false
+			},							
+			xaxis:{					
+					mode: "time", min: new Date("{{dataDashboard[0].valuesDay[0].date | date('F j, Y')}}"), 
+					max: new Date("{{ endDate | date('F j, Y') }}"), 
+					//tickLength: 5, 
+					font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					show:true,
+					timeformat: "%a <br/> %d.%m", //\n 
+					//minTickSize: [1, "day"],
+					//labelWidth: 50, reserveSpace:true						
+				},
+			yaxis:{min:0, max: {{maxY}}, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[0, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false},			
+			
+		});	
+		
+		$("#placeholder_stackPila").bind("plothover", function (event, pos, item) {
+			if (item) {					
+				document.body.style.cursor = 'pointer';
+				if (previousPoint != item.dataIndex) {
+					previousPoint = item.dataIndex;
+					
+					//console.log(item);
+					$("#tooltip").remove();
+					var x = item.datapoint[0],
+						y = item.datapoint[1];
+						z = item.series.data[item.dataIndex][2];
+						console.log(z);
+						//z = item.datapoint[2];
+					showTooltip(item.pageX, item.pageY, z);
+				}
+			}else{
+				document.body.style.cursor = 'default';
+				$("#tooltip").remove();
+				previousPoint = null;
+			}
+		});
+		
+		//Función compartida por todas las gráficas
+		function showTooltip(x, y, contents)
+		{
+			$('<div id="tooltip" style="font-size:10px;">' + contents + '</div>').css( {
+				position: 'absolute',
+				display: 'none',
+				top: y-20,
+				left: x + 10,
+				border: '1px solid #595959',
+				padding: '2px',				
+				'background-color': '#DADADA',
+				opacity: 0.80
+			}).appendTo("body").fadeIn(200);
+		}
+		
+	});	
+					
+		
+</script>
+  
+	<div id="left">
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
+		
+	</div>
+	
+	<div id="right">
+		
+		<div id="topRight">			
+			<p>  {{ nameBuilding }} </p>
+			<ul type="none">
+				<li class="active"><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
+			</ul>
+		</div>
+		
+		<div id="centerRight">			
+			<div>
+				
+				<p class="textSection">The building dashboard displays the DSS indicators values in the last 7 days and the average of the last month.</p>
+				
+					
+				<!-- Graph Stack -->
+				<div style=" overflow:hidden; ">
+					<!-- if mapping is not empty => print-->
+					<div style="float:left; width:100%; margin-bottom: 40px;">						
+						<div id="placeholder_stack" style="{%if mappingVariable is empty%}display:none;{% endif %} height:300px; float:left; width: 1075px;  margin-bottom:10px; background-color:#fff; padding: 0 0 30px 0;" onclick="location.href='{{ path('prediction', {'idBuilding':idBuilding}) }}';">	</div> <!--margin-left: -10px;-->
+					</div>
+					
+					<div style="float:left; width:100%;">
+						<div style="width:15%; float:left;">
+							<p class="titleDiv">{{ nameBuilding }} </p>
+							<p class="">last week</p>
+							<p class="">previous week</p>
+						</div>
+						{% for key,indicator in globalRTime %}
+							{% if indicator[0] < indicator[1] %}
+								{% set arrow='&#9660;' %}								
+							{% elseif indicator[0] > indicator[1] %}
+								{% set arrow='&#9650;' %}							
+							{% else%}
+								{% set arrow="=" %}						
+							{% endif %}
+							
+							{% if indicator[2] > 0 %}
+								{% set color="#00ff00;" %}
+								
+							{% elseif indicator[2] < 0 %}
+								{% set color="#ff0000;" %}
+							{% else%}
+								{% set color="#44546a;" %}
+							{% endif %}
+							
+							<div style="margin: 10px 10px; overflow: hidden; float:left;  width: 18%;">
+								<p style="font-size:12px; float:left; margin:0; width:100%;">
+									{% set colorVariable="#fff" %}
+									{% for z in mappingVariable %}
+										{% set lp_z=loop.index0 %}
+										{% if mappingVariable[lp_z].name==key %}
+											{% set colorVariable=mappingVariable[lp_z].color %}
+										{% endif %}
+									{% endfor %}
+									<span style="margin:2px 5px 2px 0; width:10px; height:10px; background-color:{{colorVariable}}; float:left; "></span><span style="color:{{colorVariable}}; margin-right:15px;">{{key}} ({{unitsRTime[key]}})</span>
+								</p>
+								<p style=" margin:0; width:160px; text-align:right;">
+									{{indicator[0]|round(1, 'floor')}} </p>
+									
+								<p style=" margin:0; width:160px; text-align:right;">	{{indicator[1] |round(1, 'floor')}}
+								</p>
+								<p style=" margin:0; width:160px; text-align:right;"><span style="color:{{color}}; width:5px;"> {{arrow|raw}}</span></p>
+							</div>
+						{% endfor %}
+					</div>
+					
+					
+				</div>
+				
+				
+				<!-- Graph Stack User activity -->
+				<!--
+				<div class="propertiesBuilding">
+					<div style="float:left; width:400px;">
+						<p style="font-size: 11px; font-weight:bold;">User activities</p>
+						
+						{% if dataDashboard[0].aWeek['accepts'] < dataDashboard[0].aMonth['accepts'] %}
+							{% set arrowA='&#9660;' %}
+							{% set colorA="#ff0000;" %}							
+						{% elseif dataDashboard[0].aWeek['accepts'] > dataDashboard[0].aMonth['accepts'] %}
+							{% set arrowA='&#9650;' %}
+							{% set colorA="#00ff00;" %}							
+						{% else%}
+							{% set arrowA="=" %}
+							{% set colorA="#44546a;" %}							
+						{% endif %}
+						
+						{% if dataDashboard[0].aWeek['declines'] < dataDashboard[0].aMonth['declines'] %}
+							{% set arrowD='&#9660;' %}
+							{% set colorD="#00ff00;" %}							
+						{% elseif dataDashboard[0].aWeek['declines'] > dataDashboard[0].aMonth['declines'] %}
+							{% set arrowD='&#9650;' %}
+							{% set colorD="#ff0000;" %}							
+						{% else%}
+							{% set arrowD="=" %}
+							{% set colorD="#44546a;" %}							
+						{% endif %}
+						
+						{% if dataDashboard[0].aWeek['unknows'] < dataDashboard[0].aMonth['unknows'] %}
+							{% set arrowU='&#9660;' %}
+							{% set colorU="#00ff00;" %}							
+						{% elseif dataDashboard[0].aWeek['unknows'] > dataDashboard[0].aMonth['unknows'] %}
+							{% set arrowU='&#9650;' %}
+							{% set colorU="#ff0000;" %}							
+						{% else%}
+							{% set arrowU="=" %}
+							{% set colorU="#44546a;" %}							
+						{% endif %}
+						
+						<div style=" font-size:11px; margin: 5px 10px; overflow: hidden;">
+							<p style="font-size:11px; float:left; margin:0; width:220px;">
+								<span style="margin:2px 5px 2px 0; width:10px; height:10px;  background-color:#00ff00; float:left; "></span>
+								<span style="color:#2e75b6; margin-right:15px;">Accepted action plans</span>
+							</p>
+							<p style="float:left; margin:0; width:160px; text-align:right;">
+								{{dataDashboard[0].aWeek['accepts']}} 
+								<span style="color:{{colorA}}; width:5px; font-size:12px;"> {{arrowA|raw}} </span> 
+								{{dataDashboard[0].aMonth['accepts']}}
+							</p>
+						</div>
+						<div style=" font-size:11px; margin: 5px 10px; overflow: hidden;">
+							<p style="font-size:11px; float:left; margin:0; width:220px;">
+								<span style="margin:2px 5px 2px 0; width:10px; height:10px;  background-color:#ff0000; float:left; "></span>
+								<span style="color:#2e75b6; margin-right:15px;">Declined action plans</span>
+							</p>
+							<p style="float:left; margin:0; width:160px; text-align:right;">	
+								{{dataDashboard[0].aWeek['declines']}} 
+								<span style="color:{{colorD}}; width:5px; font-size:12px;"> {{arrowD|raw}} </span> 
+								{{dataDashboard[0].aMonth['declines']}}
+							</p>
+						</div>
+						<div style=" font-size:11px; margin: 5px 10px; overflow: hidden;">
+							<p style="font-size:11px; float:left; margin:0; width:220px;">
+								<span style="margin:2px 5px 2px 0; width:10px; height:10px;  background-color:#ffff00; float:left; "></span>
+								<span style="color:#2e75b6; margin-right:15px;">Inactivity</span>
+							</p>
+							<p style="float:left; margin:0; width:160px; text-align:right;">
+								{{dataDashboard[0].aWeek['unknows']}} 
+								<span style="color:{{colorU}}; width:5px; font-size:12px;"> {{arrowU|raw}} </span> 
+								{{dataDashboard[0].aMonth['unknows']}}
+							</p>
+						</div>
+					</div>
+					
+					<div style="float:left; width:470px;">						
+						<div  id="placeholder_stackPila" style="float:left; width:470px; height:120px; margin-bottom:10px;"></div>
+					</div>
+				</div>-->
+					
+								
+			</div>
+		</div>
+	</div>
+		
+    
+{% endblock %}
