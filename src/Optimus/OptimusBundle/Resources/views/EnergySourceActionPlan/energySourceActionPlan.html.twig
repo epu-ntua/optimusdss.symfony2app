@@ -2,8 +2,8 @@
 
 {% block javascripts %}
     <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/ui-lightness/jquery-ui-1.10.3.custom.min.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/source.css') }}"/>
-    <script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/source.css') }}"/>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
     <script src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
   
@@ -16,6 +16,7 @@
 	$(function(){		
 		$("#datepicker").hide();
 		$(".showDiv").slideToggle();
+		$(".showDiv2").slideToggle();
 		
 		var startDate;
 		var endDate;
@@ -62,6 +63,19 @@
 		$(document).on('mouseleave','#datepicker .ui-datepicker-calendar tr', function() { $(this).find('td a').removeClass('ui-state-hover'); });
 		
 		
+		//double-clik on table
+		$("#showSchedule").click(function(){
+			$(".showDiv").slideToggle();
+			$("#showSchedule .closedList").toggle();
+			$("#showSchedule .openList").toggle();
+		});
+		
+		$("#showSchedule2").click(function(){
+			$(".showDiv2").slideToggle();
+			$("#showSchedule2 .closedList").toggle();
+			$("#showSchedule2 .openList").toggle();
+		});
+		
 	});
 	
 	//Show/hide el calendario
@@ -82,51 +96,59 @@
 		location.href=url;
 		//location.href="{{ path('homepage') }}/"+$('#startDate').html()+"/"+$('#endDate').html()+"/"+timeSelected;
 	}
+	
+	function createURLPredictor()
+	{
+		dateI=$("#startDate").html();
+		dateF=$("#endDate").html();
+		
+		var url = "{{ path('newCalculateES', {'idBuilding':idBuilding, 'idAPType':idAPType, 'from':'dateI', 'to':'dateF'}) }}";
+		url = url.replace("dateI", $("#startDate").html());
+		url = url.replace("dateF", $("#endDate").html());
+		
+		location.href=url;
+	}
 
 	google.load('visualization', '1', {packages: ['corechart', 'line']});
     google.setOnLoadCallback(drawChart);
 	var data;
 	var options;
 	var chart;
-	var consumption = [{% for i in 0..166 %}
-							{{dataActionPlan.dataHourly[i].consumption }}, 
+	
+	var res = [{% for i in 0..166 %}
+							{{dataActionPlan[i/24].res[i%24] }}, 
 					  {% endfor %} 
-					  {{dataActionPlan.dataHourly[167].consumption }} ];
-					  
-	var consumptionShifted = [{% for i in 0..166 %}
-								{{dataActionPlan.dataHourly[i].consumptionShifted }}, 
-							 {% endfor %} 
-							 {{dataActionPlan.dataHourly[167].consumptionShifted }} ];
-							 
-	var production = [{% for i in 0..166 %}
-							{{dataActionPlan.dataHourly[i].production }}, 
-					  {% endfor %} 
-					  {{dataActionPlan.dataHourly[167].production }} ];
+					  {{dataActionPlan[6].res[167%24] }} ];
 					  
 	var grid = [{% for i in 0..166 %}
-					{{dataActionPlan.dataHourly[i].grid }}, 
-				{% endfor %} 
-				{{dataActionPlan.dataHourly[167].grid }} ];
-	
-	var gridShifted = [{% for i in 0..166 %}
-					{{dataActionPlan.dataHourly[i].gridShifted }}, 
-				{% endfor %} 
-				{{dataActionPlan.dataHourly[167].gridShifted }} ];
+							{{dataActionPlan[i/24].grid[i%24] }}, 
+					  {% endfor %} 
+					  {{dataActionPlan[6].grid[167%24] }} ];
 	
 	var load = [{% for i in 0..166 %}
-					{{dataActionPlan.dataHourly[i].load }}, 
-				{% endfor %} 
-				{{dataActionPlan.dataHourly[167].load }} ];
+							{{dataActionPlan[i/24].load[i%24] }}, 
+					  {% endfor %} 
+					  {{dataActionPlan[6].load[167%24] }} ];
 	
-	var gridOriginal = [{% for i in 0..166 %}
-					{{dataActionPlan.dataHourly[i].gridOriginal }}, 
-				{% endfor %} 
-				{{dataActionPlan.dataHourly[167].gridOriginal }} ];
+	var grid_original = [{% for i in 0..166 %}
+							{{dataActionPlan[i/24].grid_original[i%24] }}, 
+					  {% endfor %} 
+					  {{dataActionPlan[6].grid_original[167%24] }} ];
 
-	var batteryUse = [{% for i in 0..166 %}
-					{{dataActionPlan.dataHourly[i].batteryUse }}, 
-				{% endfor %} 
-				{{dataActionPlan.dataHourly[167].batteryUse }} ];	
+	var load_original = [{% for i in 0..166 %}
+							{{dataActionPlan[i/24].load_original[i%24] }}, 
+					  {% endfor %} 
+					  {{dataActionPlan[6].load_original[167%24] }} ];
+					  
+	var storage = [{% for i in 0..166 %}
+							{{dataActionPlan[i/24].storage[i%24] }}, 
+					  {% endfor %} 
+					  {{dataActionPlan[6].storage[167%24] }} ];
+					  
+	var shaving = [{% for i in 0..166 %}
+							{{dataActionPlan[i/24].shaving[i%24] }}, 
+					  {% endfor %} 
+					  {{dataActionPlan[6].shaving[167%24] }} ];
 				
 	var dif = 0;
 	
@@ -137,7 +159,7 @@
           title: 'Energy Data',
           subtitle: 'in kWh'
         },
-		colors: ['red','green','blue', 'FireBrick', 'GreenYellow'],
+		colors: ['red','green','blue', 'FireBrick', 'lightblue', 'GreenYellow'],
         width: 899,
         height: 400
       };
@@ -153,18 +175,19 @@
 				$( this ).attr("class","chart_days_li");
 			});
 			$(this).attr("class","chart_days_li selected");
-			dif = parseInt($(this).text().substring(8, 10)) - parseInt($( ".chart_days_li:first" ).text().substring(8, 10));
+			dif = $( ".chart_days_li" ).index( $(this) );
 			data = new google.visualization.DataTable();
 			data.addColumn('number', 'Hour');
-			data.addColumn('number', 'Consumption');
-			data.addColumn('number', 'Production');
 			data.addColumn('number', 'Load');
-			data.addColumn('number', 'Grid Original')
-			data.addColumn('number', 'Storage')
+			data.addColumn('number', 'Res');
+			data.addColumn('number', 'Grid');
+			data.addColumn('number', 'Load Original');
+			data.addColumn('number', 'Grid Original');
+			data.addColumn('number', 'Storage');
 				
 			var newdata=[];
 			for (i = dif*24; i < dif*24+24; i++) {
-				newdata.push([i%24, consumption[i], production[i], load[i], gridOriginal[i], batteryUse[i]]); 
+				newdata.push([i%24, load[i], res[i], grid[i], load_original[i], grid_original[i], storage[i]]); 
 			}
 			data.addRows(newdata);
 			
@@ -182,50 +205,25 @@
 				
 				data = new google.visualization.DataTable();
 				data.addColumn('number', 'Hour');
-				data.addColumn('number', 'Consumption');
-				data.addColumn('number', 'Production');
 				data.addColumn('number', 'Load');
-				data.addColumn('number', 'Grid Original')
-				data.addColumn('number', 'Storage')
+				data.addColumn('number', 'Res');
+				data.addColumn('number', 'Grid');
+				data.addColumn('number', 'Load Original');
+				data.addColumn('number', 'Grid Original');
+				data.addColumn('number', 'Storage');
 					
 				var newdata=[];
 				for (i = dif*24; i < dif*24+24; i++) {
-					newdata.push([i%24, consumption[i], production[i], load[i], gridOriginal[i], batteryUse[i]]); 
+					newdata.push([i%24, load[i], res[i], grid[i], load_original[i], grid_original[i], storage[i]]); 
 				}
 				data.addRows(newdata);
-					chart.draw(data, options);
+					
+				chart.draw(data, options);
 			}
 		});
 	});
 	
 	
-	$(document).ready(function() {
-		$("#finalSuggestionsHead").click(function(){
-			$(".finalSuggestionsRow").toggle();
-			$("#finalSuggestionsHead .closedList").toggle();
-			$("#finalSuggestionsHead .openList").toggle();
-		});
-	});
-	
-	$(document).ready(function() {
-		$("#batteryUseHead").click(function(){
-			$(".batteryUseRow").toggle();
-			$("#batteryUseHead .closedList").toggle();
-			$("#batteryUseHead .openList").toggle();
-		});
-	});
-	
-	$(document).ready(function() {
-		$("#loadshift").click(function(){
-			if ($("#loadshift").is(':checked')) {
-				$("#finalSuggestionsHead").show();
-			}
-			else{
-				$("#finalSuggestionsHead").hide();
-				$(".finalSuggestionsRow").hide();
-			}
-		});
-	});
 </script>
 
 
@@ -237,11 +235,11 @@
 		<div id="topRight">
 			<p>
 				<strong>
-				<span style="cursor:pointer;" onclick="location.href='{{ path('init') }}';">Sant Cugat</span> > 
-				<span style="cursor:pointer;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">Town Hall</span> > 
-				Action Plan: Determination of the energy source to cover the demand, considering battery charging, PV production and the grid
+				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
+				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> > 
+				{{ dataActionPlan_name }}
 				</strong>
-			</p>					
+			</p>				
 		</div>
 		
 		<div id="centerRight">
@@ -271,6 +269,7 @@
 					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #7f7f7f; cursor:pointer;" onclick="displayCalendar();">+</p>
 					
 					<p class="buttonIndicator" onclick="createURLView();" style="margin-right:20px;">View</p>
+					<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">Calculate</p>
 					
 					<p>Selected Day: {{  "now"|date("Y-m-d")  }}</p>
 				</div>
@@ -282,97 +281,154 @@
 						<input type="checkbox" id="loadshift"  name="loadshift" checked >Allow Load Shift
 					</div>
 					<div class="contentTableResults">
-						<table id="tablaActionPlan" border="0">
-							<thead>
-								<tr id="dates">
-									<th colspan="2" style="background-color: #aeaaaa; border-right: 2px solid;"></th>
-									{% for i in 0..6 %}
-										<th>{{ startDate|slice(0, 8) ~ (startDate|slice(8, 2)|number_format + i) }}</th>
-									{% endfor %}
-								</tr>
-							</thead>
+						{% if( dataActionPlan != null) %}
+						<table id="tablaActionPlan" border="0" style="font-size: 12px;">
 							<tbody>
-								<tr>
-									<td class="firstColumnHeaderTemp" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">Consume (kWh) </td>
+								<tr class="headerDays">
+									<td colspan="2" style="border-right: 2px solid;"></td>
 									{% for i in 0..6 %}
-										<td>{{ dataActionPlan.dataDaily[i].consumption|round(1) }}</td>
+									<td>
+										{% if dataActionPlan is defined %}	
+											{% if dataActionPlan[i] is defined %}	
+												{{ (dataActionPlan[i].nameAbbreviatedDay) }}
+												{{ (dataActionPlan[i].abbreviatedDay) }}
+											{% endif %}
+										{% endif %}
+									</td>
+									{% endfor %}
+								</tr>
+								
+								<!-- Top values --> 
+								<tr>
+									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Load {%endtrans%}(kWh) </td>
+									{% for i in 0..6 %}									
+										<td style="background-color: #f2f2f2;">{{ dataActionPlan[i].load_total|round(1, 'floor') }}</td>				
+									{% endfor %}
+								</tr>	
+								<tr>
+									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Grid {%endtrans%}(kWh) </td>
+									{% for i in 0..6 %}									
+										<td style="background-color: #f2f2f2;">{{ dataActionPlan[i].grid_total|round(1, 'floor') }}</td>				
 									{% endfor %}
 								</tr>
 								<tr>
-									<td class="firstColumnHeaderTemp" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">Grid (kWh) </td>
-									{% for i in 0..6 %}
-										<td>{{ dataActionPlan.dataDaily[i].grid|round(1) }}</td>
+									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Production {%endtrans%}(kWh) </td>
+									{% for i in 0..6 %}									
+										<td style="background-color: #f2f2f2;">	{{ dataActionPlan[i].res_total|round(1, 'floor') }}</td>				
 									{% endfor %}
 								</tr>
-								<tr>
-									<td class="firstColumnHeaderTemp" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">Production (kWh) </td>
-									{% for i in 0..6 %}
-										<td>{{ dataActionPlan.dataDaily[i].production|round(1) }}</td>
-									{% endfor %}
+								
+								<!-- Peak Shaving -->
+								<tr id="showSchedule">
+									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span>{%trans%}show peak shaving schedule (per hour) {%endtrans%}</td>
 								</tr>
-								<tr id="finalSuggestionsHead">
-									<td colspan="9"> <span class="closedList"> &#9658;</span><span class="openList" hidden> &#9660;</span> Show Final Suggestion for peak shaving (per hour)</td>
+								
+								<!-- FIRST COLUMN -->
+								<tr class="showDiv">
+									<td class="firstCellShowDiv" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Final Suggestions </br> for peak shaving {%endtrans%}</td>
 								</tr>
+								
 								{% for i in 0..23 %}
-									<tr class="finalSuggestionsRow" hidden>
-										<td class="firstColumnHeaderTemp" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid; {%if( i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
-										{% for j in 0..6 %}
-											<td  {% if(dataActionPlan.dataHourly[j*24 +i].finalSuggestion > 0) %} class="suggestionPos" {% elseif(dataActionPlan.dataHourly[j*24 +i].finalSuggestion < 0) %} class="suggestionNeg" {% endif %} >
-												{{ dataActionPlan.dataHourly[j*24 +i].finalSuggestion | round(2) }}
+								<tr class="showDiv">
+								
+									<!-- TIME COLUMN -->
+									<td class="secondCellShowDiv" style="background-color: #d9e1f2; border-right: 2px solid; {%if(i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
+															
+									<!-- WEEK DAYS COLUMNS -->
+									{% for j in 0..6 %}
+									
+										<!-- DAILY COLUMNS -->
+									
+										{% if dataActionPlan[j].shaving[i] is defined %}		
+											<td style="{%if(i==23)%} border-bottom: 2px solid; {% endif %}" 
+												{% if(dataActionPlan[j].shaving[i] > 0) %} class="suggestionPos" {% elseif(dataActionPlan[j].shaving[i] < 0) %} class="suggestionNeg" {% endif %} >
+												{{ (dataActionPlan[j].shaving[i])   |round(1, 'floor') }}													
 											</td>
-										{% endfor %}
+											
+										{% else %}	
+											<td style="background-color:#777777;{%if(i==23)%} border-bottom: 2px solid; {% endif %}"> no data </td>
+										{% endif %}									
+										
+									{% endfor %}
 									</tr>
 								{% endfor %}
 								
-								<tr id="batteryUseHead">
-									<td colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden> &#9660;</span> Show Final Suggestion for optimizing the battery use (per hour)</td>
+								<!-- Battery Use -->
+								<tr id="showSchedule2">
+									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span>{%trans%}show battery use schedule (per hour) {%endtrans%}</td>
 								</tr>
+								
+								<!-- FIRST COLUMN -->
+								<tr class="showDiv2">
+									<td class="firstCellShowDiv2" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Battery Use {%endtrans%}</td>
+								</tr>
+								
 								{% for i in 0..23 %}
-									<tr class="batteryUseRow" hidden>
-										<td class="firstColumnHeaderTemp" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid; {%if( i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
-										{% for j in 0..6 %}
-											<td>
-												{{ dataActionPlan.batteryUse[j*24 +i] | round(2)}}
+								<tr class="showDiv2">
+								
+									<!-- TIME COLUMN -->
+									<td class="secondCellShowDiv2" style="background-color: #d9e1f2; border-right: 2px solid; {%if(i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
+															
+									<!-- WEEK DAYS COLUMNS -->
+									{% for j in 0..6 %}
+									
+										<!-- DAILY COLUMNS -->
+									
+										{% if dataActionPlan[j].storage[i] is defined %}		
+											<td {% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
+													class="selectedDayCell" 
+												{% endif %}
+													style="background-color:
+												 {%if(i==23)%} border-bottom: 2px solid; {% endif %}" >
+												{{ (dataActionPlan[j].storage[i])   |round(1, 'floor') }}													
 											</td>
-										{% endfor %}
+											
+										{% else %}	
+											<td style="background-color:#777777;{%if(i==23)%} border-bottom: 2px solid; {% endif %}"> no data </td>
+										{% endif %}									
+										
+									{% endfor %}
 									</tr>
 								{% endfor %}
+								
+								<!-- Confirm Action Plan -->
+								<tr>
+									<td class="value" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
+									
+									{% for i in 0..6 %}
+										<td style="text-align: left;">
+											<form id="form_{{i}}" method="post">
+									 
+												<div class="inputsFilters" style=" float:left; margin-right:3px;">
+													<p style="font-size:11px; margin:0;">
+														<input type="radio" name="filter" value="0" {%if( dataActionPlan[i].day >'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
+													</p>
+													<p style="font-size:11px; margin:0;">
+														<input type="radio" name="filter" value="1" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
+													</p>
+													<p style="font-size:11px; margin:0;">
+														<input type="radio" name="filter" value="2" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
+													</p>
+													<input type="hidden" value="{{dataActionPlan[i].day|date('Y-m-d') }}" name="day" id="day" />
+													<input type="hidden" value="{{idActionPlan}}" name="idActionPlan" id="idActionPlan" />
+												</div>
+												
+											</form>
+										</td>
+									{% endfor %}
+								</tr>
 							</tbody>
+							
 						</table>
+						{% endif %}
 					</div>
-					<button id="chart_btn" > <span class="closedList"> &#9658;</span><span class="openList" hidden> &#9660;</span> show graphical schedule</button>
+					<button id="chart_btn" style="background-color:#aeaaaa; text-align:left; border-top:1px solid; border-bottom:2px solid;"> <span class="closedList"> &#9658;</span><span class="openList" hidden> &#9660;</span>show graphical schedule (per hour)</button>
 					<div id="chart_div" hidden>
-						<div id="chart_days" ><ul>{% for j in 0..6 %} <li class="chart_days_li {% if(j==0) %} selected {% endif %}">{{ startDate|slice(0, 8) ~ (startDate|slice(8, 2)|number_format + j) }}</li> {% endfor %}</ul/></div>
+						<div id="chart_days" style="font-size: 14px;"><ul>{% for i in 0..6 %} <li class="chart_days_li {% if(i==0) %} selected {% endif %}">{{ (dataActionPlan[i].nameAbbreviatedDay) }} {{ (dataActionPlan[i].abbreviatedDay) }}</li> {% endfor %}</ul/></div>
 						<div id="linechart" style="margin-top: 10px; margin-bottom: 10px;" > </div>
 					</div>
 					
-					<div id="contentFilterTable" style="overflow:hidden; padding-bottom:10px; padding-top:10px;">
-						<div id="headerFilter" >
-							<p>Please confirm the action plan:</p>
-						</div>
-						<div id="filters" style="float:left;">
-							{% for i in 0..6 %}
-								<form id="form_{{i}}" method="post">
-									<div class="inputsFilters" style=" float:left; margin-right:0px;"">
-										<p style="font-size:11px; margin:0;">
-											{#  <input type="radio" name="filter" value="0" {% if(dataActionPlan[i].status==0) %} checked="checked" {% endif %} >Unknown  #}
-											<input type="radio" name="filter" value="0"  >Unknown
-										</p>
-										<p style="font-size:11px; margin:0;">
-											{# <input type="radio" name="filter" value="1" {% if(dataActionPlan[i].status==1) %} checked="checked" {% endif %} >Accepted #}
-											<input type="radio" name="filter" value="1"  >Accepted												
-										</p>
-										<p style="font-size:11px; margin:0;">
-											{# <input type="radio" name="filter" value="2" {% if(dataActionPlan[i].status==2) %} checked="checked" {% endif %} >Declined #}
-											<input type="radio" name="filter" value="2"  >Declined											
-										</p>
-										{# <input type="hidden" value="{{dataActionPlan[i].day|date('Y-m-d') }}" name="day" id="day" />  #}
-										{# <input type="hidden" value="1" name="idActionPlan" id="idActionPlan" />  #}
-									</div>
-								</form>
-							{% endfor %}
-						</div>						
-					</div>
+					
 					
 				</div>
 		</div>		
