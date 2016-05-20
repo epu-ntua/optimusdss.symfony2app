@@ -118,7 +118,7 @@ class WeeklyReportsController extends Controller
 			'C:\xampp\htdocs\optimus\web\bundles\optimus\pdf\testPDF_1.pdf');*/
 		
 		//View
-		dump($data);
+		//dump($data);
 		return $this->render('OptimusOptimusBundle:Reports:basicForm.html.twig', $data);
 	}
 	
