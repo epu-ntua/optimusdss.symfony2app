@@ -47,6 +47,10 @@ newCalculatePV:
     path:    /new-calculate-pv/{idBuilding}/{idAPType}/{from}/{to}
     defaults: { _controller: OptimusOptimusBundle:PVActionPlan:newCalculatePV }
 
+newCalculateES:
+    path:    /new-calculate-es/{idBuilding}/{idAPType}/{from}/{to}
+    defaults: { _controller: OptimusOptimusBundle:EnergySourceActionPlan:newCalculateES }
+
 changePVStatusDay:
     path:    /change-status/{idOutputDay}
     defaults: { _controller: OptimusOptimusBundle:PVActionPlan:changeStatusDay }
