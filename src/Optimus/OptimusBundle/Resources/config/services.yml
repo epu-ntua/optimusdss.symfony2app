@@ -22,6 +22,10 @@ services:
     service_appvm:
         class: Optimus\OptimusBundle\Servicios\ServiceAPPVMCalculation
         arguments: ["@doctrine.orm.entity_manager", "@service_ontologia", "@service_predict_data_invoke", "@service_event"]    
+
+    service_apsource:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPEnergySourceCalculation
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia", "@service_predict_data_invoke", "@service_event"]  		
         
     service_appreheating:
         class: Optimus\OptimusBundle\Servicios\ServiceAPPreheating
@@ -91,7 +95,7 @@ services:
 
     service_calculo:
         class: Optimus\OptimusBundle\Servicios\ServiceCalculos
-        arguments: ["@service_ontologia", "@service_service_calculation_data_invoke", "@service_predict_data_invoke", "@doctrine.orm.entity_manager", "@service_appv", "@service_appvm", "@service_apeconomizer", "@service_appreheating", "@service_apspmc", "@service_apoc", "@service_event", "@service_pricePredictor", %pvm_num_panels%, %pvm_panels_surface_area%, %pvm_a_coefficient%, %pvm_ta_coefficient%]
+        arguments: ["@service_ontologia", "@service_service_calculation_data_invoke", "@service_predict_data_invoke", "@doctrine.orm.entity_manager", "@service_appv", "@service_appvm", "@service_apeconomizer", "@service_appreheating", "@service_apspmc", "@service_apoc", "@service_event", "@service_pricePredictor", %pvm_num_panels%, %pvm_panels_surface_area%, %pvm_a_coefficient%, %pvm_ta_coefficient%, "@service_apsource"]
 
     service_event:
         class: 	Optimus\OptimusBundle\Servicios\ServiceEvents
@@ -108,8 +112,9 @@ services:
     service_dashboard:
         class: 	Optimus\OptimusBundle\Servicios\ServiceDashboard
         arguments: ["@doctrine.orm.entity_manager"]
-    service_apsource:
-        class: Optimus\OptimusBundle\Servicios\ServiceAPEnergySource
+
+    service_apsource_presenter:
+        class: Optimus\OptimusBundle\Servicios\ServiceAPEnergySourcePresenter
         arguments: ["@doctrine.orm.entity_manager"]
 
     app.twig_extension:

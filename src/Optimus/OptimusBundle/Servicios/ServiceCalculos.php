@@ -28,6 +28,7 @@ class ServiceCalculos {
     protected $appv;
 	protected $appvm;
 	protected $apeconomizer;
+	protected $apflows;
     protected $appreheating;
     protected $apspmc;
 	protected $apoc;
@@ -54,7 +55,8 @@ class ServiceCalculos {
 								$pvm_num_panels,
 								$pvm_panels_surface_area,
 								$pvm_a_coefficient,
-								$pvm_ta_coefficient)
+								$pvm_ta_coefficient,
+								ServiceAPEnergySourceCalculation $apflows)
     {
 		// Params: htdocs\optimus\app\config\config.yml
 		//         htdocs\optimus\src\Optimus\OptimusBundle\Resources\config\services.yml
@@ -75,6 +77,7 @@ class ServiceCalculos {
 		$this->pvm_panels_surface_area=$pvm_panels_surface_area;
 		$this->pvm_a_coefficient=$pvm_a_coefficient;
 		$this->pvm_ta_coefficient=$pvm_ta_coefficient;
+		$this->apflows=$apflows;
     }
 	
 	public function createPredictionAndCalculatesAllBuildings($ip, $user)
@@ -263,8 +266,7 @@ class ServiceCalculos {
 				}
 			}
 		}
-		
-		// dump("SENSORS: ".$aSensors);		
+		// dump("SENSORS: ".$aSensors);
 		return $aSensors;
 	}
 	
@@ -424,7 +426,6 @@ class ServiceCalculos {
 								$aoRelSensorsActionPlan!= null)
 							{
 								//dump(	"INSERT NEW CALCULATED DATA: ".$aoRelSensorsActionPlan['actionPlan']->getType()." Calc ->".$calculation->getId()." AP -> ".$idActionPlan);
-
 								// Do calculations...
 								switch($aoRelSensorsActionPlan['actionPlan']->getType())
 								{
@@ -436,6 +437,8 @@ class ServiceCalculos {
                                     case 5: $this->appvm->insertNewCalculation($aoRelSensorsActionPlan, $from, $calculation, $idBuilding, $ip, $user); break; //Ip & User for event of alarms
 									// Scheduling the buy/sell energy produced PV
                                     case 6: $this->appv->insertNewCalculation($aoRelSensorsActionPlan, $from, $calculation, $idBuilding); break;
+									// Energy Source
+									case 7: $this->apflows->insertNewCalculation($aoRelSensorsActionPlan, $from, $calculation, $idBuilding, $ip, $user); break;
 									// Scheduling the air side economizer
                                     case 8: $this->apeconomizer->insertNewCalculation($aoRelSensorsActionPlan, $from, $calculation, $idBuilding, $ip, $user); break;
 
