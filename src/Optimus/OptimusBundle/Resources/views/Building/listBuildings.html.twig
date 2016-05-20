@@ -1,0 +1,107 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+			
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.stack.js') }}"></script>
+{% endblock %}
+
+{% block content %}  
+<script type="text/javascript">
+	$(function(){
+		
+	});
+</script>
+   
+ 
+	<div id="left">
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
+	</div>
+
+	<div id="right">		
+		<div id="centerRight">	
+			<p class="textSection">The building dashboard displays the DSS indicators values in the last 7 days.</p>
+					
+			<!-- List of buildings-->
+			<div class="contentAllBuildings">
+			{% set i=0 %}
+			{% for building in buildings %}	
+				<div class="boxBuilding">
+					
+					<div class="headerBuilding" > <!-- selectGraph -->
+						<p class="titleDiv link" onclick="location.href='{{ path('buildingDashboard',{'idBuilding':building.id}) }}';"><strong>{{ building.name }}</strong></p>
+						{% for key,indicator in dataBuildings[building.id]['globalRTime'] %}
+							
+							{% set colorVariable=colorsRTime[key] %}								
+							
+							<p class="headersNames" style="color:{{colorVariable}}; ">
+								<span class="boxColor" style=" background-color:{{colorVariable}};  "></span>	
+								{{key}} ({{unitsRTime[key]}})								
+							</p><!--<span ></span>-->
+							
+						{% endfor %}						
+					</div>
+					
+					<div class="contentBuilding">
+						<div class="indicatorsBuilding">
+							<p class="titleRow">last week</p>
+							{% for key,indicator in dataBuildings[building.id]['globalRTime'] %}
+								{% if indicator[0] < indicator[1] %}
+									{% set arrow='&#9660;' %}								
+								{% elseif indicator[0] > indicator[1] %}
+									{% set arrow='&#9650;' %}							
+								{% else%}
+									{% set arrow="=" %}						
+								{% endif %}
+								
+								{% if indicator[2] > 0 %}
+									{% set color="#00ff00;" %}
+									
+								{% elseif indicator[2] < 0 %}
+									{% set color="#ff0000;" %}
+								{% else%}
+									{% set color="#44546a;" %}
+								{% endif %}
+								<p class="textRow">
+									<span style="color:{{color}}; width:5px;"> {{arrow|raw}}</span>
+									{{indicator[0]|round(1, 'floor')}} 
+								</p>
+							{% endfor %}
+						</div>
+						
+						<div class="indicatorsBuilding">
+							<p class="titleRow">previous week</p>
+							{% for key,indicator in dataBuildings[building.id]['globalRTime'] %}
+								
+								<p class="textRow">								
+									{{indicator[1] |round(1, 'floor')}}
+								</p>
+							{% endfor %}
+						</div>
+						
+					</div>
+					
+				</div>
+				{% set i=i+1 %}
+			{% endfor %}	
+			</div>
+		</div>
+	</div>
+		
+    
+{% endblock %}

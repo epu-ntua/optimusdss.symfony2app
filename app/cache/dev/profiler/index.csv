@@ -1,4 +1,0 @@
-b0cc13,147.102.131.205,GET,http://optimusdss.epu.ntua.gr/santcugat/app_dev.php/init,1462580637,
-aa5792,127.0.0.1,GET,http://optimusdss.epu.ntua.gr/santcugat/app_dev.php/_fragment?_path=_format%3Dhtml%26_locale%3Den%26_controller%3DOptimusOptimusBundle%253ABuilding%253Adescription,1462580645,447fb4
-3b53cf,127.0.0.1,GET,http://optimusdss.epu.ntua.gr/santcugat/app_dev.php/_fragment?_path=_format%3Dhtml%26_locale%3Den%26_controller%3DOptimusOptimusBundle%253AEvents%253AlastsEvents,1462580645,447fb4
-447fb4,147.102.131.205,GET,http://optimusdss.epu.ntua.gr/santcugat/app_dev.php/select-graph/1,1462580645,

@@ -1,0 +1,160 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	
+{% endblock %}
+
+{% block content %} 
+  
+	<div id="left">
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
+	</div>
+	
+	<div id="right">
+		<div id="topRight">
+			<p>{{ nameBuilding }}</p>	
+			
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li class="active"><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
+			</ul>
+			
+		</div>
+		<div id="centerRight">			
+		
+				<p class="titleSection">Description section Action Plans</p>
+				
+				<div id="markDayActual"></div>
+				
+				<div class="contentAllAP">
+					<div class="contentHeadersDays">
+																
+						<p class="daysAP">SUN <br>{{ ("now") | date_modify('Sunday this week')|date("d.m") }}</p>
+						<p class="daysAP">SAT <br>{{ ("now") | date_modify('Saturday this week')|date("d.m") }}</p>
+						<p class="daysAP">FRI <br>{{ ("now") | date_modify('Friday this week')|date("d.m") }}</p>
+						<p class="daysAP">THU <br>{{ ("now") | date_modify('Thursday this week')|date("d.m") }}</p>
+						<p class="daysAP">WED <br>{{ ("now") | date_modify('Wednesday this week')|date("d.m") }}</p>
+						<p class="daysAP">TUE <br>{{ ("now") | date_modify('Tuesday this week')|date("d.m") }}</p>
+						<p class="daysAP">MON <br>{{ ("now") | date_modify('Monday this week')|date("d.m") }}</p>
+					</div>
+					
+					
+					{% set i=0 %}
+					{% for aPlan in actionPlans %}
+						
+						{% if aPlan.type==1 %}
+							{% set direccion=path('getOccupancyPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==2 %}
+							{% set direccion=path('getSetPointPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==4 %}
+							{% set direccion=path('view_switchOnOff', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==6 %}
+							{% set direccion=path('actionPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==5 %}
+							{% set direccion=path('actionPlan_PVMaintenance', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% else %}
+							{% set direccion='' %}
+						{% endif %}
+						
+						<div class="contentAP"> 
+							
+							<div class="leftAP">
+								<p class="titleDiv link" onclick="location.href='{{direccion}}';"><strong>{{ aPlan.name }}</strong></span></p>
+								<p>{{ aPlan.description }}</p>
+							</div>
+								
+								<div class="rightAP">
+									<!--
+									{% if statusActionPlans[aPlan.id] is defined %}
+										<p style="margin:3px 10px;"><span style="color:#2e75b6">{%trans%} Status {%endtrans%}:</span> 
+											{% if (statusActionPlans[aPlan.id][0].status ==1 ) %}<span style="color:#C00000"><strong> {%trans%} Action required {%endtrans%}</strong></span>
+											{% else %}
+												<span><strong> {%trans%} No action required {%endtrans%}</strong></span>
+											{% endif %}
+										</p>
+									{% endif %}
+									
+									<p style="margin:3px 10px;"><span style="color:#2e75b6">{%trans%} Last action {%endtrans%}:</span> 
+										{% if(lastsDatesActionsPlans[i]!=null) %}	
+											{% set dateAP=date(lastsDatesActionsPlans[i].date | date('Y-m-d')) %}
+											{% set dateNow=date('now'|date('Y-m-d')) %}
+											
+											{% if (dateAP.diff(dateNow).days > 2) %}
+												<span style="color:#C00000"> <strong>{{ lastsDatesActionsPlans[i].date| date('Y-m-d')  }}</strong></span>
+											{% else %}
+												<strong>{{ lastsDatesActionsPlans[i].date| date('Y-m-d') }}</strong>
+											{% endif %}
+										{% else %}
+											<strong>{%trans%} No data {%endtrans%}</strong>
+										{% endif %}
+									</p>-->
+									
+									
+										
+											
+									{% if statusActionPlans[aPlan.id] is defined %}
+										{% set j=0 %}
+										{% for  status in statusActionPlans[aPlan.id][0].aOutputActionPlan %}
+											{% if status.status=="#ffff00" %}
+												{% set text='Action plan unknown' %}
+											{% elseif status.status=="#00ff00" %}
+												{% set text='Action plan accepted' %}
+											{% elseif status.status=="#ff0000" %}
+												{% set text='Action plan declined' %}
+											{% else %}
+												{% set text='Action plan unknow' %}
+											{% endif %}
+											<div class="contentBoxStatus">
+												<p title="{{text}} - {{status.date |date('Y/m/d') }}" style="background-color:{{status.status}}; "></p>
+											</div>
+											{% set j=j+1 %}
+										{% endfor %}
+									{% endif %}
+										
+									
+								</div>
+							
+						</div>
+						{% set i=i+1 %}
+					{% endfor %}
+				</div>
+				<!-- ///////////////////////////// -->
+							
+		</div>
+	</div>
+<script type="text/javascript">
+	$(function(){
+		var dateActual='{{ ("now") |date("D") }}';
+		
+		var heightDiv=$(".contentAllAP").height();
+		
+		if (dateActual=='Mon'){	
+			$("#markDayActual").css({'position':'absolute', 'top':'59px', 'left':'641px', 'height':heightDiv});		
+		}else if(dateActual=='Tue')	{	
+			$("#markDayActual").css({'position':'absolute', 'top':'59px', 'left':'712px', 'height':heightDiv});
+		}else if(dateActual=='Wed'){ 
+			$("#markDayActual").css({'position':'absolute', 'top':'59px', 'left':'789px', 'height':heightDiv});
+		}else if(dateActual=='Thu'){  
+			$("#markDayActual").css({'position':'absolute', 'top':'59px', 'left':'859px', 'height':heightDiv});
+		}else if(dateActual=='Fri'){  
+			$("#markDayActual").css({'position':'absolute', 'top':'59px', 'left':'929px', 'height':heightDiv});
+		}else if(dateActual=='Sat'){  
+			$("#markDayActual").css({'position':'absolute', 'top':'59px', 'left':'1005px', 'height':heightDiv});
+		}else if(dateActual=='Sun'){
+			$("#markDayActual").css({'position':'absolute', 'top':'59px', 'left':'1079px', 'height':heightDiv});
+		}
+		$("#markDayActual").show();
+	});
+</script>		
+    
+{% endblock %}

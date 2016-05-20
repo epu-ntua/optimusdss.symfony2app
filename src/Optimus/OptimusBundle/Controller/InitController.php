@@ -7,8 +7,74 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 
 class InitController extends Controller
-{	
-    public function indexAction()
+{
+	//List Buildings --- NEW 
+	public function indexAction()
+    {
+		$em = $this->getDoctrine()->getManager();
+		$buildings=$em->getRepository('OptimusOptimusBundle:Building')->findAll();
+		
+		$datesBuildings=$this->lastsDatesBuildings($buildings);
+		
+		//Dates
+		$dateActual=new \DateTime();
+		$thisMonday=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";
+		$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");
+		$startDate=$thisMonday;
+		$endDate=$dateActual;
+		
+		dump($buildings);
+		
+		$dataBuildings=array();
+		foreach ($buildings as $building)
+		{
+			//Data average RTime, User Activity & Chart Activity
+			//$dataBuildings[$building->getId()]['dataDashboard']=$this->getDataDashboard($building);
+			$aBuilding[]=$building;
+			$dataBuildings[$building->getId()]['globalRTime']=$this->globalValuesRTime($aBuilding);		
+		}
+		
+		$unitsRTime=$this->get('service_sensorsRTime')->getUnitsVariables();
+		$colorsRTime = $this->get('service_sensorsRTime')->getColorsVariables();
+		
+		dump($dataBuildings);
+		
+		return $this->render('OptimusOptimusBundle:Building:listBuildings.html.twig', array('buildings'=>$buildings, "datesBuildings"=>$datesBuildings, "startDate"=>$startDate, "endDate"=>$endDate, "unitsRTime"=>$unitsRTime, "dataBuildings"=>$dataBuildings, "colorsRTime"=>$colorsRTime));
+		
+	}
+	
+	//Dashboard of city with graph RTime --- NEW 
+	public function cityDashboardAction()
+	{
+		$em = $this->getDoctrine()->getManager();
+		$buildings=$em->getRepository('OptimusOptimusBundle:Building')->findAll();
+		
+		//Data to Charts RTime & User Activity
+		$datesBuildings=$this->lastsDatesBuildings($buildings);
+		$globalRTime=$this->globalValuesRTime($buildings);
+		$dataDashboard=$this->getDataDashboard($buildings);
+		$unitsRTime=$this->get('service_sensorsRTime')->getUnitsVariables();
+		
+		//Dates
+		$dateActual=new \DateTime();
+		$thisMonday=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";
+		$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");
+		$startDate=$thisMonday;
+		$endDate=$dateActual;
+		
+		//Values Chart Stack RTime -->Modify 
+		if($buildings)
+		{			
+			$mappingVariable = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $thisMonday, $buildings[0]->getId());
+			//dump($mappingVariable);
+		}else{ 
+			$mappingVariable = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $thisMonday, null);
+		}
+		
+		return $this->render('OptimusOptimusBundle:Dashboard:cityDashboard.html.twig', array('buildings'=>$buildings, "datesBuildings"=>$datesBuildings, "globalRTime"=>$globalRTime, "dataDashboard"=>$dataDashboard, "mappingVariable"=>$mappingVariable, "startDate"=>$startDate, "endDate"=>$endDate, "unitsRTime"=>$unitsRTime));
+	}
+	
+   /* public function indexAction()
     {	
 		$em = $this->getDoctrine()->getManager();
 		$buildings=$em->getRepository('OptimusOptimusBundle:Building')->findAll();
@@ -37,7 +103,7 @@ class InitController extends Controller
 		
 		
 		return $this->render('OptimusOptimusBundle:Building:selectBuilding.html.twig', array('buildings'=>$buildings, "datesBuildings"=>$datesBuildings, "globalRTime"=>$globalRTime, "dataDashboard"=>$dataDashboard, "mappingVariable"=>$mappingVariable, "startDate"=>$startDate, "endDate"=>$endDate, "unitsRTime"=>$unitsRTime));			
-    }
+    }*/
 	
 	//Get last values real time sensors city
 	private function globalValuesRTime($buildings)
@@ -91,7 +157,7 @@ class InitController extends Controller
 		return $globalRTime;
 	}
 	
-	//Last user activity city
+	//Last user activity city 
 	private function getDataDashboard($buildings)
 	{
 		$em = $this->getDoctrine()->getManager();
@@ -188,6 +254,7 @@ class InitController extends Controller
 		}
 	}
 	
+	// ---- Deprecated old view
 	public function selectGraphAction($idBuilding)
     {
 		$dateActual=new \DateTime();			
@@ -247,6 +314,93 @@ class InitController extends Controller
 		//Obtener los ActionsPlans del edificio
 		return $this->render('OptimusOptimusBundle:Building:selectGraph.html.twig', $data);	
     }
+	
+	// Dashboard of building with graph lasts indicators --- NEW 
+	public function buildingDashboardAction($idBuilding)
+	{
+		//Info Building
+		$data['idBuilding']=$idBuilding;
+		$data['nameBuilding']=$this->get('service_data_capturing')->getNameBuilding($idBuilding);
+		
+		$dateActual=new \DateTime();			
+		$startDate=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 days");				
+		$startDateFunction=$startDate->format("Y-m-d H:i:s");
+		
+		//Get Building
+		$em = $this->getDoctrine()->getManager();
+		$building=$em->getRepository('OptimusOptimusBundle:Building')->findBy(array("id"=>$idBuilding));
+		
+		//Data average RTime, User Activity & Chart Activity
+		$data['dataDashboard']=$this->getDataDashboard($building);
+		$data['globalRTime']=$this->globalValuesRTime($building);
+		$data['unitsRTime']=$this->get('service_sensorsRTime')->getUnitsVariables();
+		
+		//Get data for the compound chart stack RTime
+		$lastWeek=$startDate->format("Y-m-d")." 00:00:00";
+		$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");		
+		$data['mappingVariable'] = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $lastWeek, $idBuilding);
+		
+		//Dates to View
+		$data['lastDay']=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d");		
+		$startDateView=$startDate->format("Y-m-d");
+		$endDate=\DateTime::createFromFormat('Y-m-d H:i:s', $startDateFunction)->modify("+7 day");
+		$endDateView=$endDate->format("Y-m-d");		
+		$data['startDate']=$startDateView;
+		$data['endDate']=$endDateView;
+		$actualDate=new \DateTime();
+		$data['actualDate']=$actualDate->format("Y-m-d");
+		$thisMonday=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("monday this week");
+		$thisMondayF=$thisMonday->format("Y-m-d H:i:s");
+		$endDateWeek=\DateTime::createFromFormat('Y-m-d H:i:s', $thisMondayF)->modify("+6 day");
+		
+		//Obtener los ActionsPlans del edificio
+		return $this->render('OptimusOptimusBundle:Building:buildingDashboard.html.twig', $data);	
+		
+	}
+	
+	//List all action plans --- NEW 
+	public function listActionPlansAction($idBuilding)
+	{
+		//Get Building
+		$em = $this->getDoctrine()->getManager();
+		$building=$em->getRepository('OptimusOptimusBundle:Building')->findBy(array("id"=>$idBuilding));
+		
+		//Info Building
+		$data['idBuilding']=$idBuilding;
+		$data['nameBuilding']=$this->get('service_data_capturing')->getNameBuilding($idBuilding);
+		
+		//pedir los ActionPlans del building	
+		$data['actionPlans']=$em->getRepository('OptimusOptimusBundle:ActionPlans')->findActionPlansWithSensors($idBuilding);
+		
+		$dateActual=new \DateTime();			
+		$startDate=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 days");				
+		$startDateFunction=$startDate->format("Y-m-d H:i:s");
+		
+		//Dates to View
+		$data['lastDay']=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d");		
+		$startDateView=$startDate->format("Y-m-d");
+		$endDate=\DateTime::createFromFormat('Y-m-d H:i:s', $startDateFunction)->modify("+7 day");
+		$endDateView=$endDate->format("Y-m-d");		
+		$data['startDate']=$startDateView;
+		$data['endDate']=$endDateView;
+		$actualDate=new \DateTime();
+		$data['actualDate']=$actualDate->format("Y-m-d");
+		$thisMonday=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("monday this week");
+		$thisMondayF=$thisMonday->format("Y-m-d H:i:s");
+		$endDateWeek=\DateTime::createFromFormat('Y-m-d H:i:s', $thisMondayF)->modify("+6 day");
+		
+		//status actions plans
+		$data["statusActionPlans"]=$this->getStatusActionsPlans($data['actionPlans'], $dateActual, $thisMonday, $endDateWeek);	
+		
+		//last activities in actions plans
+		$data['lastsDatesActionsPlans']=$this->lastsDatesActionsPlans($data['actionPlans']);
+		
+		//last date data forecasted
+		$data['lastDateForecasted']=$this->get('service_data_capturing')->lastForecastedDate($idBuilding);
+		
+		//Obtener los ActionsPlans del edificio
+		return $this->render('OptimusOptimusBundle:Building:listActionPlans.html.twig', $data);	
+	}
 	
 	//Get lasts dates activities for all actionsplans actives
 	private function lastsDatesActionsPlans($aActionsPlans)
