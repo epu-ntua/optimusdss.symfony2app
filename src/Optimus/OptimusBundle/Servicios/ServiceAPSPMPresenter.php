@@ -44,11 +44,11 @@ class ServiceAPSPMPresenter {
 				
 				if($outputDay)
 				{
-					$aStatusWeek[]=array('statusDay'=>$outputDay[0]->getStatus(), 'idOutputDay'=>$outputDay[0]->getId());
+					$aStatusWeek[]=array('status'=>$outputDay[0]->getStatus(), 'idOutputDay'=>$outputDay[0]->getId());//statusDay
 					
-				}else	$aStatusWeek[]=array('statusDay'=>0, 'idOutputDay'=>0);
+				}else	$aStatusWeek[]=array('status'=>0, 'idOutputDay'=>0);
 				
-			}else	$aStatusWeek[]=array('statusDay'=>0, 'idOutputDay'=>0);
+			}else	$aStatusWeek[]=array('status'=>0, 'idOutputDay'=>0);
 		}
 		//dump($aStatusWeek);
 		return $aStatusWeek;

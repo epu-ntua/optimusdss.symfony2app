@@ -1,0 +1,82 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>	
+{% endblock %}
+
+{% block content %} 
+
+	<div id="left" >
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a  href="{{ path('cityDashboard') }}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p style="float:left; font-size:18px; color:#0069b4; padding-top: 6px;">{{ "now"|date('l, F d, Y') }}</p>
+	</div>
+	
+	<div id="right">
+		<div id="topRight">
+			<!--<p><strong><span style="text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > {{ nameBuilding }}</strong></p>	-->
+			
+			<p>{{ nameBuilding }}</p>	
+			
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a style="color:#0069b4;" href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
+			</ul>
+		</div>
+		
+		<div id="centerRight">
+						
+			<div style="background-color:#eee; overflow:hidden; margin-bottom:20px;">
+				<div style="float:left; border-right:1px solid #ddd; width:100%; font-size: 12px;">
+					<table border="0">
+						<thead>
+							<tr class="headerDays" style="text-align:center; text-transform: uppercase; color:#0069b4;">
+								<td style="text-align:center;">W</td>
+								<td style="text-align:center;">{%trans%} Periods {%endtrans%}</td>
+								
+								<td style="text-align:center;">{%trans%} Energy consumption (kW/h) {%endtrans%}</td>
+								<td style="text-align:center;">{%trans%} Energy cost (€) {%endtrans%}</td>
+								<td style="text-align:center;">{%trans%} User Actions {%endtrans%}</td>
+								<!--<td style="text-align:right; font-size:11px; border-right:0px; padding: 3px;">{%trans%} Last mod. {%endtrans%}</td>-->
+								<td style="text-align:center;">{%trans%} Report {%endtrans%}</td>
+							</tr>
+						</thead>
+						<tbody>
+							
+							{% for report in lastReports %}
+							
+								<tr >
+									<td >{{ report.datetime |date("W")}}</td>
+									<td >{{ report.period }}	</td>
+									
+									<td>{{ report.energyConsumption }}	</td>
+									<td>{{ report.energyCost }}	</td>
+									<td>{{ report.userActions }} </td>
+									<td>{{ report.datetime |date("Y-m-d") }}</td>
+									{% if report.status==1 %}
+										<td style="border-right:0px; padding: 3px;"><a href="{{ path('openFormReport', {'idBuilding':idBuilding, 'idWeeklyReport':report.id} ) }}">Edit</a></td>
+									{% else %}
+										<td style="border-right:0px; padding: 3px;">PDF</td>
+									{% endif %}
+								</tr>
+								
+							{% endfor %}
+							
+							
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+			
+		</div>
+		
+	</div>
+
+{% endblock %}

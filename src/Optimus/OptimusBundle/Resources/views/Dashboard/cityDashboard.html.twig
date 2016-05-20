@@ -1,0 +1,337 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+{# extends Bundle - carpeta - archivo twig#}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+			
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.stack.js') }}"></script>
+{% endblock %}
+
+{% block content %}  
+<script type="text/javascript">
+	$(function(){
+		/* Graph Stack RTime Indicators */
+		var stack1 = true,	bars1 = false,	lines1 = true,	steps1 = false;
+			
+		var stackSensors=["Energy production", "Total consumption", "CO2"];
+	
+		{% set maxY=0 %}
+		{% set minY=0 %}
+		{% set startPredictor=startDate | date('F j, Y H:i:s') %}
+		{% set endPredictor=endDate | date('F j, Y H:i:s') %}
+		{% set initPred = true %}
+		var datasetStackRT=[];
+		var aHeight = [];
+		aHeight["Energy cost"] = 70;
+		aHeight["CO2"] = 70;
+		aHeight["Energy consumption"] = 260;
+		aHeight["Produced renewable energy"] = 50;
+			
+		{% for z in mappingVariable %}
+			{% set lp_z=loop.index0 %}				
+
+			var dataVariable=[];			
+			
+			{% if mappingVariable[lp_z].data is not empty %}
+				{% for j in mappingVariable[lp_z].data %}
+					{% set lp_j=loop.index0 %}							
+					
+					
+					{% set date = mappingVariable[lp_z].data[lp_j].date | date("F j, Y H:i:s") %}
+					
+					var value = 0;
+					{% if mappingVariable[lp_z].maxValue != 0 %}
+						value = {{mappingVariable[lp_z].data[lp_j].value}} * aHeight["{{mappingVariable[lp_z].name}}"] / {{mappingVariable[lp_z].maxValue}}
+
+					{% endif %}					 
+					
+					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(2)+" {{mappingVariable[lp_z].units}}"]);	
+				
+				{% endfor %}		
+			{% endif %}
+			
+			datasetStackRT.push({data:dataVariable, label: "{{mappingVariable[lp_z].name}}", color:"{{mappingVariable[lp_z].color}}", dashes: { show: false, dashLength:[3, 3], lineWidth: 1, color:"{{mappingVariable[lp_z].color}}"}, shadowSize: 0, stack: {{mappingVariable[lp_z].stack}}});
+		
+		{% endfor %}	
+			
+		var plotStackRT = $.plot("#placeholder_stackRTimeIndicators", datasetStackRT,{
+			series: {
+				stack: stack1,
+				lines: {
+					show: lines1,
+					fill: true,
+					steps: steps1,
+					lineWidth: 1.1,
+					strokeStyle: "#eee"
+				},
+				points: {
+					show: false
+				},
+				shadowSize: 1
+			}, 
+			 
+			grid: {
+				canvasText:{show:true},
+				hoverable: true,
+				backgroundColor: { colors: [ "#fff", "#fff" ] },
+				borderColor: "#fff",
+				borderWidth: {
+					top: 1,
+					right: 1,
+					bottom: 1,
+					left: 1
+				},
+			},
+			legend: {
+				show: false
+			},
+			crosshair: {
+				mode: "x"
+			},				
+			xaxis:{					
+					mode: "time", min: new Date("{{ startDate | date('F j, Y') }}"), max: new Date("{{ endDate | date('F j, Y') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					show:true,
+					timeformat: "%a <br/> %d.%m", //<br/>
+					//labelWidth: 50,
+					minTickSize: [1, "day"]//, reserveSpace:true						
+				},
+			yaxis:{min:{{ minY }}, max: 400, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: false,  ticks:[{{ minY }}, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false},			
+		});	
+		
+		$("#placeholder_stackRTimeIndicators").bind("plothover", function (event, pos, item) {
+			if (item) {					
+				document.body.style.cursor = 'pointer';
+				if (previousPoint != item.dataIndex) {
+					previousPoint = item.dataIndex;
+					
+					//console.log(item);
+					$("#tooltip").remove();
+					var x = item.datapoint[0],
+						y = item.datapoint[1];
+						z = item.series.data[item.dataIndex+1][2];
+					showTooltip(item.pageX, item.pageY, z);
+				}
+			}else{
+				document.body.style.cursor = 'default';
+				$("#tooltip").remove();
+				previousPoint = null;
+			}
+		});
+	
+		/* Graph Stack BARS User Activity */
+		var stack = true,	bars = true,	lines = false,	steps = false;
+			
+		var stackSensors=["Energy production", "Total consumption", "CO2"];
+		
+		var dataset=[];
+		var dAccepts = [];	
+		var dDeclines = [];	
+		var dUnknows = [];	
+		
+		{% set maxY=0 %}		
+		
+		{% for z in dataDashboard[0].valuesDay %}
+			
+			{% set lp_z=loop.index0 %}
+			
+			{% set date = dataDashboard[0].valuesDay[lp_z].date | date("F j, Y") %}
+			
+			{% set sumDay=dataDashboard[0].valuesDay[lp_z].accepts + dataDashboard[0].valuesDay[lp_z].declines + dataDashboard[0].valuesDay[lp_z].unknows %}
+			
+			{% if maxY < sumDay %}
+				{% set maxY=sumDay %}
+			{% endif %}
+			
+			dAccepts.push([new Date("{{date}}"), {{dataDashboard[0].valuesDay[lp_z].accepts}}, "Accepts "+({{dataDashboard[0].valuesDay[lp_z].accepts}})+" "]);
+			
+			dDeclines.push([new Date("{{date}}"), {{dataDashboard[0].valuesDay[lp_z].declines}}, "Declines "+({{dataDashboard[0].valuesDay[lp_z].declines}})+" "]);
+			
+			dUnknows.push([new Date("{{date}}"), {{dataDashboard[0].valuesDay[lp_z].unknows}}, "Unknows "+({{dataDashboard[0].valuesDay[lp_z].unknows}})+" "]);
+			
+		{% endfor %}
+		
+		dataset.push({data:dAccepts, label: "Accepts", color:"#00ff00",  shadowSize: 0, stack: 0 });
+		dataset.push({data:dDeclines, label: "Declines", color:"#ff0000",  shadowSize: 0, stack: 0 });
+		dataset.push({data:dUnknows, label: "Unknows", color:"#ffff00",  shadowSize: 0, stack: 0 });
+		
+		console.log(dataset);
+			
+		var plot2 = $.plot("#placeholder_stackPila", dataset,{
+			series: {
+				stack: stack,
+				
+				bars: {
+					lineWidth: 0.5,
+					show: bars,
+					barWidth: 24 * 60 * 60 * 600
+				},				
+			}, 			 
+			grid: {
+				canvasText:{show:true},
+				hoverable: true,
+				backgroundColor: { colors: [ "#fff", "#fff" ] },
+				borderColor: "#bbb",
+				borderWidth: {
+					top: 1,
+					right: 1,
+					bottom: 1,
+					left: 1
+				},				
+			},
+			legend: {
+				show: false
+			},							
+			xaxis:{					
+					mode: "time", min: new Date("{{dataDashboard[0].valuesDay[0].date | date('F j, Y')}}"), 
+					max: new Date("{{ endDate | date('F j, Y') }}"), 
+					//tickLength: 5, 
+					font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					show:true,
+					timeformat: "%a <br/> %d.%m", //\n
+					//minTickSize: [1, "day"],
+					//labelWidth: 50, reserveSpace:true						
+				},
+			yaxis:{min:0, max: {{maxY}}, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[0, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false},			
+			
+		});	
+		
+		$("#placeholder_stackPila").bind("plothover", function (event, pos, item) {
+			if (item) {					
+				document.body.style.cursor = 'pointer';
+				if (previousPoint != item.dataIndex) {
+					previousPoint = item.dataIndex;
+					
+					//console.log(item);
+					$("#tooltip").remove();
+					var x = item.datapoint[0],
+						y = item.datapoint[1];
+						z = item.series.data[item.dataIndex][2];
+					showTooltip(item.pageX, item.pageY, z);
+				}
+			}else{
+				document.body.style.cursor = 'default';
+				$("#tooltip").remove();
+				previousPoint = null;
+			}
+		});
+			
+		function showTooltip(x, y, contents)
+		{
+			$('<div id="tooltip" style="font-size:10px;">' + contents + '</div>').css( {
+				position: 'absolute',
+				display: 'none',
+				top: y-20,
+				left: x + 10,
+				border: '1px solid #595959',
+				padding: '2px',				
+				'background-color': '#DADADA',
+				opacity: 0.80
+			}).appendTo("body").fadeIn(200);
+		}
+	});
+</script>
+   
+ 
+	<div id="left">
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{ path('cityDashboard') }}">City Dashboard</a></li>
+			<li><a href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p style="float:left; font-size:18px; color:#0069b4; padding-top: 6px;">{{ "now"|date('l, F d, Y') }}</p>
+	</div>
+
+	<div id="right">		
+		<div id="centerRight">	
+			<p class="titleSection">The dashboard displays the DSS indicators values of the buildings in the last 7 days.</p>
+			
+			<div class="contentDashboard" style="overflow:hidden;">
+							
+				<!-- Graph Stack -->
+				<div style="float:left; width:100%; margin-bottom: 40px;">												
+						<div id="placeholder_stackRTimeIndicators" style="height:300px; float:left; width: 1075px; margin-bottom:10px; background-color:#fff; padding: 0 0 30px 0;">	</div>
+					</div>
+				<div class="contentAllBuildings">	
+					<div class="boxBuilding">
+					
+						<div class="headerBuilding">
+							<p class="titleDiv">All Buildings ({{globalRTime|length}})</p>
+							
+							{% for key,indicator in globalRTime %}
+								{% set colorVariable="#fff" %}
+								{% for z in mappingVariable %}
+									{% set lp_z=loop.index0 %}
+									{% if mappingVariable[lp_z].name==key %}
+										{% set colorVariable=mappingVariable[lp_z].color %}
+									{% endif %}
+								{% endfor %}
+								
+								<p class="headersNames" style="color:{{colorVariable}}; ">
+									<span class="boxColor" style=" background-color:{{colorVariable}};  "></span>	
+									{{key}} ({{unitsRTime[key]}})								
+								</p>
+							{% endfor %}
+						</div>
+						
+						<div class="contentBuilding">
+							<div class="indicatorsBuilding">
+								<p class="titleRow">last week</p>
+								{% for key,indicator in globalRTime %}
+									{% if indicator[0] < indicator[1] %}
+										{% set arrow='&#9660;' %}								
+									{% elseif indicator[0] > indicator[1] %}
+										{% set arrow='&#9650;' %}							
+									{% else%}
+										{% set arrow="=" %}						
+									{% endif %}
+									
+									{% if indicator[2] > 0 %}
+										{% set color="#00ff00;" %}
+										
+									{% elseif indicator[2] < 0 %}
+										{% set color="#ff0000;" %}
+									{% else%}
+										{% set color="#44546a;" %}
+									{% endif %}
+									
+									<p class="textRow">
+										<span style="color:{{color}}; width:5px;"> {{arrow|raw}}</span>
+										{{indicator[0]|round(1, 'floor')}} 
+									</p>
+									
+								{% endfor %}
+							</div>
+							
+							<div class="indicatorsBuilding">
+								<p class="titleRow">previous week</p>
+								{% for key,indicator in globalRTime %}
+									
+									<p class="textRow">								
+										{{indicator[1] |round(1, 'floor')}}
+									</p>
+								{% endfor %}
+							</div>
+							
+							
+						
+						</div>
+					</div>				
+				</div>
+				
+						
+			</div>			
+			
+		</div>
+	</div>
+		
+    
+{% endblock %}

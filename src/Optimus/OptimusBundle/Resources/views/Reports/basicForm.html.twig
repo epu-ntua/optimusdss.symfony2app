@@ -1,0 +1,280 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>	
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+{% endblock %}
+
+{% block content %} 
+
+	<div id="left" style="">
+		
+		{#{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }#}
+		{#{ render(controller('OptimusOptimusBundle:WeeklyReports:lastsReports', {'idBuilding':idBuilding})) }#}
+		{#{ render(controller('OptimusOptimusBundle:Events:lastsEvents', {'idBuilding':idBuilding})) }#}
+		
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
+		
+	</div>
+	
+	<div id="right">
+		<div id="topRight">
+			<!--<p><strong><span style="text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > {{ nameBuilding }}</strong></p>	-->
+			
+			<p> {{ nameBuilding }}</p>	
+			
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a style="color:#0069b4;" href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
+			</ul>
+			
+		</div>
+		
+		<div id="centerRight">
+			
+			<div style=" margin-bottom:10px; overflow:hidden;">
+				
+				<p>
+					<strong>Responsible person:</strong> 
+					{% for user in usersInWR %}
+						<span>{{user.getFkUser().name}} {{user.getFkUser().lastname}},</span>
+					{% endfor %}
+				</p>
+				<p><strong>Week:</strong> {{weeklyReport.period }}</p>
+			</div>
+			
+			<form class="nueva-entrevista-form" enctype="multipart/form-data" method="post" action="{{ path('saveDataFormReport', {'idBuilding':idBuilding, 'idWeeklyReport':weeklyReport.id })}}">
+				<div id="page">
+					<ul style="width:100%;">
+						<li><a href="#page_0">DSS implementation</a></li>
+						{% set i=1 %}
+						{% for actionPlan in allActionsPlans %}
+							<li><a href="#page_{{i}}">AP.{{i}}</a></li>
+							{% set i=i+1 %}
+						{% endfor %}
+						<li><a href="#page_{{i}}">Evaluation criteria</a></li>
+					</ul>
+					<div id="page_0" class="section"> <!-- common all reports -->
+						
+						<p class="titleDiv"><strong>DSS implementation</strong></p>
+						
+						<p>Did you experience any general difficulties with the DSS operation due to malfunctioning during this week (e.g. problems with data, with sensors, etc.)? How were these overcome?</p>
+						<textarea name="difficulties" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Fill in ...">{{weeklyReport.experienceDifficulties}}</textarea>
+						
+						<p>Did you experience any recurrent episode that suggests to act on the calibration of the data flows or of the models (e.g. forecast always different from real conditions)?</p>
+						<textarea name="calibration" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Fill in ...">{{weeklyReport.experienceCalibration}}</textarea>
+						
+						<p>Did you experience any peculiar event (e.g. particular meteorological phenomena, strike or other social issue, black-out, etc…)?</p>
+						<textarea name="events" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Fill in ...">{{weeklyReport.experienceEvents}}</textarea>
+
+						<!--<p onclick="$('#page_1').show();$('#page_0').hide();">Next step</p>-->
+					</div>
+			
+					{% set i=1 %}
+					{% set maxPag= allActionsPlans|length %}
+					{% for actionPlan in allActionsPlans %}
+						<div id="page_{{i}}" class="section">
+							
+							{#% if actionPlan.type== 1 %#}
+								{#% include 'ProhabitBundle:Reports:logged.html.twig' %#}
+								<p><strong>{{actionPlan.name |capitalize }}</strong></p>
+								<table border="0">
+									<tbody>
+										<tr class="headerDays">
+											<td><strong>DAY</strong></td>						
+											<td>Mon</br>
+												{{ startDate |date("d")}}</td>
+											<td>
+												Tue</br>{{ startDate|date_modify("+"~1~" day")|date("d.m") }}</td>
+											<td>
+												Wed</br>{{ startDate|date_modify("+"~2~" day")|date("d.m") }}</td>
+											<td>
+												Thu</br>{{ startDate|date_modify("+"~3~" day")|date("d.m") }}</td>
+											<td>
+												Fri</br>{{ startDate|date_modify("+"~4~" day")|date("d.m") }}</td>
+											<td>
+												Sat</br>{{ startDate|date_modify("+"~5~" day")|date("d.m") }}</td>
+											<td>
+												Sun</br>{{ startDate|date_modify("+"~6~" day")|date("d.m") }}</td>
+										</tr>
+										
+										
+										<tr class="headerDays">
+											<td><strong>DECISION</strong></td>
+											{% if statusWeekActionPlan[actionPlan.id] is defined %}
+											
+												{% for statusDay in statusWeekActionPlan[actionPlan.id] %} <!-- 0=Unknown, 1=Accepted, 2=Declined -->
+													{% if statusDay.status==0 %}
+														<td>Unknown</td>
+													{% elseif statusDay.status==1 %}
+														<td>Accept</td>
+													{% else %}
+														<td>Decline</td>
+													{% endif %}											
+												{% endfor %}
+											{% endif %}	
+										</tr>
+										
+										<tr>
+											<td><strong>LINK</strong></td>
+											<td colspan="7" style="text-align: center;">
+												{% if actionPlan.type== 1 %}
+													<a target="_blank" href="{{path('getOccupancyPlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'start_date':startDate})}}">link</a>
+												{% elseif actionPlan.type== 2 %}
+													<a target="_blank" href="{{path('getSetPointPlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'start_date':startDate})}}">link</a>
+												{% elseif actionPlan.type== 4 %}
+													<a target="_blank" href="{{path('view_switchOnOff', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':startDate, 'to':sundayDate})}}">link</a>
+												{% elseif actionPlan.type== 5 %}
+													<a target="_blank" href="{{path('actionPlan_PVMaintenance', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':startDate, 'to':sundayDate})}}">link</a>
+												{% elseif actionPlan.type== 6 %}													
+													<a target="_blank" href="{{path('actionPlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':startDate, 'to':sundayDate})}}">link</a>
+												{% endif %}
+											</td>
+										</tr>
+										
+									</tbody>
+								</table>
+							
+								<div class="comments">
+									<p><strong>Comments</strong></p>
+									<p>Please, describe the procedure you have followed for the implementation of this Action Plan. In particular, please report:
+										- the criteria/reasons at the basis of accepting/declining the suggestions
+										- if you have noticed some incoherent/unfeasible suggestions that may require refinement of the data/models/rules
+									</p>
+									<textarea name="text_{{actionPlan.id}}" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Fill in ...">{{weeklyReportActionPlan[actionPlan.id][0].textProcedure}}</textarea>
+									
+									<p>Lessons learned?	</p>
+									<textarea name="lesson_{{actionPlan.id}}" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Fill in ...">{{weeklyReportActionPlan[actionPlan.id][0].lessonLearned}}</textarea>
+								</div>
+							{#% elseif actionPlan.type== 2 %#}
+							
+							{#% elseif actionPlan.type== 4 %#}
+							
+							{#% elseif actionPlan.type== 5 %#}
+							
+							{#% elseif actionPlan.type== 6 %#}
+							
+							{#% endif %#}
+							Page {{i}}
+							
+							<!--<p onclick="$('#page_{{i-1}}').show();$('#page_{{i}}').hide();">Previus step</p>-->
+							
+							
+							{#% if maxPag==(i+1) %#}
+								<!--<input type="submit" value="Send">-->
+							{#% else %#}
+								<!--<p onclick="$('#page_{{i+1}}').show();$('#page_{{i}}').hide();">Next step</p>-->
+							{#% endif %#}
+						</div>			
+						
+						{% set i=i+1 %}
+					{% endfor %}
+				
+					<div id="page_{{i}}" class="section">
+						<p><strong>Evaluation criteria</strong></p>
+						
+						<p style="margin-bottom:40px;">(please answer in relation to operation of this week)<br/> 1=very low <br/> 5=very high </p>
+						
+						<div style="margin-bottom:40px;">
+							<p>Please provide your self-assessment of the level of ease of use of the DSS.</p>
+							<input type="radio" name="score1" value="1" {% if evCriteria[0].score1==1 %} checked {% endif %} > 1
+							<input type="radio" name="score1" value="2" {% if evCriteria[0].score1==2 %} checked {% endif %} > 2
+							<input type="radio" name="score1" value="3" {% if evCriteria[0].score1==3 %} checked {% endif %} > 3
+							<input type="radio" name="score1" value="4" {% if evCriteria[0].score1==4 %} checked {% endif %} > 4
+							<input type="radio" name="score1" value="5" {% if evCriteria[0].score1==5 %} checked {% endif %} > 5
+							<textarea name="text1" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Comments...">{{ evCriteria[0].text1 }}</textarea>
+							
+						</div>
+						
+						<div style="margin-bottom:40px;">
+							<p>Please provide your self-assessment of the level of usefulness of the DSS in its present configuration. </p>
+							<input type="radio" name="score2" value="1" {% if evCriteria[0].score2==1 %} checked {% endif %} > 1
+							<input type="radio" name="score2" value="2" {% if evCriteria[0].score2==2 %} checked {% endif %} > 2
+							<input type="radio" name="score2" value="3" {% if evCriteria[0].score2==3 %} checked {% endif %} > 3
+							<input type="radio" name="score2" value="4" {% if evCriteria[0].score2==4 %} checked {% endif %} > 4
+							<input type="radio" name="score2" value="5" {% if evCriteria[0].score2==5 %} checked {% endif %} > 5
+							<textarea name="text2" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Comments...">{{ evCriteria[0].text2 }}</textarea>
+							
+						</div>
+						
+						<div style="margin-bottom:40px;">
+							<p>Please provide your assessment of the level of acceptance of the users of the DSS (including energy manager and technicians involved, not the users of the buildings). </p>
+							<input type="radio" name="score3" value="1" {% if evCriteria[0].score3==1 %} checked {% endif %} > 1
+							<input type="radio" name="score3" value="2" {% if evCriteria[0].score3==2 %} checked {% endif %} > 2
+							<input type="radio" name="score3" value="3" {% if evCriteria[0].score3==3 %} checked {% endif %} > 3
+							<input type="radio" name="score3" value="4" {% if evCriteria[0].score3==4 %} checked {% endif %} > 4
+							<input type="radio" name="score3" value="5" {% if evCriteria[0].score3==5 %} checked {% endif %} > 5
+							<textarea name="text3" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Comments...">{{ evCriteria[0].text3 }}</textarea>
+							
+						</div>
+						
+						<div style="margin-bottom:40px;">
+							<p>Please provide your assessment of the level of appreciation of the users of the buildings. </p>
+							<input type="radio" name="score4" value="1" {% if evCriteria[0].score4==1 %} checked {% endif %} > 1
+							<input type="radio" name="score4" value="2" {% if evCriteria[0].score4==2 %} checked {% endif %} > 2
+							<input type="radio" name="score4" value="3" {% if evCriteria[0].score4==3 %} checked {% endif %} > 3
+							<input type="radio" name="score4" value="4" {% if evCriteria[0].score4==4 %} checked {% endif %} > 4
+							<input type="radio" name="score4" value="5" {% if evCriteria[0].score4==5 %} checked {% endif %} > 5
+							<textarea name="text4" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Comments...">{{ evCriteria[0].text4 }}</textarea>
+							
+						</div>
+						
+						<div style="margin-bottom:40px;">
+							<p>Please provide your self-assessment of your behaviour modification in terms of enhanced energy use. </p>
+							<input type="radio" name="score5" value="1" {% if evCriteria[0].score5==1 %} checked {% endif %} > 1
+							<input type="radio" name="score5" value="2" {% if evCriteria[0].score5==2 %} checked {% endif %} > 2
+							<input type="radio" name="score5" value="3" {% if evCriteria[0].score5==3 %} checked {% endif %} > 3
+							<input type="radio" name="score5" value="4" {% if evCriteria[0].score5==4 %} checked {% endif %} > 4
+							<input type="radio" name="score5" value="5" {% if evCriteria[0].score5==5 %} checked {% endif %} > 5
+							<textarea name="text5" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Comments...">{{ evCriteria[0].text5 }}</textarea>
+							
+						</div>
+						
+						<div style="margin-bottom:40px;">
+							<p>Please provide your self-assessment of your behaviour modification in terms of procedural complication in your daily routine as energy manager. </p>
+							<input type="radio" name="score6" value="1" {% if evCriteria[0].score6==1 %} checked {% endif %} > 1
+							<input type="radio" name="score6" value="2" {% if evCriteria[0].score6==2 %} checked {% endif %} > 2
+							<input type="radio" name="score6" value="3" {% if evCriteria[0].score6==3 %} checked {% endif %} > 3
+							<input type="radio" name="score6" value="4" {% if evCriteria[0].score6==4 %} checked {% endif %} > 4
+							<input type="radio" name="score6" value="5" {% if evCriteria[0].score6==5 %} checked {% endif %} > 5
+							<textarea name="text6" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Comments...">{{ evCriteria[0].text6 }}</textarea>
+							
+						</div>
+						
+						<div style="margin-bottom:40px;">
+							<p>Please provide your assessment of the behaviour modification of the users of the building. </p>
+							<input type="radio" name="score7" value="1" {% if evCriteria[0].score7==1 %} checked {% endif %} > 1
+							<input type="radio" name="score7" value="2" {% if evCriteria[0].score7==2 %} checked {% endif %} > 2
+							<input type="radio" name="score7" value="3" {% if evCriteria[0].score7==3 %} checked {% endif %} > 3
+							<input type="radio" name="score7" value="4" {% if evCriteria[0].score7==4 %} checked {% endif %} > 4
+							<input type="radio" name="score7" value="5" {% if evCriteria[0].score7==5 %} checked {% endif %} > 5
+							<textarea name="text7" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Comments...">{{ evCriteria[0].text7 }}</textarea>
+							
+						</div>
+						<!--<p onclick="$('#page_{{i-1}}').show();$('#page_{{i}}').hide();">Previus step</p>-->
+						
+					</div>
+					<input type="submit" value="SEND" style="margin:0 0 30px 30px; color:#0077bb; border:1px solid #0077bb; border-radius:15px; padding:5px 15px; background-color:#fff; cursor:pointer; ">
+				</div>
+			</form>	
+			
+		</div>
+	</div>
+<script type="text/javascript">
+	$(function () 
+	{
+		$( "#page" ).tabs();
+		//$(".section").hide();
+		//$("#page_0").show();
+		
+	});
+</script>	
+{% endblock %}
