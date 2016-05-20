@@ -82,7 +82,7 @@ class ServiceAPEnergySourceCalculation
 		$actionPlan = $aoRelSensorsActionPlan['actionPlan'];
 		//$start=\DateTime::createFromFormat('Y-m-d H:i:s', $from)->modify(" -1441 hour")->format("Y-m-d H:i:s");
 		$start=\DateTime::createFromFormat('Y-m-d H:i:s', $from)->modify(" -1 hour")->format("Y-m-d H:i:s");
-		$dateHistorical=\DateTime::createFromFormat('Y-m-d H:i:s', $from)->modify(" -674 hour")->format("Y-m-d H:i:s");
+		$dateHistorical=\DateTime::createFromFormat('Y-m-d H:i:s', $from)->modify(" -673 hour")->format("Y-m-d H:i:s");
 		
 		// 1.Init data structure:	
 		$from = $this->getDateString($from, 0);			
