@@ -43,6 +43,24 @@ class APFlowsOutputRepository extends EntityRepository{
 		$query->setMaxResults(1);
         return $query->getResult();
     }
+	
+    public function getDQLOutputTimestamp($datetime)
+	{		
+		$dqlQuery = 'SELECT apflowsoutput ';
+        $dqlQuery .= ' FROM '.$this->_entityName.' apflowsoutput';
+        $dqlQuery .= " WHERE apflowsoutput.hour_timestamp = '".$datetime."' ";
+		$dqlQuery .= ' ORDER BY apflowsoutput.fkApCalculation DESC';
+		
+        return $dqlQuery;	
+    }
+	
+	public function existsFlowsOutputByDateTime($datetime){
+        $em = $this->getEntityManager();
+        $dqlQuery = $this->getDQLOutputTimestamp($datetime);
+        $query = $em->createQuery($dqlQuery);
+		
+        return count($query->getResult()) > 0;			
+    }
     
 }
 
