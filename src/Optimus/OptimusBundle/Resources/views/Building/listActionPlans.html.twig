@@ -58,10 +58,14 @@
 							{% set direccion=path('getSetPointPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
 						{% elseif aPlan.type==4 %}
 							{% set direccion=path('view_switchOnOff', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
-						{% elseif aPlan.type==6 %}
-							{% set direccion=path('actionPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
 						{% elseif aPlan.type==5 %}
 							{% set direccion=path('actionPlan_PVMaintenance', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==6 %}
+							{% set direccion=path('actionPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==7 %}
+							{% set direccion=path('energySourcePlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
+						{% elseif aPlan.type==8 %}
+							{% set direccion=path('economizerPlan', {'idBuilding':idBuilding, 'idAPType':aPlan.type}) %}
 						{% else %}
 							{% set direccion='' %}
 						{% endif %}
