@@ -391,10 +391,10 @@ class InitController extends Controller
 		
 		//status actions plans
 		$data["statusActionPlans"]=$this->getStatusActionsPlans($data['actionPlans'], $dateActual, $thisMonday, $endDateWeek);	
-		
+
 		//last activities in actions plans
 		$data['lastsDatesActionsPlans']=$this->lastsDatesActionsPlans($data['actionPlans']);
-		
+
 		//last date data forecasted
 		$data['lastDateForecasted']=$this->get('service_data_capturing')->lastForecastedDate($idBuilding);
 		
@@ -464,6 +464,16 @@ class InitController extends Controller
 				elseif($aActionsPlans[$i]->getType()==6)
 				{
 					$aTrafficLight[$aActionsPlans[$i]->getId()]=$this->get('service_appv_presenter')->getTrafficLight($aActionsPlans[$i]->getId(), $dateActual, $startDate, $endDate);	
+					
+				}
+				elseif($aActionsPlans[$i]->getType()==7)
+				{
+					$aTrafficLight[$aActionsPlans[$i]->getId()]=$this->get('service_apsource_presenter')->getTrafficLight($aActionsPlans[$i]->getId(), $dateActual, $startDate, $endDate);	
+					
+				}
+				elseif($aActionsPlans[$i]->getType()==8)
+				{
+					$aTrafficLight[$aActionsPlans[$i]->getId()]=$this->get('service_apeconomizer_presenter')->getTrafficLight($aActionsPlans[$i]->getId(), $dateActual, $startDate, $endDate);	
 					
 				}
 			}
