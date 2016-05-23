@@ -108,3 +108,7 @@ f18cf7,::1,GET,http://localhost/optimusDSS/web/app_dev.php/set_point/7/2,1463760
 ae8187,::1,GET,http://localhost/optimusDSS/web/app_dev.php/set_point/7/2,1463761001,
 09c940,::1,GET,http://localhost/optimusDSS/web/app_dev.php/city-dashboard,1463761096,
 5060f2,::1,GET,http://localhost/optimusDSS/web/app_dev.php/init,1463761117,
+fe2644,::1,GET,http://localhost/optimusDSS/web/app_dev.php/init,1463761397,
+b0161c,::1,GET,http://localhost/optimusDSS/web/app_dev.php/building-dashboard/8,1463761407,
+ab1e94,::1,GET,http://localhost/optimusDSS/web/app_dev.php/table-reports/8/ok,1463761416,
+8e6b96,::1,GET,http://localhost/optimusDSS/web/app_dev.php/open-form-report/8/2,1463761420,
