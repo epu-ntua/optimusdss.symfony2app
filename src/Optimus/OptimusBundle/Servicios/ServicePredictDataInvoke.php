@@ -42,6 +42,42 @@ class ServicePredictDataInvoke {
 		return $this->InvokePredictionService($serviceCall);
 	}	
 	
+	public function PredictDataWith2Windows($url='', $server = '', $dateForecast='', $dateHistorical='', $windowForecast='', $windowHistorical='', $horizon='', $listofsensors)
+	{
+
+		if($dateForecast == ''){ 
+			$dateForecast = '2015-03-03T00:00:00Z'; 
+			//dump("invoke prediction service error: parameter 'date' is not specified"); 
+		}
+		if($dateHistorical == ''){ 
+			$dateForecast = '2015-03-03T00:00:00Z'; 
+			//dump("invoke prediction service error: parameter 'date' is not specified"); 
+		}
+		if($windowForecast == ''){ 
+			$windowForecast = 169; 
+			//dump("invoke prediction service error: parameter 'window' is not specified"); 
+		}
+		if($windowHistorical == ''){ 
+			$windowHistorical = 673; 
+			//dump("invoke prediction service error: parameter 'window' is not specified"); 
+		}
+		if($horizon == ''){ 
+			$horizon = horizon; 
+			//dump("invoke prediction service error: parameter 'horizon' is not specified"); 
+		}
+		if($url == '' || $listofsensors == '' || $server == ''){ 
+			//dump("invoke prediction service error: parameter 'url' is not specified");
+			return;
+		}
+		
+		// Generate the full URL:
+		$serviceCall = $url."?sensors=".$listofsensors."&dateHistorical=".$dateHistorical."&dateForecast=".$dateForecast."&windowForecast=".$windowForecast."&server=".$server."&windowHistorical=".$windowHistorical;
+		
+		//echo "!!!!!!!Service call: ".$serviceCall."\n\n";
+		
+		// Invoke and extract data from the web service:
+		return $this->InvokePredictionService($serviceCall);
+	}
 	
 	public function PredictDataSwitchOnOff($url='', $date='', $window='', $listofsensors, $setpoint, $context)
 	{

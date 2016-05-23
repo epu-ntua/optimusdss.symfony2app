@@ -204,6 +204,34 @@ class ServiceAPEnergySourcePresenter {
 	{
 		$ret = array();
 		
+		$calculations = $this->em->getRepository('OptimusOptimusBundle:APCalculation')->findAllCalculationsByDate($sCurrentDay, $idActionPlan);
+		if($calculations != null){
+			if(Count($calculations)> 0){
+				foreach ($calculations as $calculation) {
+					$idCalculation=$calculation->getId();
+					$currentDay=\DateTime::createFromFormat('Y-m-d H:i:s', $sCurrentDay);
+					$output = $this->em->getRepository('OptimusOptimusBundle:APFlowsOutput')->findFlowsOutputsByDate($idCalculation, $currentDay->format('Y-m-d H:i:s'));
+					if($output != null){
+						if(Count($output) > 0){
+							foreach($output as $aOutput){
+								$ret[] = array( "hour"=>$aOutput->getHour_timestamp(),
+												"load"=>$aOutput->getLoad_value(),
+												"grid"=>$aOutput->getGrid(),	
+												"res"=>$aOutput->getRes(),							
+												"shaving"=>$aOutput->getShaving(),							
+												"load_original"=>$aOutput->getLoad_original(),							
+												"grid_original"=>$aOutput->getGrid_original(),							
+												"storage"=>$aOutput->getStorage() );
+							}
+							return $ret;
+						}
+					}
+				}
+			}
+		}
+		
+		
+	/*	
 		$calculation=$this->em->getRepository('OptimusOptimusBundle:APCalculation')->findCalculationByDate($sCurrentDay, $idActionPlan);
 		//dump($calculation);
 		if($calculation != null)
@@ -232,7 +260,7 @@ class ServiceAPEnergySourcePresenter {
 				}
 			}
 		}
-		
+	*/	
 		return null; // Not defined
 	}
 	
@@ -266,40 +294,6 @@ class ServiceAPEnergySourcePresenter {
 		$aDays[$i]=$to;		
 		
 		return $aDays;
-	}
-	
-	//Get Status week 
-	public function getStatusWeek($idActionPlan, $startDate, $endDate)
-	{
-		$initDay=$startDate." 00:00:00";
-		$finalDay=\DateTime::createFromFormat('Y-m-d H:i:s', $endDate." 00:00:00")->modify("+1 day")->format("Y-m-d H:i:s");
-		
-		$aDays=$this->getDaysFromDate($initDay, $finalDay);		
-		$numDays=count($aDays);
-		$aStatusWeek=array();
-
-		for($i=0; $i < $numDays; $i++)
-		{
-			$qCalculation=$this->em->getRepository('OptimusOptimusBundle:APCalculation')->findCalculationByDate($aDays[$i], $idActionPlan);
-			$currentDayFormat=explode(" ", $aDays[$i])[0];
-			//dump($qCalculation);
-			
-			if($qCalculation != null)
-			{
-				$idCalculation=$qCalculation[0]->getId();			
-				
-				$outputDay = $this->em->getRepository('OptimusOptimusBundle:APFlowsOutputDay')->findOutputByDay($idCalculation, $currentDayFormat); 
-				
-				if($outputDay)
-				{
-					$aStatusWeek[]=array('status'=>$outputDay[0]->getStatus(), 'idOutputDay'=>$outputDay[0]->getId());
-					
-				}else	$aStatusWeek[]=array('status'=>0, 'idOutputDay'=>0);
-				
-			} else $aStatusWeek[]=array('status'=>0, 'idOutputDay'=>0);
-		}
-		
-		return $aStatusWeek;
 	}
 	
 }
