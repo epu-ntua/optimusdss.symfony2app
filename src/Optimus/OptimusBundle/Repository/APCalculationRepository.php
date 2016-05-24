@@ -30,11 +30,16 @@ class APCalculationRepository extends EntityRepository{
         $query->setMaxResults(1);
         return $query->getResult();
     }
-	
-	
-	
-	
-	
+
+	public function findAllCalculationsByDate($day, $idActionPlan)
+	{
+		$em = $this->getEntityManager();		
+		// IMPORTANT: By default Doctrine does not support all the functions of a specific vendor, such as the DATE_ADD. 
+		$dqlQuery = $this->getDQLCalculationDate($day, $idActionPlan);
+        $query = $em->createQuery($dqlQuery);
+        return $query->getResult();
+    }
+
 	public function getDQLLastCalculationWithPVMOutput($idActionPlan)
 	{		
 		$dqlQuery = 'SELECT apcalculation ';

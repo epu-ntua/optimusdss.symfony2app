@@ -82,13 +82,14 @@ class ServiceAPEnergySourceCalculation
 		$actionPlan = $aoRelSensorsActionPlan['actionPlan'];
 		//$start=\DateTime::createFromFormat('Y-m-d H:i:s', $from)->modify(" -1441 hour")->format("Y-m-d H:i:s");
 		$start=\DateTime::createFromFormat('Y-m-d H:i:s', $from)->modify(" -1 hour")->format("Y-m-d H:i:s");
-		$dateHistorical=\DateTime::createFromFormat('Y-m-d H:i:s', $from)->modify(" -673 hour")->format("Y-m-d H:i:s");
+		$dateHistorical=\DateTime::createFromFormat('Y-m-d H:i:s', $from)->modify(" -674 hour")->format("Y-m-d H:i:s");
 		
 		// 1.Init data structure:	
 		$from = $this->getDateString($from, 0);			
 		$sCurrentDatetime = $from;
 		$aValues=array("historical" => null, "predicted" => null, "hour" => null);
-		$window = 1441;
+		$windowForecast = '';
+		$windowHistorical = '';
 		$horizon = 1441;
 		$nDays = 7;
 		
@@ -157,13 +158,9 @@ class ServiceAPEnergySourceCalculation
 		switch ($building->getCity())
 		{
 			case "Savona":
-				switch ($building->getName())
-				{	
-					case "Campus":
-						$url = "http://optimusdss.epu.ntua.gr:8080/RAWS/process/Savona/ActionPlan_EnergySource_R";
-						break;
-					default:
-						$url = "http://optimusdss.epu.ntua.gr:8080/RAWS/process/Savona/ActionPlan_EnergySource_R";
+				if (strpos($building->getName(), 'Campus') !== false){
+					$url = "http://optimusdss.epu.ntua.gr:8080/RAWS/process/Savona/ActionPlan_EnergySource_R";
+					$server = 'http%3A%2F%2Foptimusdss.epu.ntua.gr%2Fsavona&';
 				}
 				break;
 		}
@@ -173,7 +170,7 @@ class ServiceAPEnergySourceCalculation
 		$dateHistorical = substr_replace($dateHistorical,"T",10,1);
 		$dateHistorical = $dateHistorical."Z";		
 		
-		$prevXml = $this->PredictData($url, $startR, $dateHistorical, $window, $horizon, $sensors);
+		$prevXml = $this->invokePredictData->PredictDataWith2Windows($url, $server, $startR, $dateHistorical, $windowForecast, $windowHistorical, $horizon, $sensors);
 
 		libxml_use_internal_errors(true);
 		$xml = simplexml_load_string($prevXml);
@@ -183,7 +180,7 @@ class ServiceAPEnergySourceCalculation
 		} else {
 			echo "Error invoking service\n\n </br></br>";
 		}
-		
+	/*	
 		$iHourStart = 0;
 		$lastCalculations = $this->em->getRepository('OptimusOptimusBundle:APCalculation')->findLastCalculationWithESOutput($actionPlan->getId());
 		if(count($lastCalculations) > 0){
@@ -199,101 +196,119 @@ class ServiceAPEnergySourceCalculation
 		if($iHourStart<0){
 			$iHourStart = 0;
 		}
-		
+	*/	
 		//echo 'start: '.$start;
 		//echo 'startingHour: '.$startingHour;
 		//echo 'Calc: '.$lastCalculationID;
 		//echo 'Start: '.$iHourStart;
 	    //echo 'Count: '.count($aValues['peak']);
+		
+		$this->em->getConnection()->beginTransaction();
 	    // 3.Insert values on DB (APFlowsOutput): -> for the previous week
-		for($iHour=$iHourStart; $iHour<count($aValues['peak']); $iHour++)
-		{
-			$value = $aValues['peak'][$iHour];;
-			$output = new APFlowsOutput();
-			$output->setFkApCalculation($calculation);	
-			
-			$value[self::$datetime_name] = str_replace("T"," ",$value[self::$datetime_name]);
-			$value[self::$datetime_name] = str_replace("Z","",$value[self::$datetime_name]);
-			$dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $value[self::$datetime_name]);
-			$output->setHour_timestamp($dateTime);
-			//print_r($dateTime);
+		$prevDay = '';
+		try {
+			$insertedDB = false;
+			for($iHour=0; $iHour<count($aValues['peak']); $iHour++)
+			{
+				$value = $aValues['peak'][$iHour];
+				$value[self::$datetime_name] = str_replace("T"," ",$value[self::$datetime_name]);
+				$value[self::$datetime_name] = str_replace("Z","",$value[self::$datetime_name]);
+				$dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $value[self::$datetime_name]);
+				
+				if (!$this->em->getRepository('OptimusOptimusBundle:APFlowsOutput')->existsFlowsOutputByDateTime($dateTime->format("Y-m-d H:i:s"))){
+					$insertedDB = true;
+					
+					$output = new APFlowsOutput();
+					$output->setFkApCalculation($calculation);	
+										
+					$output->setHour_timestamp($dateTime);
+								
+					$output->setLoad_value($value[self::$load_name]);
+					$output->setGrid($value[self::$grid_name]);
+					$output->setRes($value[self::$res_name]);
+					$output->setShaving($value[self::$shaving_name]); 
+					
+					$batteryValue = $aValues['battery'][$iHour];
+					$output->setLoad_original($batteryValue[self::$load_name]);
+					$output->setGrid_original($batteryValue[self::$grid_name]);
+					$output->setStorage($batteryValue[self::$storage_name]);
+					
+					$energyValue = $aValues['energy'][$iHour];
+					$output->setThA($energyValue[self::$ThA_name]);
+					$output->setThB($energyValue[self::$ThB_name]);
+					$output->setAon($energyValue[self::$Aon_name]);
+					$output->setBon($energyValue[self::$Bon_name]);
+					
+					$this->em->persist($output);
+					$this->em->flush();
+					
+
+					//day
+
+					$sCurrentDate = $this->getDateString($value[self::$datetime_name], 0);
+					$currentDate=\DateTime::createFromFormat('Y-m-d', $sCurrentDate );
+					
+					if ($prevDay != $sCurrentDate){
+						// 4.To manage inputs from users:	
+						$outputDay = new APFlowsOutputDay();
+						$outputDay->setDate($currentDate);
 						
-			$output->setLoad_value($value[self::$load_name]);
-			$output->setGrid($value[self::$grid_name]);
-			$output->setRes($value[self::$res_name]);
-			$output->setShaving($value[self::$shaving_name]); 
+						// Specific for this action plan:
+						$outputDay->setStatus(0);						// Alarm status by user
+						$outputDay->setFkApCalculation($calculation);
+				
+						$this->em->persist($outputDay);
+						$this->em->flush();
+						
+						$prevDay = $sCurrentDate;
+					}
+				}
+				
+			}
 			
-			$batteryValue = $aValues['battery'][$iHour];
-			$output->setLoad_original($batteryValue[self::$load_name]);
-			$output->setGrid_original($batteryValue[self::$grid_name]);
-			$output->setStorage($batteryValue[self::$storage_name]);
+			if (!$insertedDB){
+				$apcalculation = $this->em->getRepository('OptimusOptimusBundle:APCalculation')->find($calculation);
+				$this->em->remove($apcalculation);
+				$this->em->flush();
+			}
+		/*	
+			if ($insertedDB){
+				for($iDay=0; $iDay<$nDays; $iDay++)
+				{
+					$sCurrentDate = $this->getDateString($from, $iDay);
+					$currentDate=\DateTime::createFromFormat('Y-m-d', $sCurrentDate );
 			
-			$energyValue = $aValues['energy'][$iHour];
-			$output->setThA($energyValue[self::$ThA_name]);
-			$output->setThB($energyValue[self::$ThB_name]);
-			$output->setAon($energyValue[self::$Aon_name]);
-			$output->setBon($energyValue[self::$Bon_name]);
+					// 4.To manage inputs from users:	
+					$outputDay = new APFlowsOutputDay();
+					$outputDay->setDate($currentDate);
+					
+					// Specific for this action plan:
+					$outputDay->setStatus(0);						// Alarm status by user
+					$outputDay->setFkApCalculation($calculation);
 			
-			$this->em->persist($output);
+					$this->em->persist($outputDay);
+					$this->em->flush();
+				}
+			} else{
+				$apcalculation = $this->em->getRepository('OptimusOptimusBundle:APCalculation')->find($calculation);
+				$this->em->remove($apcalculation);
+				$this->em->flush();
+			}
+		*/
+			// Try and commit the transaction
+			$this->em->getConnection()->commit();
+		}catch (\Exception $e) {
+			// Rollback the failed transaction attempt
+			$this->em->getConnection()->rollback();
+			//$this->em->getRepository('OptimusOptimusBundle:APCalculation')->deleteCalculationById($calculation);
+			$apcalculation = $this->em->getRepository('OptimusOptimusBundle:APCalculation')->find($calculation);
+			$this->em->remove($apcalculation);
 			$this->em->flush();
-		}
-		
-		for($iDay=0; $iDay<$nDays; $iDay++)
-		{
-			$sCurrentDate = $this->getDateString($from, $iDay);
-			$currentDate=\DateTime::createFromFormat('Y-m-d', $sCurrentDate );
-    
-			// 4.To manage inputs from users:	
-			$outputDay = new APFlowsOutputDay();
-			$outputDay->setDate($currentDate);
-			
-			// Specific for this action plan:
-			$outputDay->setStatus(0);						// Alarm status by user
-			$outputDay->setFkApCalculation($calculation);
-    
-			$this->em->persist($outputDay);
-			$this->em->flush();
+			throw $e;
 		}
 	}
 	
-	public function PredictData($url='', $dateForecast='', $dateHistorical='', $window='', $horizon='', $listofsensors)
-	{
-		$windowForecast=169;
-		$windowHistorical=673;
-		$horizon=169;
-		$server='http%3A%2F%2Foptimusdss.epu.ntua.gr%2Fsavona&';
 		
-		if($dateForecast == ''){ 
-			$dateForecast = '2015-03-03T00:00:00Z'; 
-			//dump("invoke prediction service error: parameter 'date' is not specified"); 
-		}
-		if($dateHistorical == ''){ 
-			$dateForecast = '2015-03-03T00:00:00Z'; 
-			//dump("invoke prediction service error: parameter 'date' is not specified"); 
-		}
-		if($window == ''){ 
-			$window = window; 
-			//dump("invoke prediction service error: parameter 'window' is not specified"); 
-		}
-		if($horizon == ''){ 
-			$horizon = horizon; 
-			//dump("invoke prediction service error: parameter 'horizon' is not specified"); 
-		}
-		if($url == '' || $listofsensors == ''){ 
-			//dump("invoke prediction service error: parameter 'url' is not specified");
-			return;
-		}
-		
-		// Generate the full URL:
-		$serviceCall = $url."?sensors=".$listofsensors."&dateHistorical=".$dateHistorical."&dateForecast=".$dateForecast."&windowForecast=".$windowForecast."&server=".$server."&windowHistorical=".$windowHistorical;
-		//$serviceCall = $url."?date=".$date."&window=".$window."&sensors=".$listofsensors;
-		
-		//echo "!!!!!!!Service call: ".$serviceCall."\n\n";
-		
-		// Invoke and extract data from the web service:
-		return $this->invokePredictData->InvokePredictionService($serviceCall);
-	}
-	
 	//!!!!!!!modify according to the values returned for ES!!!!!!!!!!!!
 	private function readXML_Maintenance($xml)
 	{

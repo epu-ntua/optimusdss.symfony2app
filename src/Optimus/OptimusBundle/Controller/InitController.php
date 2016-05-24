@@ -23,7 +23,7 @@ class InitController extends Controller
 		$startDate=$thisMonday;
 		$endDate=$dateActual;
 		
-		dump($buildings);
+		//dump($buildings);
 		
 		$dataBuildings=array();
 		foreach ($buildings as $building)
@@ -37,7 +37,7 @@ class InitController extends Controller
 		$unitsRTime=$this->get('service_sensorsRTime')->getUnitsVariables();
 		$colorsRTime = $this->get('service_sensorsRTime')->getColorsVariables();
 		
-		dump($dataBuildings);
+		//dump($dataBuildings);
 		
 		return $this->render('OptimusOptimusBundle:Building:listBuildings.html.twig', array('buildings'=>$buildings, "datesBuildings"=>$datesBuildings, "startDate"=>$startDate, "endDate"=>$endDate, "unitsRTime"=>$unitsRTime, "dataBuildings"=>$dataBuildings, "colorsRTime"=>$colorsRTime));
 		
