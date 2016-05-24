@@ -73,7 +73,7 @@ class ServicePredictDataInvoke {
 		// Generate the full URL:
 		$serviceCall = $url."?sensors=".$listofsensors."&dateHistorical=".$dateHistorical."&dateForecast=".$dateForecast."&windowForecast=".$windowForecast."&server=".$server."&windowHistorical=".$windowHistorical;
 		
-		//echo "!!!!!!!Service call: ".$serviceCall."\n\n";
+		echo "Service call: ".$serviceCall."\n\n";
 		
 		// Invoke and extract data from the web service:
 		return $this->InvokePredictionService($serviceCall);
