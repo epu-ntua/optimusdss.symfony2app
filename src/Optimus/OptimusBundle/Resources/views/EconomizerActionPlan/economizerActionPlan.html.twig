@@ -200,55 +200,67 @@
 </script>
 
 
-	
-	<div id="left">	
-		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}		
+
+	<div id="left">
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
 	</div>
 	<div id="right">
 		<div id="topRight">
-			<p>
-				<strong>
-				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
-				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> > 
-				{{ dataActionPlan_name }}
-				</strong>
-			</p>				
+			<p>{{ nameBuilding }}</p>
+
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li style="background-color:#e8f3f9;"><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
+			</ul>
 		</div>
 		
 		<div id="centerRight">
-				<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;">
-					<div style="width:650px;float:left;">
-						<p class="titleContentDescription"><strong>Action Plan:</strong> <span>{{ dataActionPlan_name }}</span></p>
-						<p class="titleContentDescription"><strong>Description:</strong> <span style="font-size:12px;">{{ dataActionPlan_description }}</span></p>
-					</div>
-					<div style="float:left; text-align:right;">
-						<p style="margin:10px 10px;"><span style="color:#2e75b6">Last forecast calculated:</span> <span style="font-size:12px;">{{ dataActionPlan_lastCalculation }}</span></span></p>					
-					</div>
-				</div>
-				
-				
-				<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;  border-top:0px;">
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #7f7f7f; text-align: right;"><strong>Dates:</strong></p>
-					
-					<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #7f7f7f; text-align:center; background-color: #e8eef8;">
-						<span id="startDate">{{ startDate }}</span> / 
-						<span id="endDate">{{ endDate }}</span>
-					</p>
-					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #7f7f7f; cursor:pointer;" onclick="displayCalendar();">+</p>
-					
-					<p class="buttonIndicator" onclick="createURLView();" style="margin-right:20px;">View</p>
-					<!--
-					<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">{%trans%} Calculate {%endtrans%}</p>
-					-->
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #7f7f7f;  text-align: right;">Method:</p> 
-					<p class="strategyActual" style="float:left; margin-right:0px; height:35px; padding:0px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right; cursor:pointer;"> 
-						<select id="method" name="method" style="background-color: #d0cece; border: none; height:20px; margin-top: 7px;">
-							<option value="temp" style="background-color: #e8eef8; border: none; " {% if dataActionPlan is defined %} {% if dataActionPlan[0].method == 'temp' %} selected {% endif %} {% endif %} >Temperature</option>
-							<option value="enth" style="background-color: #e8eef8; border: none; " {% if dataActionPlan is defined %} {% if dataActionPlan[0].method == 'enth' %} selected {% endif %} {% endif %} >Enthalpy</option>
-						</select> 
-					</p>		
-				</div>
-				<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#d0cece;"></div>
+			<p class="titleDiv">{{ dataActionPlan_name }}</p>
+			<p>{{ dataActionPlan_description }}</p>
+			{#<div style="float: right;"><p><span style="color:#2e75b6">{%trans%} Last forecast calculated {%endtrans%}:</span> <span>{{ dataActionPlan_lastCalculation }}</span></p></div>#}
+			<div id="indicators">
+				<p class="boxContent borderRight">
+					<img src="{{asset('bundles/optimus/img/Calendar.png')}}" />
+				</p>
+
+				<p class="dates boxContent borderRight">
+					<span id="startDate">{{ startDate }}</span> /
+					<span id="endDate">{{ endDate }}</span>
+				</p>
+
+				<p class="boxContent borderRight" style="cursor:pointer;" onclick="displayCalendar();"><img src="{{asset('bundles/optimus/img/Plus.png')}}" /></p>
+
+				<p class="boxContent borderRight"  style="cursor:pointer;" onclick="createURLView();">
+					<img src="{{asset('bundles/optimus/img/View.png')}}" />
+				</p>
+
+				{% if( dataActionPlan != null) %}
+				<p class="boxContent borderRight" id="updateSuggestions" style="cursor:pointer;">
+					<strong style="color:#0069b4">Update Suggestions</strong>
+				</p>
+				{% endif %}
+
+				<p class="boxContent borderRight">
+					{%trans%} Last forecast calculated {%endtrans%}: <span>{{ dataActionPlan_lastCalculation }}</span>
+				</p>
+
+				<p style="float: right; padding: 10px; margin: 0px;">
+					{%trans%} Method: {%endtrans%}
+					<select id="method" name="method" style="cursor: pointer; border: none;">
+						<option value="temp" style="background-color: #e8eef8; border: none; " {% if dataActionPlan is defined %} {% if dataActionPlan[0].method == 'temp' %} selected {% endif %} {% endif %} >Temperature</option>
+						<option value="enth" style="background-color: #e8eef8; border: none; " {% if dataActionPlan is defined %} {% if dataActionPlan[0].method == 'enth' %} selected {% endif %} {% endif %} >Enthalpy</option>
+					</select>
+				</p>
+			</div>
+			<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
 				
 				<div id="contentGraficas">
 					<!-- tabla de valores -->
@@ -258,7 +270,7 @@
 					</div>
 					<div class="contentTableResults">
 						{% if( dataActionPlan != null) %}
-						<button id="updateSuggestions" style="float: right;">Update Suggestions</button>
+						{#<button id="updateSuggestions" style="float: right;">Update Suggestions</button>#}
 						<table id="tablaActionPlan" border="0" style="font-size: 12px;">
 							<tbody>
 								<tr class="headerDays">
