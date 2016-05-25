@@ -83,7 +83,7 @@ class SetPointPlanController extends Controller
 		}
 
         // render the template
-        return $this->render('OptimusOptimusBundle:Set_point_tempActionPlan:setpoint_plan.html.twig', $result);
+        return $this->render('OptimusOptimusBundle:Set_pointActionPlan:setpoint_plan.html.twig', $result);
     }
 	
 	public function newCalculateSetPointManagementAction($idBuilding, $idAPType, $from='', $to='')

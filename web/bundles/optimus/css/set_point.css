@@ -110,12 +110,6 @@
     text-align:center;
 }
 
-.table_container {
-    width:100%;
-    float:right;
-    cursor:default;
-}
-
 .row {
     margin:-20px 5px;
     line-height:2px;
@@ -182,13 +176,6 @@ table {
 .references {
     cursor:pointer;
     text-decoration: underline;
-}
-
-#container #main #right #centerRight #indicators {
-    background-color: #d0cece;
-    width: 99.8%;
-    overflow: hidden;
-    border: 1px solid #7f7f7f;
 }
 
 .float_left {
