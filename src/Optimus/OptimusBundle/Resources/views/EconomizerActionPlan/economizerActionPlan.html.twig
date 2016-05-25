@@ -195,60 +195,143 @@
 		$("#method").change(function() {
 			createURLView();
 		});
+		$(".showDiv").slideToggle();
+		$("#showSchedule").click(function(){
+			$(".showDiv").slideToggle();
+		});
 	});
 	
 </script>
+	<style>
+		.selectedDayCell
+		{
+			border-left: 3px solid #00D !Important;
+			border-right: 3px solid #00D !Important;
+		}
+		#tablaActionPlan .rawTitle {
+			text-align:left;
+			color:#0069b4;
+			padding-left:15px;
+			font-size:11px;
+			font-weight:bold;
+			letter-spacing:1px;
+			text-transform:uppercase;
+		}
+		#tablaActionPlan .borderRight {
+			border-right: 2px solid #efefef;
+		}
+		#tablaActionPlan .borderBottom {
+			border-bottom: 2px solid #efefef;
+		}
+		#tablaActionPlan #showSchedule > td {
+			background-color:#aeaaaa;
+			text-align:left;
+			border-top:2px solid #efefef;
+			border-bottom:2px solid #efefef;
+			padding-left:15px;
+		}
+		#tablaActionPlan .temp_internal, #tablaActionPlan .enth_internal {
+			text-align:right;
+			width: 50px;
+			border-style:none;
+			margin: 2px;
+		}
+		#tablaActionPlan .gray {
+			background-color: #f2f2f2;
+		}
+		#tablaActionPlan .blue {
+			background-color: #d9e1f2;
+		}
+		#tablaActionPlan .orange {
+			background-color: #FF7F50;
+		}
+		#tablaActionPlan .pink {
+			background-color: #FFAAAA;
+		}
+		#tablaActionPlan .green {
+			background-color: #AAEEAA;
+		}
+		#tablaActionPlan .disabled {
+			background-color: #f2f2f2;
+			color: #949494;
+		}
+		#tablaActionPlan .ActionPlanConfirm {
+			text-align: left;
+		}
+		#tablaActionPlan .ActionPlanConfirm p {
+			font-size: 11px !important;
+			margin: 0 !important;
+		}
+		#tablaActionPlan .ActionPlanConfirm.disabled p {
+			color: #949494 !important;
+		}
+		#tablaActionPlan .ActionPlanConfirm .inputsFilters {
+			float:left;
+			margin-right:3px;
+		}
+	</style>
 
 
-	
-	<div id="left">	
-		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}		
+	<div id="left">
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
 	</div>
 	<div id="right">
 		<div id="topRight">
-			<p>
-				<strong>
-				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
-				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> > 
-				{{ dataActionPlan_name }}
-				</strong>
-			</p>				
+			<p>{{ nameBuilding }}</p>
+
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li style="background-color:#e8f3f9;"><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
+			</ul>
 		</div>
 		
 		<div id="centerRight">
-				<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;">
-					<div style="width:650px;float:left;">
-						<p class="titleContentDescription"><strong>Action Plan:</strong> <span>{{ dataActionPlan_name }}</span></p>
-						<p class="titleContentDescription"><strong>Description:</strong> <span style="font-size:12px;">{{ dataActionPlan_description }}</span></p>
-					</div>
-					<div style="float:left; text-align:right;">
-						<p style="margin:10px 10px;"><span style="color:#2e75b6">Last forecast calculated:</span> <span style="font-size:12px;">{{ dataActionPlan_lastCalculation }}</span></span></p>					
-					</div>
-				</div>
-				
-				
-				<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;  border-top:0px;">
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #7f7f7f; text-align: right;"><strong>Dates:</strong></p>
-					
-					<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #7f7f7f; text-align:center; background-color: #e8eef8;">
-						<span id="startDate">{{ startDate }}</span> / 
-						<span id="endDate">{{ endDate }}</span>
-					</p>
-					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #7f7f7f; cursor:pointer;" onclick="displayCalendar();">+</p>
-					
-					<p class="buttonIndicator" onclick="createURLView();" style="margin-right:20px;">View</p>
-					<!--
-					<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">{%trans%} Calculate {%endtrans%}</p>
-					-->
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #7f7f7f;  text-align: right;">Method:</p> 
-					<p class="strategyActual" style="float:left; margin-right:0px; height:35px; padding:0px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right; cursor:pointer;"> 
-						<select id="method" name="method" style="background-color: #d0cece; border: none; height:20px; margin-top: 7px;">
-							<option value="temp" style="background-color: #e8eef8; border: none; " {% if dataActionPlan is defined %} {% if dataActionPlan[0].method == 'temp' %} selected {% endif %} {% endif %} >Temperature</option>
-							<option value="enth" style="background-color: #e8eef8; border: none; " {% if dataActionPlan is defined %} {% if dataActionPlan[0].method == 'enth' %} selected {% endif %} {% endif %} >Enthalpy</option>
-						</select> 
-					</p>		
-				</div>
-				<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#d0cece;"></div>
+			<p class="titleDiv">{{ dataActionPlan_name }}</p>
+			<p>{{ dataActionPlan_description }}</p>
+			{#<div style="float: right;"><p><span style="color:#2e75b6">{%trans%} Last forecast calculated {%endtrans%}:</span> <span>{{ dataActionPlan_lastCalculation }}</span></p></div>#}
+			<div id="indicators">
+				<p class="boxContent borderRight">
+					<img src="{{asset('bundles/optimus/img/Calendar.png')}}" />
+				</p>
+
+				<p class="dates boxContent borderRight">
+					<span id="startDate">{{ startDate }}</span> /
+					<span id="endDate">{{ endDate }}</span>
+				</p>
+
+				<p class="boxContent borderRight" style="cursor:pointer;" onclick="displayCalendar();"><img src="{{asset('bundles/optimus/img/Plus.png')}}" /></p>
+
+				<p class="boxContent borderRight"  style="cursor:pointer;" onclick="createURLView();">
+					<img src="{{asset('bundles/optimus/img/View.png')}}" />
+				</p>
+
+				{% if( dataActionPlan != null) %}
+				<p class="boxContent borderRight" id="updateSuggestions" style="cursor:pointer;">
+					<strong style="color:#0069b4">Update Suggestions</strong>
+				</p>
+				{% endif %}
+
+				<p class="boxContent borderRight">
+					{%trans%} Last forecast calculated {%endtrans%}: <span>{{ dataActionPlan_lastCalculation }}</span>
+				</p>
+
+				<p style="float: right; padding: 10px; margin: 0px;">
+					{%trans%} Method: {%endtrans%}
+					<select id="method" name="method" style="cursor: pointer; border: none;">
+						<option value="temp" style="background-color: #e8eef8; border: none; " {% if dataActionPlan is defined %} {% if dataActionPlan[0].method == 'temp' %} selected {% endif %} {% endif %} >Temperature</option>
+						<option value="enth" style="background-color: #e8eef8; border: none; " {% if dataActionPlan is defined %} {% if dataActionPlan[0].method == 'enth' %} selected {% endif %} {% endif %} >Enthalpy</option>
+					</select>
+				</p>
+			</div>
+			<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
 				
 				<div id="contentGraficas">
 					<!-- tabla de valores -->
@@ -258,16 +341,16 @@
 					</div>
 					<div class="contentTableResults">
 						{% if( dataActionPlan != null) %}
-						<button id="updateSuggestions" style="float: right;">Update Suggestions</button>
+						{#<button id="updateSuggestions" style="float: right;">Update Suggestions</button>#}
 						<table id="tablaActionPlan" border="0" style="font-size: 12px;">
 							<tbody>
-								<tr class="headerDays">
-									<td colspan="2" style="border-right: 2px solid;"></td>
+								<tr class="headerDays" style="font-weight:bold;">
+									<td colspan="2" class="borderRight"></td>
 									{% for i in 0..6 %}
-									<td>
+									<td style='text-align:center;'>
 										{% if dataActionPlan is defined %}	
 											{% if dataActionPlan[i] is defined %}	
-												{{ (dataActionPlan[i].nameAbbreviatedDay) }}
+												{{ (dataActionPlan[i].nameAbbreviatedDay) }}</br>
 												{{ (dataActionPlan[i].abbreviatedDay) }}
 											{% endif %}
 										{% endif %}
@@ -277,15 +360,15 @@
 								
 								<!-- Top values --> 
 								<tr>
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Internal Temperature {%endtrans%}(°C) </td>
+									<td colspan="2" class="rawTitle borderRight">{%trans%} Internal Temperature {%endtrans%}(°C) </td>
 									{% for i in 0..6 %}									
-										<td style="background-color: #d9e1f2;"><input type="number" class="temp_internal"  name="temp_internal_{{i}}" step="0.5" style="width: 50px; background-color: #d9e1f2; border-style:none; margin: 2px;" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].temperature_internal}}" {% endif %} {% endif %} {% endif %} /></td>				
+										<td class="blue"><input type="number" class="temp_internal blue" name="temp_internal_{{i}}" step="0.5" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].temperature_internal}}" {% endif %} {% endif %} {% endif %} /></td>
 									{% endfor %}
 								</tr>	
 								<tr>
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Internal Enthalpy {%endtrans%}(°C) </td>
+									<td colspan="2" class="rawTitle borderRight">{%trans%} Internal Enthalpy {%endtrans%}(°C) </td>
 									{% for i in 0..6 %}									
-										<td style="background-color: #d9e1f2;"><input type="number" class="enth_internal"  name="enth_internal_{{i}}" step="0.5" style="width: 50px; background-color: #d9e1f2; border-style:none; margin: 2px;" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].enthalpy_internal}}" {% endif %} {% endif %} {% endif %} /></td>				
+										<td class="blue"><input type="number" class="enth_internal blue" name="enth_internal_{{i}}" step="0.5" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].enthalpy_internal}}" {% endif %} {% endif %} {% endif %} /></td>
 									{% endfor %}
 								</tr>	
 								<tr style="display: none;">
@@ -293,22 +376,22 @@
 									{% for i in 0..6 %}									
 										<td style="background-color: #d9e1f2;"><input type="number" class="idOutputDay"  name="idOutputDay_{{i}}" style="width: 50px; background-color: #d9e1f2; border-style:none; margin: 2px;" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].idOutputDay}}" {% endif %} {% endif %} {% endif %} /></td>				
 									{% endfor %}
-								</tr>	
-								
+								</tr>
+
 								<tr id="showSchedule">
-									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9">{%trans%} schedule (per hours) {%endtrans%}</td>
+									<td colspan="9"> &#9660; {%trans%} show schedule (per hours) {%endtrans%}</td>
 								</tr>
 								
 								<!-- FIRST COLUMN -->
 								<tr class="showDiv">
-									<td class="firstCellShowDiv" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Free cooling options {%endtrans%}</td>
+									<td class="firstCellShowDiv rawTitle borderBottom" rowspan="25">{%trans%} Free cooling options {%endtrans%}</td>
 								</tr>
 								
 								{% for i in 0..23 %}
-								<tr class="showDiv" style="height: 30px;">
+								<tr class="showDiv">
 								
 									<!-- TIME COLUMN -->
-									<td class="secondCellShowDiv" style="background-color: #d9e1f2; border-right: 2px solid; {%if(i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
+									<td class="secondCellShowDiv borderRight {%if(i==23)%}borderBottom{% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
 															
 									<!-- WEEK DAYS COLUMNS -->
 									{% for j in 0..6 %}
@@ -316,25 +399,27 @@
 										<!-- DAILY COLUMNS -->
 									
 										{% if dataActionPlan[j].rule_result[i] is defined %}		
-											<td {% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
-													class="selectedDayCell" 
-												{% endif %}
-												style=" width: 92px; text-align:center; background-color:
-												{% if dataActionPlan[j].rule_result[i] == 'Total free cooling' %} 
-													#AAEEAA;
+											<td class="
+												{% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%}selectedDayCell{% endif %}
+												{%if(i==23)%} borderBottom{% endif %}
+												{% if dataActionPlan[j].rule_result[i] == 'Total free cooling' %}
+													green
 												{% elseif dataActionPlan[j].rule_result[i] == 'Partial free cooling' %}
-													#FF7F50;	
+													orange
 												{% elseif dataActionPlan[j].rule_result[i] == 'Minimum outside air' %}
-													#FFAAAA;	
-												{% else %}
-													#777777;	
+													pink
+												{% elseif dataActionPlan[j].rule_result[i] == 'no data' %}
+													disabled
 												{% endif %}
-												 {%if(i==23)%} border-bottom: 2px solid; {% endif %}" >
+												">
 												{{ (dataActionPlan[j].rule_result[i]) }}													
 											</td>
 											
 										{% else %}	
-											<td style="background-color:#777777;{%if(i==23)%} border-bottom: 2px solid; {% endif %}"> no data </td>
+											<td class="disabled
+												{% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%}selectedDayCell{% endif %}
+												{%if(i==23)%} borderBottom{% endif %}
+												"> no data </td>
 										{% endif %}									
 										
 									{% endfor %}
@@ -342,20 +427,20 @@
 								{% endfor %}
 								
 								<tr>
-									<td class="value" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
+									<td class="value rawTitle borderRight" colspan="2"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
 									
 									{% for i in 0..6 %}
-										<td style="text-align: left; {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} background-color:#d9d9d9; {% endif %}">
+										<td class="ActionPlanConfirm {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%}disabled{% endif %}">
 											<form id="form_{{i}}" method="post">
 									 
-												<div class="inputsFilters" style=" float:left; margin-right:3px;">
-													<p style="font-size:11px; margin:0;">
+												<div class="inputsFilters">
+													<p>
 														<input type="radio" name="filter" value="0" {%if( dataActionPlan[i].day >'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
 													</p>
-													<p style="font-size:11px; margin:0;">
+													<p>
 														<input type="radio" name="filter" value="1" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
 													</p>
-													<p style="font-size:11px; margin:0;">
+													<p>
 														<input type="radio" name="filter" value="2" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
 													</p>
 													<input type="hidden" value="{{dataActionPlan[i].day|date('Y-m-d') }}" name="day" id="day" />

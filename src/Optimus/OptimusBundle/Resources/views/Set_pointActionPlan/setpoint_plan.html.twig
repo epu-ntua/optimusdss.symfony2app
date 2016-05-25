@@ -1,8 +1,6 @@
 {% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('bundles/optimus/js/jsTree/themes/default/style.min.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/ui-lightness/jquery-ui-1.10.3.mine.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/set_point.css') }}"/>
 {% endblock %}
 
@@ -194,7 +192,7 @@
     </style>
 
     <div id="left">
-        <ul type="none" style="">
+		<ul type="none" style="">
 			<li><a href="">Tracker</a></li>
 			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
 			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
@@ -203,7 +201,7 @@
     </div>
     <div id="right">
         <div id="topRight">
-            <p>{{ nameBuilding }}</p>	
+		<p>{{ nameBuilding }}</p>	
 			
 			<ul type="none">
 				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
@@ -211,29 +209,34 @@
 				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
 				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
 				<li><a href="">User Activity</a></li>
+			</ul>
         </div>
 
         <div id="centerRight">
-            <p class="titleDiv">{{ dataActionPlan_name }}</p>
-			<p>{{ dataActionPlan_description }}</p>
+		
+				<p class="titleDiv">{{ dataActionPlan_name }}</p>
+				<p>{{ dataActionPlan_description }}</p>
 
-            <div id="indicators" style="background-color:#ddd; width:99.8%;  overflow:hidden; border:1px solid #aaa;  border-top:0px;">
-                <p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #aaa; text-align: right;"><strong>{%trans%} Dates {%endtrans%}:</strong></p>
-
-                <p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #aaa; text-align:center; background-color: #e8eef8;">
-                    <span id="startDate">{{ startDate }}</span> /
-                    <span id="endDate">{{ endDate }}</span>
-                </p>
-                <p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #aaa; cursor:pointer;" onclick="displayCalendar();">+</p>
-
-                <p class="buttonIndicator" onclick="createURLView();">{%trans%} View {%endtrans%}</p>
-
-                <!--<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">{%trans%} Calculate {%endtrans%}</p>-->
+            <div id="indicators">
+				<p class="boxContent borderRight">
+						<img src="{{asset('bundles/optimus/img/Calendar.png')}}" />
+					</p>
+					
+					<p class="dates boxContent borderRight">
+						<span id="startDate">{{ startDate }}</span> / 
+						<span id="endDate">{{ endDate }}</span>
+					</p>
+					
+					<p class="boxContent borderRight" style=" cursor:pointer;" onclick="displayCalendar();"><img src="{{asset('bundles/optimus/img/Plus.png')}}" /></p>
+					
+					<p class="boxContent borderRight"  style=" cursor:pointer;" onclick="createURLView();">
+						<img src="{{asset('bundles/optimus/img/View.png')}}" />
+					</p>
             </div>
             <div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
             <div id="contentGraficas">
                 <!-- Filtros -->
-                <div class="contentTableResults" style="margin:2% 0 17% 0; font-size=12;">
+                <div class="contentTableResults">
 
                     <table class="table_container">
                         <tr style="margin:0; line-height:0px;">
