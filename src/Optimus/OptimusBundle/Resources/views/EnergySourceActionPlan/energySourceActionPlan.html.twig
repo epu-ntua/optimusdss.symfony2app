@@ -227,59 +227,69 @@
 </script>
 
 
-	
-	<div id="left">	
-		{{ render(controller('OptimusOptimusBundle:Building:description', {'idBuilding':idBuilding})) }}		
+
+	<div id="left">
+		<ul type="none" style="">
+			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>
 	</div>
 	<div id="right">
 		<div id="topRight">
-			<p>
-				<strong>
-				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > 
-				<span style="cursor:pointer;text-decoration:underline;" onclick="location.href='{{ path('selectGraph', {'idBuilding':idBuilding} ) }}';">{{ nameBuilding }}</span> > 
-				{{ dataActionPlan_name }}
-				</strong>
-			</p>				
+			<p>{{ nameBuilding }}</p>
+
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li style="background-color:#e8f3f9;"><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li><a href="">User Activity</a></li>
+			</ul>
 		</div>
 		
 		<div id="centerRight">
-				<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;">
-					<div style="width:650px;float:left;">
-						<p class="titleContentDescription"><strong>Action Plan:</strong> <span>Scheduling the battery use towards energy cost optimization</span></p>
-						<p class="titleContentDescription"><strong>Description:</strong> <span style="font-size:11px;">The main goal of the DSS is to schedule the electricity storage of an energy network based on its hourly energy production and consumption data.</span></p>
-					</div>
-					<div style="float:left; text-align:right;">
-						<p style="margin:10px 10px;"><span style="color:#2e75b6">Last forecast calculated:</span> <span><strong>When??</strong></span></p>					
-					</div>
-				</div>
-				
-				<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f; border-top:0px;">	
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #7f7f7f;  text-align: right;"><strong>Profile:</strong></p>
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:150px; border-right:1px solid #7f7f7f;  text-align: right;">Summer profile</p>
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:160px; border-right:1px solid #7f7f7f;  text-align: right;"><strong>Visualization:</strong></p><p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px;  border-right:1px solid #7f7f7f;  text-align: right;">Daily</p>
-				</div>
-				
-				<div id="indicators" style="background-color:#d0cece; width:99.8%;  overflow:hidden; border:1px solid #7f7f7f;  border-top:0px;">
-					<p style="float:left; margin-right:0px; height:15px; padding:10px; margin:0px; width:50px; border-right:1px solid #7f7f7f; text-align: right;"><strong>Dates:</strong></p>
-					
-					<p style="float:left; margin-right:0px; height:15px; padding:10px 0 10px 10px; margin:0px; width:160px; border-right:1px solid #7f7f7f; text-align:center; background-color: #e8eef8;">
-						<span id="startDate">{{ startDate }}</span> / 
-						<span id="endDate">{{ endDate }}</span>
-					</p>
-					<p style="background-color:#e8eef8; float:left; margin:0px; width:40px; height:35px; text-align:center; font-size:16px; line-height:2.3; border-right:1px solid #7f7f7f; cursor:pointer;" onclick="displayCalendar();">+</p>
-					
-					<p class="buttonIndicator" onclick="createURLView();" style="margin-right:20px;">View</p>
-					<p class="buttonIndicator" onclick="createURLPredictor();" style="margin-right:20px;">Calculate</p>
-					
-					<p>Selected Day: {{  "now"|date("Y-m-d")  }}</p>
-				</div>
-				<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#d0cece;"></div>
+			<p class="titleDiv">{{ dataActionPlan_name }}</p>
+			<p>{{ dataActionPlan_description }}</p>
+			{#<p><span style="color:#2e75b6">{%trans%} Last forecast calculated {%endtrans%}:</span> <span><strong>When??/strong></span></p>#}
+
+			<div id="indicators">
+				<p class="boxContent borderRight">
+					<img src="{{asset('bundles/optimus/img/Calendar.png')}}" />
+				</p>
+
+				<p class="dates boxContent borderRight">
+					<span id="startDate">{{ startDate }}</span> /
+					<span id="endDate">{{ endDate }}</span>
+				</p>
+
+				<p class="boxContent borderRight" style="cursor:pointer;" onclick="displayCalendar();">
+					<img src="{{asset('bundles/optimus/img/Plus.png')}}" />
+				</p>
+
+				<p class="boxContent borderRight" style="cursor:pointer;" onclick="createURLView();">
+					<img src="{{asset('bundles/optimus/img/View.png')}}" />
+				</p>
+
+				<p class="boxContent borderRight" style="cursor:pointer;" onclick="createURLPredictor();">
+					<strong style="color:#0069b4">Calculate</strong>
+				</p>
+
+				<p class="boxContent borderRight">Selected Day: {{  "now"|date("Y-m-d")  }}</p>
+
+				<p class="boxContent borderRight">Profile: Summer profile</p>
+				<p class="boxContent borderRight">Visualization: Daily</p>
+
+				<p style="float: right; padding: 10px; margin: 0px;">
+					<label for="loadshift" style="cursor: pointer;" >Allow Load Shift</label>
+					<input style="cursor: pointer;" type="checkbox" id="loadshift" name="loadshift" checked >
+				</p>
+			</div>
+			<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
 				
 				<div id="contentGraficas">
 					<!-- tabla de valores -->
-					<div style="float: right;">
-						<input type="checkbox" id="loadshift"  name="loadshift" checked >Allow Load Shift
-					</div>
 					<div class="contentTableResults">
 						{% if( dataActionPlan != null) %}
 						<table id="tablaActionPlan" border="0" style="font-size: 12px;">
@@ -320,12 +330,12 @@
 								
 								<!-- Peak Shaving -->
 								<tr id="showSchedule">
-									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span>{%trans%}show peak shaving schedule (per hour) {%endtrans%}</td>
+									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span>{%trans%}Show suggestions for shaving peaks {%endtrans%}</td>
 								</tr>
 								
 								<!-- FIRST COLUMN -->
 								<tr class="showDiv">
-									<td class="firstCellShowDiv" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Final Suggestions </br> for peak shaving {%endtrans%}</td>
+									<td class="firstCellShowDiv" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%}Suggestions</br>for shaving peaks {%endtrans%}</td>
 								</tr>
 								
 								{% for i in 0..23 %}
@@ -355,12 +365,12 @@
 								
 								<!-- Battery Use -->
 								<tr id="showSchedule2">
-									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span>{%trans%}show battery use schedule (per hour) {%endtrans%}</td>
+									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span>{%trans%}Show suggestions for optimizing battery use {%endtrans%}</td>
 								</tr>
 								
 								<!-- FIRST COLUMN -->
 								<tr class="showDiv2">
-									<td class="firstCellShowDiv2" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Battery Use {%endtrans%}</td>
+									<td class="firstCellShowDiv2" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Suggestions for</br>optimizing battery use Use {%endtrans%}</td>
 								</tr>
 								
 								{% for i in 0..23 %}
