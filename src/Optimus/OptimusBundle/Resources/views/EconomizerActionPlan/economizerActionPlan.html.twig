@@ -195,10 +195,81 @@
 		$("#method").change(function() {
 			createURLView();
 		});
+		$(".showDiv").slideToggle();
+		$("#showSchedule").click(function(){
+			$(".showDiv").slideToggle();
+		});
 	});
 	
 </script>
-
+	<style>
+		.selectedDayCell
+		{
+			border-left: 3px solid #00D !Important;
+			border-right: 3px solid #00D !Important;
+		}
+		#tablaActionPlan .rawTitle {
+			text-align:left;
+			color:#0069b4;
+			padding-left:15px;
+			font-size:11px;
+			font-weight:bold;
+			letter-spacing:1px;
+			text-transform:uppercase;
+		}
+		#tablaActionPlan .borderRight {
+			border-right: 2px solid #efefef;
+		}
+		#tablaActionPlan .borderBottom {
+			border-bottom: 2px solid #efefef;
+		}
+		#tablaActionPlan #showSchedule > td {
+			background-color:#aeaaaa;
+			text-align:left;
+			border-top:2px solid #efefef;
+			border-bottom:2px solid #efefef;
+			padding-left:15px;
+		}
+		#tablaActionPlan .temp_internal, #tablaActionPlan .enth_internal {
+			text-align:right;
+			width: 50px;
+			border-style:none;
+			margin: 2px;
+		}
+		#tablaActionPlan .gray {
+			background-color: #f2f2f2;
+		}
+		#tablaActionPlan .blue {
+			background-color: #d9e1f2;
+		}
+		#tablaActionPlan .orange {
+			background-color: #FF7F50;
+		}
+		#tablaActionPlan .pink {
+			background-color: #FFAAAA;
+		}
+		#tablaActionPlan .green {
+			background-color: #AAEEAA;
+		}
+		#tablaActionPlan .disabled {
+			background-color: #f2f2f2;
+			color: #949494;
+		}
+		#tablaActionPlan .ActionPlanConfirm {
+			text-align: left;
+		}
+		#tablaActionPlan .ActionPlanConfirm p {
+			font-size: 11px !important;
+			margin: 0 !important;
+		}
+		#tablaActionPlan .ActionPlanConfirm.disabled p {
+			color: #949494 !important;
+		}
+		#tablaActionPlan .ActionPlanConfirm .inputsFilters {
+			float:left;
+			margin-right:3px;
+		}
+	</style>
 
 
 	<div id="left">
@@ -273,13 +344,13 @@
 						{#<button id="updateSuggestions" style="float: right;">Update Suggestions</button>#}
 						<table id="tablaActionPlan" border="0" style="font-size: 12px;">
 							<tbody>
-								<tr class="headerDays">
-									<td colspan="2" style="border-right: 2px solid;"></td>
+								<tr class="headerDays" style="font-weight:bold;">
+									<td colspan="2" class="borderRight"></td>
 									{% for i in 0..6 %}
-									<td>
+									<td style='text-align:center;'>
 										{% if dataActionPlan is defined %}	
 											{% if dataActionPlan[i] is defined %}	
-												{{ (dataActionPlan[i].nameAbbreviatedDay) }}
+												{{ (dataActionPlan[i].nameAbbreviatedDay) }}</br>
 												{{ (dataActionPlan[i].abbreviatedDay) }}
 											{% endif %}
 										{% endif %}
@@ -289,15 +360,15 @@
 								
 								<!-- Top values --> 
 								<tr>
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Internal Temperature {%endtrans%}(°C) </td>
+									<td colspan="2" class="rawTitle borderRight">{%trans%} Internal Temperature {%endtrans%}(°C) </td>
 									{% for i in 0..6 %}									
-										<td style="background-color: #d9e1f2;"><input type="number" class="temp_internal"  name="temp_internal_{{i}}" step="0.5" style="width: 50px; background-color: #d9e1f2; border-style:none; margin: 2px;" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].temperature_internal}}" {% endif %} {% endif %} {% endif %} /></td>				
+										<td class="blue"><input type="number" class="temp_internal blue" name="temp_internal_{{i}}" step="0.5" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].temperature_internal}}" {% endif %} {% endif %} {% endif %} /></td>
 									{% endfor %}
 								</tr>	
 								<tr>
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Internal Enthalpy {%endtrans%}(°C) </td>
+									<td colspan="2" class="rawTitle borderRight">{%trans%} Internal Enthalpy {%endtrans%}(°C) </td>
 									{% for i in 0..6 %}									
-										<td style="background-color: #d9e1f2;"><input type="number" class="enth_internal"  name="enth_internal_{{i}}" step="0.5" style="width: 50px; background-color: #d9e1f2; border-style:none; margin: 2px;" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].enthalpy_internal}}" {% endif %} {% endif %} {% endif %} /></td>				
+										<td class="blue"><input type="number" class="enth_internal blue" name="enth_internal_{{i}}" step="0.5" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].enthalpy_internal}}" {% endif %} {% endif %} {% endif %} /></td>
 									{% endfor %}
 								</tr>	
 								<tr style="display: none;">
@@ -305,22 +376,22 @@
 									{% for i in 0..6 %}									
 										<td style="background-color: #d9e1f2;"><input type="number" class="idOutputDay"  name="idOutputDay_{{i}}" style="width: 50px; background-color: #d9e1f2; border-style:none; margin: 2px;" {% if( dataActionPlan != null) %} {% if dataActionPlan is defined %} {% if dataActionPlan[0] is defined %} value="{{dataActionPlan[i].idOutputDay}}" {% endif %} {% endif %} {% endif %} /></td>				
 									{% endfor %}
-								</tr>	
-								
+								</tr>
+
 								<tr id="showSchedule">
-									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9">{%trans%} schedule (per hours) {%endtrans%}</td>
+									<td colspan="9"> &#9660; {%trans%} show schedule (per hours) {%endtrans%}</td>
 								</tr>
 								
 								<!-- FIRST COLUMN -->
 								<tr class="showDiv">
-									<td class="firstCellShowDiv" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Free cooling options {%endtrans%}</td>
+									<td class="firstCellShowDiv rawTitle borderBottom" rowspan="25">{%trans%} Free cooling options {%endtrans%}</td>
 								</tr>
 								
 								{% for i in 0..23 %}
-								<tr class="showDiv" style="height: 30px;">
+								<tr class="showDiv">
 								
 									<!-- TIME COLUMN -->
-									<td class="secondCellShowDiv" style="background-color: #d9e1f2; border-right: 2px solid; {%if(i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
+									<td class="secondCellShowDiv borderRight {%if(i==23)%}borderBottom{% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
 															
 									<!-- WEEK DAYS COLUMNS -->
 									{% for j in 0..6 %}
@@ -328,25 +399,27 @@
 										<!-- DAILY COLUMNS -->
 									
 										{% if dataActionPlan[j].rule_result[i] is defined %}		
-											<td {% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
-													class="selectedDayCell" 
-												{% endif %}
-												style=" width: 92px; text-align:center; background-color:
-												{% if dataActionPlan[j].rule_result[i] == 'Total free cooling' %} 
-													#AAEEAA;
+											<td class="
+												{% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%}selectedDayCell{% endif %}
+												{%if(i==23)%} borderBottom{% endif %}
+												{% if dataActionPlan[j].rule_result[i] == 'Total free cooling' %}
+													green
 												{% elseif dataActionPlan[j].rule_result[i] == 'Partial free cooling' %}
-													#FF7F50;	
+													orange
 												{% elseif dataActionPlan[j].rule_result[i] == 'Minimum outside air' %}
-													#FFAAAA;	
-												{% else %}
-													#777777;	
+													pink
+												{% elseif dataActionPlan[j].rule_result[i] == 'no data' %}
+													disabled
 												{% endif %}
-												 {%if(i==23)%} border-bottom: 2px solid; {% endif %}" >
+												">
 												{{ (dataActionPlan[j].rule_result[i]) }}													
 											</td>
 											
 										{% else %}	
-											<td style="background-color:#777777;{%if(i==23)%} border-bottom: 2px solid; {% endif %}"> no data </td>
+											<td class="disabled
+												{% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%}selectedDayCell{% endif %}
+												{%if(i==23)%} borderBottom{% endif %}
+												"> no data </td>
 										{% endif %}									
 										
 									{% endfor %}
@@ -354,20 +427,20 @@
 								{% endfor %}
 								
 								<tr>
-									<td class="value" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
+									<td class="value rawTitle borderRight" colspan="2"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
 									
 									{% for i in 0..6 %}
-										<td style="text-align: left; {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} background-color:#d9d9d9; {% endif %}">
+										<td class="ActionPlanConfirm {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%}disabled{% endif %}">
 											<form id="form_{{i}}" method="post">
 									 
-												<div class="inputsFilters" style=" float:left; margin-right:3px;">
-													<p style="font-size:11px; margin:0;">
+												<div class="inputsFilters">
+													<p>
 														<input type="radio" name="filter" value="0" {%if( dataActionPlan[i].day >'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
 													</p>
-													<p style="font-size:11px; margin:0;">
+													<p>
 														<input type="radio" name="filter" value="1" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
 													</p>
-													<p style="font-size:11px; margin:0;">
+													<p>
 														<input type="radio" name="filter" value="2" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
 													</p>
 													<input type="hidden" value="{{dataActionPlan[i].day|date('Y-m-d') }}" name="day" id="day" />
