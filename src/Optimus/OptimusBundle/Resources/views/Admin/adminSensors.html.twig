@@ -8,20 +8,7 @@
 {% endblock %}
 
 {% block content %} 			
-	<div id="left" style="">		
 		
-		<p class="titleContentDescription"><strong>{{ optimus_instance }} </strong></p>				
-		<div id="attributesContentDescription">
-			<p><span>Buildings:</span>2</p>
-			<p><span>Total surface:</span> 18.593m2 </p>
-			<p><span>Renewable generation:</span> PV plant (23 MWh)</p>
-			<p><span>Thermal power:</span> 850 kW </p>
-			<p><span>Electrical power:</span> 440 kW</p>
-			<p><span>Total energy consumption:</span> 2157 kWh/m2</p>
-			<p><span>CO2 emissions:</span> PV plant (23 MWh)</p>
-		</div>
-	</div>
-	
 	<div id="right">
 		<div id="topRight">
 			<p><strong><a href="{{ path('adminBuilding') }}">{{ optimus_instance }}</a> > {{ nameBuilding}} >{%trans%}  Sensors {%endtrans%}</strong></p>					

@@ -5,6 +5,19 @@
 	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery.dataTables.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery.jeditable.min.js') }}"></script>
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.dashes.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.stack.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.crosshair.js') }}"></script>
 {% endblock %}
 
 {% block clase_ActionPlanData %}activo{% endblock %}
@@ -64,7 +77,7 @@
 		/* forms */
 		{% for i in 0..6 %}
 			$("#form_{{i}} ").change (function( event ) { //> input[name*=filter]
-				console.log($("#form_{{i}}").serialize());
+				//console.log($("#form_{{i}}").serialize());
 				//$("#form_{{i}}").submit(function() {
 					console.log({{dataActionPlan[i].idOutputDay}});
 					var url = "{{ path('changePVStatusDay' ,{'idOutputDay':dataActionPlan[i].idOutputDay} ) }}"; // the script where you handle the form input.
@@ -102,15 +115,10 @@
 		$("#menuStrategies").mouseleave(function(){
 			$("#menuStrategies").hide();
 		});
-						
-		//$(document).ready(ReadyFunctionsPVActionPlan());
-		
+				
 	});
 	
-	function ReadyFunctionsPVActionPlan()
-	{
-		
-	}
+	
 	
 	//Show/hide el calendario
 	function displayCalendar()
@@ -232,7 +240,7 @@
 				<li class="active"><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
 				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
 				<li><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
-				<li><a href="">User Activity</a></li>
+				<li><a href="{{ path('lastsEvents', {'idBuilding':idBuilding} )}}">User Activity</a></li>
 			</ul>					
 		</div>
 	
@@ -316,6 +324,9 @@
 				<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
 				
 				<div id="contentGraficas">
+					<!-- Test graph -->
+					<!--<div id="placeholderPartition" style="height:300px; float:left; width: 1075px;  margin-bottom:10px; background-color:#fff; padding: 0 0 30px 0;">	</div>	-->
+					
 					<!-- tabla de valores -->
 					<div class="contentTableResults">
 						{% if( dataActionPlan != null) %}
@@ -413,91 +424,134 @@
 										<td class="lastFirstBlock">{{ dataActionPlan[i].selling_price }}</td>				
 									{% endfor %}							
 								</tr>
-								<tr id="showSchedule">
+								<!--<tr id="showSchedule">
 									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid #efefef; border-bottom:2px solid #efefef; padding-left:15px;" colspan="9"> &#9660; {%trans%} show schedule (per hours) {%endtrans%}</td>
-								</tr>
+								</tr>-->
 								
-								<!-- FIRST COLUMN -->
-								<tr class="showDiv">
-									<td class="firstCellShowDiv" rowspan="25" style=" border-bottom: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">{%trans%} Daily Energy Cost {%endtrans%}<br><br>{%trans%} (Production in KW/h)  {%endtrans%}</td>
-								</tr>
-								
+								{% set aRow=[] %}
+								{% set row=25 %}
 								{% for i in 0..23 %}
-								<tr class="showDiv">
 								
-									<!-- TIME COLUMN -->
-									<td class="secondCellShowDiv" style=" border-right: 2px solid #efefef; {%if(i==23)%} border-bottom: 2px solid #efefef; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
-															
-									<!-- WEEK DAYS COLUMNS -->
-									
+									{% set rowDay=0 %}
 									{% for j in 0..6 %}
 										{% if dataActionPlan[j].calculation[i] is defined %}		
 											{% if dataActionPlan[j].strategy is defined %}
-												
-												{% set title='' %}
-												{% set bold='' %}
-												<!-- CONTENT CELL -->												
-												{% set valueCellByHour=(dataActionPlan[j].calculation[i].message) %}
-												
-												{% set valueCellByHourBefore=(dataActionPlan[j].calculation[i].energy_production_before*dataActionPlan[j].calculation[i].energy_price_before)|round(1, 'floor')%}
-												
-												{% if valueCellByHour != valueCellByHourBefore %}
-													{% set title='before '~valueCellByHourBefore %}
-													{% set bold='font-weight:bold;' %}
-													{% set diferentValue=true %}
-													
+												{% if (dataActionPlan[j].calculation[i].message)=='-'%}
+													{% set rowDay=rowDay+1 %}
 												{% endif%}
+											{% else %}
+												{% set rowDay=rowDay+1 %}
+											{% endif%}
+										{% else %}
+											{% set rowDay=rowDay+1 %}
+										{% endif%}
+									{% endfor %}
+									
+									{% if rowDay==7 %}										
+										{% set row=row-1 %}
+									{% endif%}
+									
+									{% set aRow=aRow |merge ([rowDay])%}
+								{% endfor %}
+									
+								
+								<!-- FIRST COLUMN -->
+								<tr class="showDiv">
+									<td class="firstCellShowDiv" rowspan="{{ row  }}" style=" border-bottom: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">{%trans%} Daily Energy Cost {%endtrans%}<br><br>{%trans%} (Production in KW/h)  {%endtrans%}</td> <!-- 25 -->
+								</tr>
+								
+								{% for i in 0..23 %}									
+									{% if aRow[i]!=7  %}
+									<tr class="showDiv">
+									
+										<!-- TIME COLUMN -->
+										<td class="secondCellShowDiv" style=" border-right: 2px solid #efefef; {%if(i==23)%} border-bottom: 2px solid #efefef; {% endif %}">
+											{{ i }}:00 - {{ i+1}}:00 h 
+												
+												{% set print=1 %}
+												{% for j in i+1..aRow|length -1 %}
+													{% if aRow[j]!=7 or i==23 %}
+														{% set print=0 %}							
+													{% endif %}
+												{% endfor %}
+												{% if print==1 %}
+													<img class="showGraphs" src="{{ asset('bundles/optimus/img/i_show_grafica.png') }}"/>
+												{% endif %} 
+										</td>										
+																
+										<!-- WEEK DAYS COLUMNS -->
 										
-												<!-- DAILY COLUMNS (ACCORDING TO THE STRATEGY) -->
+										{% for j in 0..6 %}
+											{% if dataActionPlan[j].calculation[i] is defined %}		
+												{% if dataActionPlan[j].strategy is defined %}
+													
+													{% set title='' %}
+													{% set bold='' %}
+													<!-- CONTENT CELL -->												
+													{% set valueCellByHour=(dataActionPlan[j].calculation[i].message) %}
+													
+													{% set valueCellByHourBefore=(dataActionPlan[j].calculation[i].energy_production_before*dataActionPlan[j].calculation[i].energy_price_before)|round(1, 'floor')%}
+													
+													{% if valueCellByHour != valueCellByHourBefore %}
+														{% set title='before '~valueCellByHourBefore %}
+														{% set bold='font-weight:bold;' %}
+														{% set diferentValue=true %}
+														
+													{% endif%}
 											
-													{% if dataActionPlan[j].calculation[i].suggestion == 1 %}
-													   </td>
-														  <td 
+													<!-- DAILY COLUMNS (ACCORDING TO THE STRATEGY) -->
+												
+														{% if dataActionPlan[j].calculation[i].suggestion == 1 %}
+														   </td>
+															  <td 
+																	{% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
+																				class="selectedDayCell" 
+																	{% endif %}
+															  style="background-color:#{{ dataActionPlan[j].calculation[i].color_suggestion }};
+																	{% if(i==23)%} 
+																	   border-bottom: 2px solid #efefef; 
+														   {% endif %} 
+																	{{bold}}" title='{{ valueCellByHour }} ({{ dataActionPlan[j].strategy }}) {{title}}'>
+												  {% elseif dataActionPlan[j].calculation[i].suggestion == 0 %}
+															  </td>
+															  <td
+															  {% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
+																	class="selectedDayCell"  
+															  {% endif %}
+															  style="background-color:#{{ dataActionPlan[j].calculation[i].color_suggestion }};
+																	{% if(i==23)%} 
+																	   border-bottom: 2px solid #efefef; 
+																	{% endif %} 
+																	{{bold}}" title='{{ valueCellByHour }} ({{ dataActionPlan[j].strategy }}) {{title}}'>
+														{% else %}
+															  </td>
+															  <td
 																{% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
 																			class="selectedDayCell" 
 																{% endif %}
-														  style="background-color:#{{ dataActionPlan[j].calculation[i].color_suggestion }};
+																style="background-color:#{{ dataActionPlan[j].calculation[i].color_suggestion }};
 																{% if(i==23)%} 
-																   border-bottom: 2px solid #efefef; 
-													   {% endif %} 
-																{{bold}}" title='{{ valueCellByHour }} ({{ dataActionPlan[j].strategy }}) {{title}}'>
-											  {% elseif dataActionPlan[j].calculation[i].suggestion == 0 %}
-														  </td>
-														  <td
-														  {% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
-															    class="selectedDayCell"  
-														  {% endif %}
-														  style="background-color:#{{ dataActionPlan[j].calculation[i].color_suggestion }};
-																{% if(i==23)%} 
-																   border-bottom: 2px solid #efefef; 
+																			border-bottom: 2px solid #efefef; 
 																{% endif %} 
-																{{bold}}" title='{{ valueCellByHour }} ({{ dataActionPlan[j].strategy }}) {{title}}'>
-													{% else %}
-														  </td>
-														  <td
-															{% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
-																		class="selectedDayCell" 
-															{% endif %}
-															style="background-color:#{{ dataActionPlan[j].calculation[i].color_suggestion }};
-															{% if(i==23)%} 
-																		border-bottom: 2px solid #efefef; 
-															{% endif %} 
-															{{bold}}" title='{{ valueCellByHour }} {{title}}'>
-													{% endif %}
-													
-													{{ valueCellByHour }}
-											
-											</td>	
-																
-											{% else %}	
-												<td style="background-color:#f2f2f2; color: #949494;{%if(i==23)%} border-bottom: 2px solid #efefef; {% endif %}"> {%trans%}no data{%endtrans%}</td>
+																{{bold}}" title='{{ valueCellByHour }} {{title}}'>
+														{% endif %}
+														
+														{{ valueCellByHour }}
+												
+												</td>	
+																	
+												{% else %}	
+													<td style="background-color:#f2f2f2; color: #949494;{%if(i==23)%} border-bottom: 2px solid #efefef; {% endif %}"> {%trans%}no data{%endtrans%}</td>
+												{% endif %}
+											{% else %}
+												<td style="background-color:#f2f2f2; color: #949494;{%if(i==23)%} border-bottom: 2px solid #efefef; {% endif %}"> {%trans%} no data {%endtrans%}</td>
 											{% endif %}
-										{% else %}
-											<td style="background-color:#f2f2f2; color: #949494;{%if(i==23)%} border-bottom: 2px solid #efefef; {% endif %}"> {%trans%} no data {%endtrans%}</td>
-										{% endif %}
-									{% endfor %}
-							
-								</tr>
+										{% endfor %}
+								
+									</tr>
+									{% endif %}
+									
+									
 								{% endfor %}								
 								
 								{% if dataActionPlan is defined %}	
@@ -509,7 +563,7 @@
 										
 										
         {% if(dataActionPlan[0].options|length > 1) %}																		
-								<tr>
+								<tr style="display:none;">
 									<!-- ROW 1: e.g. AUTO-CONSUMPTION -->
 									
 									<!-- FIRST COLUMNS Part A -->
@@ -518,7 +572,7 @@
 									</td>
 									
 									<!-- FIRST COLUMNS Part B - ROW 1 -->
-								 <td style="width:150px;  border-right: 2px solid #efefef;
+								 <td style="display:none; width:150px;  border-right: 2px solid #efefef;
 									{% if(dataActionPlan[0].options|length-1 == 1) %}
 									  border-bottom: 2px solid #efefef;
 									{% endif %}									
@@ -545,7 +599,7 @@
 								{% endif %}	
 								
 								{% if(dataActionPlan[0].options|length > 2) %}								
-								<tr>
+								<tr style="display:none;">
 									<!-- FIRST COLUMNS Part B - ROW 2 -->
          <td style="width:150px;  border-right: 2px solid #efefef;
 									{% if(dataActionPlan[0].options|length-1 == 2) %}
@@ -574,7 +628,7 @@
         {% endif %}								
 								
 							 {% if(dataActionPlan[0].options|length > 3) %}								
-								<tr>
+								<tr style="display:none;">
 									<!-- FIRST COLUMNS Part B - ROW 3 -->
 									<td style="width:150px;  border-right: 2px solid #efefef;
 									{% if(dataActionPlan[0].options|length-1 == 3) %}
@@ -603,7 +657,7 @@
 								{% endif %}
 								
 								{% if(dataActionPlan[0].options|length > 4) %}
-								<tr>
+								<tr style="display:none;">
 									<!-- FIRST COLUMNS Part B - ROW 4 -->
 									<td style="width:150px; border-right: 2px solid #efefef; 									
 									{% if(dataActionPlan[0].options|length-1 == 4) %}
@@ -664,6 +718,21 @@
 										<strong>{{ weekEmissionsAcumulated }}</strong>
 									</td>						
 								</tr>-->
+								<tr id="rowGraph">
+									<td class="value" colspan="2" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;"></td>
+									
+									<td class="value" colspan="7" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">
+										{% set diffUnits1=[] %}
+										{% set i=0 %}
+										{% for unit in unitsAP %}
+											{% if unit not in diffUnits1 %}
+												<div id="placeholderPartition_{{i}}" style="height:200px;  min-width: 703px; border-bottom:1px solid #efefef; margin-bottom:3px;  background-color:#fff; padding: 0 0 30px 0;">	</div>
+												{% set i=i+1 %}
+												{% set diffUnits1=diffUnits1 |merge ([unit]) %}
+											{% endif %}
+										{% endfor %}
+									</td>
+								</tr>
 								
 								<tr>
 									<td class="value" colspan="2" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
@@ -672,7 +741,7 @@
 										<td style="text-align: left; {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} background-color:#f2f2f2; color:#949494; {% endif %}">
 											<form id="form_{{i}}" method="post">
 									 
-												<div class="inputsFilters" style=" float:left; margin-right:3px;">
+												<div class="inputsFilters" style=" float:left; margin-right:3px; min-width: 78px;">
 													<p style="font-size:11px; margin:0;">
 														<input type="radio" name="filter" value="0" {%if( dataActionPlan[i].day<'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].status==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
 													</p>
@@ -703,9 +772,217 @@
 
 	<script>
 		$(function(){	
+			
+			$(".showGraphs").click(function(){
+				$("#tooltip").remove();
+				$("#bartip").remove();
+				$("#rowGraph").slideToggle();
+			});
 			{% if diferentValue==true %}				
 				$('#showSchedule > td').html($('#showSchedule > td').html()+" Check the changes");
 			{% endif %}
+			
+			
+			/* ------ PlaceHolder Partition ----- */	
+			{% set diffUnits=[] %}
+			{% set i=0 %}
+			{% for nameUnit,unit in unitsAP %}
+				{% if unit not in diffUnits %}
+					
+					var plot_{{i}}= $.plot($("#placeholderPartition_{{i}}"), [ 		
+						{% set maxY=0 %}
+						{% set minY=0 %}					
+						
+						{% for index, Partition in dataPartitions %}						{##}
+							{% if Partition|length > 0 %}
+							
+								{% for idSensorPartition, sensorPartition in Partition %}									
+														
+									{% for typeData, dataValueSensor in sensorPartition['values'] %}
+																				
+										{% if (dataValueSensor['values']|length) > 0 %}										
+										
+											{% set nameSensorPartition=dataValueSensor['name'] %}
+											{% if unitsAP[nameSensorPartition]==unit %}										
+												
+												{
+													data: [								
+														
+														{% for j in 0..dataValueSensor['values']|length-1 %}					
+															
+															{% set date = dataValueSensor['values'][j].datetime | date("F j, Y H:i:s") %}
+															
+															{% if typeData=='historical' and (nameSensorPartition=='Energy Production' or nameSensorPartition=='Energy Consumption') %}
+															
+																{% set finalValue= dataValueSensor['values'][j].value/1000 %}			
+																
+															{% else %}																
+																{% set finalValue= dataValueSensor['values'][j].value %}
+																
+															{% endif %}	
+
+															{% if j==0 %} 
+																{% set minY= finalValue  %}
+															{% elseif minY > finalValue %} 
+																{% set minY=finalValue  %}
+															{% endif %}
+															
+															{% if maxY < finalValue %} 
+																{% set maxY=finalValue %}
+															{% endif %}	
+															
+															[new Date("{{ date }}"), {{ finalValue }}, "{{finalValue |round(2, 'floor')}} - {{dataValueSensor['name']}} ({{typeData}})" ],		
+															
+														{% endfor %} 								
+														
+														{% if typeData =='prediction' %}
+															], color:"{{ sensorPartition['color']}}", shadowSize: 0, lines:{show:false}, dashes: { show: true, dashLength:[4, 2], lineWidth:1},				
+															//dashes: { show: true }, shadowSize: 0,	
+														{% else %}
+															], color:"{{ sensorPartition['color']}}", shadowSize: 0, dashes: { show: false}, lines:{show:true, lineWidth:1, fillColor:'#FFFFFF'},						
+														{% endif %}												
+												},
+										
+											{% endif %}	
+											
+										{% endif %}	
+										
+									{% endfor %}
+									
+								{% endfor %}		
+							
+							{% endif %}		
+						{% endfor %}
+						
+					],
+					
+					{
+						grid: {
+							canvasText:{show:true},
+							hoverable: true,
+							clickable: true,
+							borderWidth: 0,
+							borderColor:"#cacaca",
+							minBorderMargin: 0.5,
+							axisMargin: 1,
+							backgroundColor:'#ffffff',
+							autoHighlight: false
+						},
+						
+						/*crosshair: {
+							mode: "x"
+						},*/
+								
+						xaxis:{					
+							mode: "time", min: new Date("{{ startDate | date('F j, Y H:i:s') }}"), max: new Date("{{ endDate | date('F j, Y H:i:s') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, show:false,					
+						},
+						yaxis:{min:{{ minY }}, max:{{ maxY }}, tickDecimals: 2,  show:false, labelWidth: 50, labelHeight: 50, reserveSpace: false,  ticks:[{{ minY }}, {{ maxY }}], font:{size: 9, family: "sans-serif", color:"#626262"}},  
+						pan:{interactive:true, cursor: "move", frameRate: 20}
+					} );
+					
+					var previousPoint = null;
+					var latestPosition = null;
+					
+					$("#placeholderPartition_{{i}}").bind("plothover", function (event, pos, item) {
+						latestPosition = pos;
+						/*if (item) {							
+							document.body.style.cursor = 'pointer';
+							if (previousPoint != item.dataIndex) {
+								previousPoint = item.dataIndex;
+
+								$("#tooltip").remove();
+								var x = item.datapoint[0],
+									y = item.datapoint[1];
+									z = item.series.data[item.dataIndex+1][2];
+								showTooltip(item.pageX, item.pageY, z);
+							}							
+						}else{
+							document.body.style.cursor = 'default';
+							$("#tooltip").remove();
+							previousPoint = null;
+						}*/
+						
+						/* -------- */					
+							
+						var pos = latestPosition;
+										
+						var axes = plot_{{i}}.getAxes();						
+						if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
+							pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) {
+							return;
+						}
+						
+						var str='';
+						{% for numGrap in 0..diffUnits1|length-1 %}
+							var i, j, dataset = plot_{{numGrap}}.getData();
+							
+							for (i = 0; i < dataset.length; ++i) {							
+								var series = dataset[i];
+								// Find the nearest points, x-wise
+								//console.log(dataset[i]);
+								for (j = 0; j < series.data.length; ++j) {
+									if (series.data[j][0] > pos.x) {
+										break;
+									}
+								}
+								if(series.data[j] !=null )
+									str+=series.data[j][2]+"<br/>";						
+							}
+						{% endfor %}
+					
+						$("#tooltip").remove();
+						$("#bartip").remove();
+						showTooltip(pos.pageX, pos.pageY,  str);
+						showBarTip(pos.pageX, pos.pageY);
+						
+						/* ------- */
+						
+						
+						//console.log(pos);
+						
+					});
+					
+					{% set i=i+1 %}
+					{% set diffUnits=diffUnits|merge([unit]) %}
+				{% endif %}	
+			{% endfor %}
+			
+			
+			
+			
+			//Función compartida por todas las gráficas
+			function showTooltip(x, y, contents)
+			{
+				$('<div id="tooltip" style="font-size:12px;">' + contents + '</div>').css( {
+					position: 'absolute',
+					display: 'none',
+					top: y-20,
+					left: x + 10,
+					border: '1px solid #ddd',
+					padding: '10px',				
+					'background-color': '#fff',
+					//opacity: 0.80
+				}).appendTo("body").fadeIn(200);
+			}
+			
+			function showBarTip(page_x, page_y)
+			{
+				var pos = $("#rowGraph").offset();
+				$('<div id="bartip" style="font-size:12px;"></div>').css( {
+					position: 'absolute',
+					display: 'none',
+					top: pos.top,//y-20,
+					left: page_x,
+					border: '1px solid #ddd',									
+					'background-color': '#ff0000',
+					width:'1px',
+					height: $("#rowGraph").height()
+					//opacity: 0.80
+				}).appendTo("body").fadeIn(200);
+			}
+			/* ---------------------------------- */
+			
+			$("#rowGraph").hide();
 		});
 	</script>
 	

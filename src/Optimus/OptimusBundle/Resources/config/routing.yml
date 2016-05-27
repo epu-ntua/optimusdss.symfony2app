@@ -270,3 +270,7 @@ openFormReport:
 saveDataFormReport:
     pattern:  /save-data-form-report/{idBuilding}/{idWeeklyReport}
     defaults: { _controller: OptimusOptimusBundle:WeeklyReports:saveDataFormReport}
+
+lastsEvents:
+    pattern:  /lasts-events/{idBuilding}
+    defaults: { _controller: OptimusOptimusBundle:Events:lastsEvents}

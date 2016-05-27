@@ -9,9 +9,12 @@ class EventsController extends Controller
 {
 	public function lastsEventsAction ($idBuilding, $idActionPlan=null)
 	{
-		$data['lastEvents']=$this->get('service_event')->lastsEvent($idBuilding, $idActionPlan);
+		$data['idBuilding']=$idBuilding;
+		$data['nameBuilding']=$this->get('service_data_capturing')->getNameBuilding($idBuilding);
 		
-		return $this->render('OptimusOptimusBundle:Events:lastEvents.html.twig', $data);
+		$data['lastsEvents']=$this->get('service_event')->lastsEvent($idBuilding, $idActionPlan);
+		
+		return $this->render('OptimusOptimusBundle:Events:userActivity.html.twig', $data);
 	}
 }
 
