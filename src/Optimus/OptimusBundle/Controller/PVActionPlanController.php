@@ -53,7 +53,14 @@ class PVActionPlanController extends Controller
 			$data['dataActionPlan'] = $this->get('service_appv_presenter')->getDataValues($startDateFunction, $idActionPlan);
 			$data['weekSoldProducedAcumulated'] = number_format($this->get('service_data_capturing')->weekSoldProducedAcumulated, 2, ',', '.');
 			$data['weekEmissionsAcumulated'] = number_format($this->get('service_data_capturing')->weekEmissionsAcumulated, 2, ',', ' ');
+			
+			$colorsAP=$this->get('service_appv')->getColorsVariables();
+			$data['unitsAP']=$this->get('service_appv')->getUnitsVariables();
+			
+			$data['dataPartitions'] =$this->get('service_data_capturing')->getDataChartTable($idBuilding, $idActionPlan, $startDateFunction, $colorsAP);
 		}
+		
+		//dump($data);
 				
 		return $this->render('OptimusOptimusBundle:PVActionPlan:PVActionPlan.html.twig', $data);		
     }
