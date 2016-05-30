@@ -1,0 +1,68 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>	
+{% endblock %}
+
+{% block content %} 
+
+	<div id="left" >
+		<ul type="none" style="">
+			<li><a href="{{path('tracker')}}">Tracker</a></li>
+			<li><a  href="{{ path('cityDashboard') }}">City Dashboard</a></li>
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p style="float:left; font-size:18px; color:#0069b4; padding-top: 6px;">{{ "now"|date('l, F d, Y') }}</p>
+	</div>
+	
+	<div id="right">
+		<div id="topRight">
+			<!--<p><strong><span style="text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > {{ nameBuilding }}</strong></p>	-->
+			
+			<p>{{ nameBuilding }}</p>	
+			
+			<ul type="none">
+				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
+				<li><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
+				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
+				<li><a  href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
+				<li class="active"><a href="{{ path('lastsEvents', {'idBuilding':idBuilding} )}}">User Activity</a></li>
+			</ul>
+		</div>
+		
+		<div id="centerRight">
+													
+			{% for event in lastsEvents %}
+			
+				<div class="contentEvent">
+					<img src="{{asset('bundles/optimus/img/User-blue.png')}}" />
+					{% if(event.getFkUser() != NULL) %}
+						<span class="userEvent">{{ event.getFkUser().name |capitalize }}</span>
+						
+						{% if(event.action== "declines") %}
+							<span style="color:#ff0000;">{{event.action |trans}}</span>
+						{% elseif(event.action == "accepts") %}
+							<span >{{event.action|trans}}</span>
+						{% elseif(event.action == "unknows") %}
+							<span> {{event.action|trans}}</span>
+						{% endif %}
+						<span class="textEvent">{{event.textEvent |trans}} </span>
+						
+					{% else %}				
+						<span class="userEvent">OPTIMUS</span>	
+						<span class="textEvent"> {{event.textEvent |trans}} </span>
+					{% endif %}
+					
+					
+					{%trans%} on {%endtrans%}			
+					<span>{{event.date |date("d/m/y")}}</span>
+				</div>
+				
+			{% endfor %}
+			
+			
+		</div>
+		
+	</div>
+
+{% endblock %}

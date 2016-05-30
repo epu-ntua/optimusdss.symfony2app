@@ -247,7 +247,7 @@ class InitController extends Controller
 		if (!($pagina)) 
 		{
 			//return 
-			return $this->indexAction();			
+			return $this->cityDashboardAction();			
 		}else
 		{		
 			return $this->render('OptimusOptimusBundle:Admin:selectOptions.html.twig');

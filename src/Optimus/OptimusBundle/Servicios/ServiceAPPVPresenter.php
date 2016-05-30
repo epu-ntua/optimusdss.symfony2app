@@ -924,6 +924,79 @@ array(0.04417,0.05,48.919,0)  // 23
 		
 		return $aStatusWeek;
 	}
+
+	public function getDataChartTable($idBuilding, $idActionPlan, $startDateFunction, $colorsAP)
+	{
+		$allPartitions=$this->em->getRepository('OptimusOptimusBundle:BuildingPartitioning')->findBy(array("fk_Building"=>$idBuilding));
+		
+		//get Sensors for each partition
+		$aPartitions=array();
+		foreach($allPartitions as $partition)
+		{
+			$allAPSensors=$this->em->getRepository('OptimusOptimusBundle:APSensors')->findBy(array("fk_BuildingPartitioning"=>$partition->getId(), "fk_actionplan"=>$idActionPlan));
+			
+			$aDataSensors=array();
+			foreach($allAPSensors as $apsensor)
+			{
+				$aDataSensors[$apsensor->getId()]=array("values"=>$this->getValuesChartSensor($idBuilding, $apsensor, $startDateFunction), "color"=>$colorsAP[$apsensor->getName()]);
+			}
+			$aPartitions[$partition->getId()]=$aDataSensors;
+		}
+		
+		return $aPartitions;
+	}
+	
+	private function getValuesChartSensor($idBuilding, $apsensor, $startDateFunction)
+	{
+		$aDataSensor=array();
+		$currentDate=\DateTime::createFromFormat('Y-m-d H:i:s', $startDateFunction);	
+		
+        // Get the current day -> the "first" one and the "last" one for calculating:
+        $loInitDay=$currentDate->modify("+0 day")->format("Y-m-d H:i:s");
+		$loFinalDay=$currentDate->modify("+6 day")->format("Y-m-d H:i:s");
+		
+        $aDays=$this->getDaysFromDate($loInitDay, $loFinalDay);	// Returns an array of every day between two dates	
+		$numDays=count($aDays);									// Number of days: should be 7 (days)
+		
+		//Historical Data Sensor
+		$aDataHistoric=$this->ontologia->getDataParameterFromOntology($loInitDay, $loFinalDay, $apsensor->getFkSensor()->getUrl(), $apsensor->getFkSensor()->getAggregation());
+			
+		$aHistorical=array(	"name"=>$apsensor->getFkSensor()->getName(), 
+								"values"=>$aDataHistoric, 
+								"color"=>$apsensor->getFkSensor()->getColor(),	
+								"idSensor"=>$apsensor->getFkSensor()->getId(),	
+								"units"=>$apsensor->getFkSensor()->getUnits());
+		
+		//Predictional Data Sensor
+		$aValues=array();
+		for($i=0; $i < $numDays; $i++)
+		{
+			$qPrediction=$this->em->getRepository('OptimusOptimusBundle:Prediction')->findPredictionByDate($aDays[$i], $idBuilding);
+			//Para cada variable getValues de la predicción
+			if(!empty($qPrediction))
+			{
+				$idPrediction=$qPrediction[0]->getId();				
+												
+				//get registros
+				$aDataRegisterPrediction = $this->em->getRepository('OptimusOptimusBundle:RegisterPredictions')->findResgisterPredictionsByDate($apsensor->getFkSensor()->getId(), $idPrediction, $aDays[$i]);
+				
+				
+				foreach($aDataRegisterPrediction as $register) {
+					$aValues[]=array("value"=>$register->getValue(), 
+									 "datetime"=>$register->getDate()->format("Y-m-d H:i:s")); //
+				}							
+			}
+			//$aPrediction[]=array("day"=>$aDays[$i], "values"=>$aValues);
+		}
+		
+		$aPrediction=array("name"=>$apsensor->getFkSensor()->getName(), 
+								"values"=>$aValues, 
+								"color"=>$apsensor->getFkSensor()->getColor(),	
+								"idSensor"=>$apsensor->getFkSensor()->getId(),
+								"units"=>$apsensor->getFkSensor()->getUnits());
+		
+		return $aDataSensor=array("historical"=>$aHistorical, "prediction"=>$aPrediction);
+	}
 }
 ?>
 

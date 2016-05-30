@@ -39,6 +39,10 @@ class ServiceAPPVMCalculation
 	private static $sensor_13_energyproductionph2_name = "Energy production ph_2 (Kwh)";
 	private static $sensor_14_energyproductionph3_name = "Energy production ph_3 (Kwh)";	
 
+	private static $sensor_6_solarradiation_color = "#01d98e";	
+	private static $sensor_12_energyproductionph1_color = "#8900e9"; 
+	private static $sensor_13_energyproductionph2_color = "#9f9d9e"; 
+	private static $sensor_14_energyproductionph3_color = "#f39a02";
 
     //to be updated
 	//public function getTemperatureName(){return self::$sensor_1_temperature_name;}
@@ -52,7 +56,7 @@ class ServiceAPPVMCalculation
 	
 	
 	
-	public function getSolarRadiationName(){return self::$sensor_5_solarradiation_name;}
+	public function getSolarRadiationName(){return self::$sensor_6_solarradiation_name;}
 	public function getEnergyProductionPh1Name(){return self::$sensor_12_energyproductionph1_name;}
 	public function getEnergyProductionPh2Name(){return self::$sensor_13_energyproductionph2_name;}
 	public function getEnergyProductionPh3Name(){return self::$sensor_14_energyproductionph3_name;}
@@ -365,6 +369,17 @@ class ServiceAPPVMCalculation
 		$aVariablesInput[].=self::$sensor_6_solarradiation_name;
         
 		return $aVariablesInput;
+	}
+	
+	public function getColorsVariables()
+	{
+		$data = array();
+		$data[self::$sensor_6_solarradiation_name] = self::$sensor_6_solarradiation_color;
+		$data[self::$sensor_12_energyproductionph1_name] = self::$sensor_12_energyproductionph1_color;
+		$data[self::$sensor_13_energyproductionph2_name] = self::$sensor_13_energyproductionph2_color;
+		$data[self::$sensor_14_energyproductionph3_name] = self::$sensor_14_energyproductionph3_color;
+		
+		return $data;
 	}
 }
 ?>

@@ -84,6 +84,7 @@ body {
   min-height: 600px;
   overflow: hidden;
   margin: 0px auto;
+  box-shadow:0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   width: 1200px; }
   /* line 11, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
   #container #header {
@@ -316,6 +317,10 @@ body {
 			font-weight:bold;
 		}
 		
+		#container #main #right #centerRight .titleDiv.left{
+			margin-left:0;
+		}
+		
 		#container #main #right #centerRight .titleDiv.link{
 			color:#0069b4;
 			cursor:pointer;
@@ -360,6 +365,44 @@ body {
 			width:10px; height:10px;  float:left; margin:10px;
 		}
 		
+		
+		#container #main #right #centerRight .track{
+			margin-bottom:45px;
+		}
+		#container #main #right #centerRight .track.top{
+			margin:45px 0;
+		}
+		.track .contentRow{
+			overflow:hidden; margin-bottom:20px;
+		}
+		.track .contentRow.last{
+			overflow:hidden; margin-bottom:0;
+		}
+		#container #main #right #centerRight .track .contentRow .nameRow{
+			float:left; width:155px; margin:4px 10px 0 0; 
+		}
+		.track .contentRow .contentBarRow{
+			float:left; background-color:#e0e0e0; width:630px; height:20px;
+		}
+		#container #main #right #centerRight .track .contentRow .contentBarRow .bar{
+			margin:0; width:450px; height:20px;
+		}
+		
+		.colorEnergyConsumption1{background-color:#0095ff;}
+		.colorEnergyConsumption2{background-color:#4cb5ff;}
+		.colorEnergyConsumption3{background-color:#99d5ff;}
+		
+		.colorCO21{background-color:#9c9d9d;}
+		.colorCO22{background-color:#bababa;}
+		.colorCO23{background-color:#cecece;}
+		
+		.colorEnergyCost1{background-color:#f39a00;}
+		.colorEnergyCost2{background-color:#f7b859;}
+		.colorEnergyCost3{background-color:#f1d6a4;}
+		
+		.colorIncrease1{background-color:#01d98e;}
+		.colorIncrease2{background-color:#00e4af;}
+		.colorIncrease3{background-color:#b3efd3;}
 		
         /* line 125, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
          #container #main #right #centerRight #indicators {
@@ -418,6 +461,7 @@ body {
           #container #main #right #centerRight #contentGraficas .contentTableResults {
             width: 100%;
             font-size: 14px; }
+		  #container #main #right #centerRight #contentGraficas .showGraphs:hover{opacity:0.5;}
         /* line 162, C:/xampp/htdocs/optimus/web/bundles/optimus/scss/body */
         #container #main #right #centerRight #contentFilterTable {
           overflow: hidden;
@@ -475,6 +519,26 @@ body {
 			#container #main #right #centerRight .contentAllBuildings .contentBuilding .indicatorsBuilding .textRow{
 				float:left;
 				width:197px;
+			}
+			#container #main #right #centerRight .contentEvent{
+				height:20px; 
+				border-bottom:1px solid #dcdcdc; 
+				font-size: 14px; 
+				padding: 10px; 
+				color:#9d9c9c;
+			}
+			#container #main #right #centerRight .contentEvent img{
+				margin-right:25px;
+			}
+			#container #main #right #centerRight .contentEvent .userEvent{
+				color:#0069b4; 
+				font-family:'Exo'; 
+				font-weight:bold;
+			}
+			#container #main #right #centerRight .contentEvent .textEvent{
+				color:#9d9c9c; 
+				font-family:'Open Sans'; 
+				font-weight:bold;
 			}
 			
 			
