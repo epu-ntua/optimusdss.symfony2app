@@ -25,6 +25,16 @@ class ServiceAPPVCalculation
 	private static $sensor_energyPricePurchase_name = "Energy Price Buy"; 
 	private static $sensor_energyPriceSelling_name = "Energy Price Sell";
 	
+	private static $sensor_energyProduction_color = "#01d98e";	
+	private static $sensor_energyConsumption_color = "#8900e9"; 
+	private static $sensor_energyPricePurchase_color = "#9f9d9e"; 
+	private static $sensor_energyPriceSelling_color = "#f39a02";	
+		
+	private static $sensor_energyProduction_units = "kWh";	
+	private static $sensor_energyConsumption_units = "kWh"; 
+	private static $sensor_energyPricePurchase_units = "€/kWh"; 
+	private static $sensor_energyPriceSelling_units = "€/kWh";
+	
 	public function getEnergyProductionName(){return self::$sensor_energyProduction_name;}
 	public function getEnergyConsumptionName(){return self::$sensor_energyConsumption_name;}
 	public function getEnergyPricePurchaseName(){return self::$sensor_energyPricePurchase_name;}
@@ -307,6 +317,28 @@ class ServiceAPPVCalculation
 		$aVariablesInput[].=self::$sensor_energyPriceSelling_name;
 		
 		return $aVariablesInput;
+	}
+	
+	public function getColorsVariables()
+	{
+		$data = array();
+		$data[self::$sensor_energyProduction_name] = self::$sensor_energyProduction_color;
+		$data[self::$sensor_energyConsumption_name] = self::$sensor_energyConsumption_color;
+		$data[self::$sensor_energyPricePurchase_name] = self::$sensor_energyPricePurchase_color;
+		$data[self::$sensor_energyPriceSelling_name] = self::$sensor_energyPriceSelling_color;
+		
+		return $data;
+	}
+	
+	public function getUnitsVariables()
+	{
+		$data = array();
+		$data[self::$sensor_energyProduction_name] = self::$sensor_energyProduction_units;
+		$data[self::$sensor_energyConsumption_name] = self::$sensor_energyConsumption_units;
+		$data[self::$sensor_energyPricePurchase_name] = self::$sensor_energyPricePurchase_units;
+		$data[self::$sensor_energyPriceSelling_name] = self::$sensor_energyPriceSelling_units;
+		
+		return $data;
 	}
 }
 ?>

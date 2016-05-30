@@ -45,8 +45,14 @@ class PVMActionPlanController extends Controller
 			$data['dataActionPlan_description'] = $actionPlan[0]->getDescription();
 			$data['dataActionPlan_lastCalculation']=$this->get('service_data_capturing')->getLastCalculated($idActionPlan);
 			
-			$data['dataActionPlan'] = $this->get('service_appvm_presenter')->getDataValues($idActionPlan, $idBuilding, $startDateFunction, $to);		
+			$data['dataActionPlan'] = $this->get('service_appvm_presenter')->getDataValues($idActionPlan, $idBuilding, $startDateFunction, $to);
+			
+			$colorsAP=$this->get('service_appvm')->getColorsVariables();
+			
+			$data['dataPartitions'] =$this->get('service_data_capturing')->getDataChartTable($idBuilding, $idActionPlan, $startDateFunction, $colorsAP);
 		}
+		
+		//dump($data);
 	
 		return $this->render('OptimusOptimusBundle:PVMActionPlan:PVMActionPlan.html.twig', $data);
 	}

@@ -12,20 +12,7 @@
 {% endblock %}
 
 {% block content %}  			
-	<div id="left" style="">
 		
-		<p class="titleContentDescription"><strong>{{ optimus_instance }} </strong></p>				
-		<div id="attributesContentDescription">
-			<p><span>Buildings:</span>2</p>
-			<p><span>Total surface:</span> 18.593m2 </p>
-			<p><span>Renewable generation:</span> PV plant (23 MWh)</p>
-			<p><span>Thermal power:</span> 850 kW </p>
-			<p><span>Electrical power:</span> 440 kW</p>
-			<p><span>Total energy consumption:</span> 2157kWh/m2</p>
-			<p><span>CO2 emissions:</span> PV plant (23 MWh)</p>
-		</div>
-	</div>
-	
 	<div id="right" style="border:0px;">
 		<div id="topRight" style="background-color:#e8eef8; margin-bottom:20px;">
 			<p><strong><a href="{{ path('adminBuilding') }}">{{ optimus_instance }}</a>  > {{ nameBuilding}} > <a href="{{ path('adminActionPlans', {'idBuilding':idBuilding} ) }}">{%trans%} Actions Plans {%endtrans%}</a> > {{nameActionPlan}} - {%trans%} Mappings {%endtrans%}</strong></p>					

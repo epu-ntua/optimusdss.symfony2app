@@ -1,0 +1,125 @@
+{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
+	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
+{% endblock %}
+
+{% block clase_ActionPlanData %}activo{% endblock %}
+
+
+{% block content %}
+
+	<div id="left">				
+		<ul type="none" style="">
+			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('tracker')}}">Tracker</a></li>
+			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
+			<li><a href="{{path('init')}}">Buildings</a></li>
+		</ul>
+		<p>{{ "now"|date('l, F d, Y') }}</p>	
+	</div>
+	
+	<div id="right">	
+		<div id="centerRight">
+			<p class="textSection">OPTIMUS tracker supports energy managers to assess the potential of your city for energy optimization. It provides information of the users’ targets (grey), their theoretical potential (blue) and their current status (light blue).</p>
+			
+			<div class="track top">
+				<p class="titleDiv left">Reduction of energy consumption</p>
+				
+				<div class="contentRow">
+					<p class="nameRow" style="color:#0095ff;">USER'S TARGET (20%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#0095ff; width:630px;"></p>
+					</div>
+				</div>
+				
+				<div class="contentRow">
+					<p class="nameRow" style="color:#0095ff;">POTENTIAL (10.7%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#4cb5ff; width:337px;"></p>
+					</div>
+				</div>
+				
+				<div class="contentRow last">
+					<p class="nameRow" style="color:#0095ff;">CURRENT STATUS (6%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#99d5ff; width:189px;"></p>
+					</div>
+				</div>				
+			</div>
+			
+			<div class="track">
+				<p class="titleDiv left">Reduction of CO2 emissions</p>
+				<div class="contentRow">
+					<p class="nameRow" style="color:#9c9d9d;">USER'S TARGET (20%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#9c9d9d; width:630px;"></p>
+					</div>
+				</div>
+				
+				<div class="contentRow">
+					<p class="nameRow" style="color:#9c9d9d;">POTENTIAL (10.7%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#bababa; width:337px;"></p>
+					</div>
+				</div>
+				
+				<div class="contentRow last">
+					<p class="nameRow" style="color:#9c9d9d;">CURRENT STATUS (6%)</p>
+					<div class="contentBarRow">
+						<p class="bar"  style="background-color:#cecece; width:189px; "></p>
+					</div>
+				</div>				
+			</div>
+			
+			<div class="track">
+				<p class="titleDiv left">Reduction of energy cost</p>
+				<div class="contentRow">
+					<p class="nameRow" style="color:#f39a00;">USER'S TARGET (20%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#f39a00; width:630px;"></p>
+					</div>
+				</div>
+				
+				<div class="contentRow">
+					<p class="nameRow" style="color:#f39a00;">POTENTIAL (15.2%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#f7b859; width:478.8px;"></p>
+					</div>
+				</div>
+				
+				<div class="contentRow last">
+					<p class="nameRow" style="color:#f39a00;">CURRENT STATUS (6%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#f1d6a4;  width:189px; "></p>
+					</div>
+				</div>				
+			</div>
+			
+			<div class="track">
+				<p class="titleDiv" style="margin-left:0;">Increase of renewable energy use</p>
+				<div class="contentRow">
+					<p class="nameRow" style="color:#42d890;">USER'S TARGET (20%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#01d98e; width:630px;"></p>
+					</div>
+				</div>
+				
+				<div class="contentRow">
+					<p class="nameRow" style="color:#42d890;">POTENTIAL (8.2%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#00e4af; width:258px;"></p>
+					</div>
+				</div>
+				
+				<div class="contentRow last">
+					<p class="nameRow" style="color:#42d890;">CURRENT STATUS (5%)</p>
+					<div class="contentBarRow">
+						<p class="bar" style="background-color:#b3efd3; width:157px; "></p>
+					</div>
+				</div>				
+			</div>
+					
+		</div>
+	</div>
+{% endblock %}

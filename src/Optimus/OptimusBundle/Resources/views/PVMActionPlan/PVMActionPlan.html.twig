@@ -5,6 +5,19 @@
 	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery.dataTables.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery.jeditable.min.js') }}"></script>
+	
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.js') }}"></script>	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.navigate.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.time.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.symbol.js') }}"></script>
+		
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.axislabelsV2.js') }}"></script>	
+	
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.fillbetween.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.selection.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.dashes.js') }}"></script>
+	<script language="javascript" type="text/javascript" src="{{ asset('bundles/optimus/js/flot/jquery.flot.stack.js') }}"></script>
 {% endblock %}
 
 {% block clase_ActionPlanData %}activo{% endblock %}
@@ -145,7 +158,7 @@
 
 	<div id="left">				
 		<ul type="none" style="">
-			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('tracker')}}">Tracker</a></li>
 			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
 			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
 		</ul>
@@ -191,6 +204,7 @@
 				<div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
 				
 				<div id="contentGraficas">
+						
 					<!-- tabla de valores -->
 					<div class="contentTableResults">
 						{% if( dataActionPlan != null) %}
@@ -334,6 +348,7 @@
 									{% endfor %}
 								</tr>
 								
+								
 								<tr>
 									<td class="value" colspan="2" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
 									
@@ -368,7 +383,6 @@
 				</div>			
 		</div> 
 	</div>
-
 {% endblock %}
 
 
