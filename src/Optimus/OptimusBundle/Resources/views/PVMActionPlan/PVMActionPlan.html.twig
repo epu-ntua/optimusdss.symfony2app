@@ -158,7 +158,7 @@
 
 	<div id="left">				
 		<ul type="none" style="">
-			<li><a href="">Tracker</a></li>
+			<li><a href="{{path('tracker')}}">Tracker</a></li>
 			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
 			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
 		</ul>
@@ -348,14 +348,6 @@
 									{% endfor %}
 								</tr>
 								
-								<tr id="rowGraph" >
-									<td class="value" colspan="2" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;"></td>
-									
-									<td class="value" colspan="7" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">
-										<div id="placeholderPartition" style="height:300px; float:left; width: 726px;  margin-bottom:10px; background-color:#fff; padding: 0 0 30px 0;">	</div>
-									</td>
-								</tr>
-								
 								
 								<tr>
 									<td class="value" colspan="2" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
@@ -391,116 +383,6 @@
 				</div>			
 		</div> 
 	</div>
-	
-	<script>
-		$(function(){	
-			
-			/* ------ PlaceHolder Partition ----- */		
-			var plot= $.plot($("#placeholderPartition"), [ 		
-				{% set maxY=0 %}
-				{% set minY=0 %}					
-				
-				{% for index, Partition in dataPartitions %}
-					{% if Partition|length > 0 %}					
-						{% for idSensorPartition, sensorPartition in Partition %}						{##}
-							{% for typeData, dataValueSensor in sensorPartition['values'] %}	
-								
-								{% if (dataValueSensor['values']|length) > 0 %}
-									{
-										data: [								
-											
-											{% for j in 0..dataValueSensor['values']|length-1 %}					
-																
-												{% if j==0 %} 
-													{% set minY= dataValueSensor['values'][j].value  %}
-												{% elseif minY > dataValueSensor['values'][j].value %} 
-													{% set minY=dataValueSensor['values'][j].value  %}
-												{% endif %}
-												
-												{% if maxY < dataValueSensor['values'][j].value %} 
-													{% set maxY=dataValueSensor['values'][j].value %}
-												{% endif %}			
-											
-												{% set date = dataValueSensor['values'][j].datetime | date("F j, Y H:i:s") %}
-												
-												{#% set date = "now" | date("F j, Y H:i:s") %#}
-							
-									
-												[new Date("{{ date }}"), {{ dataValueSensor['values'][j].value }}, "{{idSensorPartition}} - {{typeData}} - {{dataValueSensor['name']}}" ],		
-												
-											{% endfor %} 								
-											
-											{% if typeData =='prediction' %}
-												], color:"{{ sensorPartition['color']}}", shadowSize: 0, lines:{show:false}, dashes: { show: true, dashLength:[4, 2], lineWidth:1},				
-												//dashes: { show: true }, shadowSize: 0,	
-											{% else %}
-												], color:"{{ sensorPartition['color']}}", shadowSize: 0, dashes: { show: false}, lines:{show:true, lineWidth:1, fillColor:'#FFFFFF'},						
-											{% endif %}							
-									},
-								{% endif %}						
-							{% endfor %}						
-						{% endfor %}
-					{% endif %}	
-				{% endfor %}
-			],
-			
-			{
-				grid: {
-					canvasText:{show:true},
-					hoverable: true,
-					clickable: true,
-					borderWidth: 1,
-					borderColor:"#cacaca",
-					minBorderMargin: 0.5,
-					axisMargin: 1,
-					backgroundColor:'#ffffff'
-				},
-						
-				xaxis:{					
-					mode: "time", min: new Date("{{ startDate | date('F j, Y H:i:s') }}"), max: new Date("{{ endDate | date('F j, Y H:i:s') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, show:false,					
-				},
-				yaxis:{min:0, max:{{ maxY }}, tickDecimals: 2,  labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, {{ maxY }}], font:{size: 9, family: "sans-serif", color:"#626262"}},
-				pan:{interactive:true, cursor: "move", frameRate: 20}
-			});
-			
-			var previousPoint = null;
-			$("#placeholderPartition").bind("plothover", function (event, pos, item) {
-				if (item) {					
-					document.body.style.cursor = 'pointer';
-					if (previousPoint != item.dataIndex) {
-						previousPoint = item.dataIndex;
-
-						$("#tooltip").remove();
-						var x = item.datapoint[0],
-							y = item.datapoint[1];
-							z = item.series.data[item.dataIndex+1][2];
-						showTooltip(item.pageX, item.pageY, z);
-					}
-				}else{
-					document.body.style.cursor = 'default';
-					$("#tooltip").remove();
-					previousPoint = null;
-				}
-			});
-			
-			//Función compartida por todas las gráficas
-			function showTooltip(x, y, contents)
-			{
-				$('<div id="tooltip" style="font-size:10px;">' + contents + '</div>').css( {
-					position: 'absolute',
-					display: 'none',
-					top: y-20,
-					left: x + 10,
-					border: '1px solid #595959',
-					padding: '2px',				
-					'background-color': '#DADADA',
-					opacity: 0.80
-				}).appendTo("body").fadeIn(200);
-			}			
-			/* ---------------------------------- */
-		});
-	</script>
-
 {% endblock %}
 
 
