@@ -44,7 +44,7 @@
 				<div class="boxBuilding">
 					
 					<div class="headerBuilding" > <!-- selectGraph -->
-						<p class="titleDiv link" onclick="location.href='{{ path('buildingDashboard',{'idBuilding':building.id}) }}';"><strong>{{ building.name }}</strong></p>
+						<p class="titleDiv"><a class="titleDiv link" href="{{ path('buildingDashboard',{'idBuilding':building.id}) }}"><strong>{{ building.name }}</strong></a></p>
 						{% for key,indicator in dataBuildings[building.id]['globalRTime'] %}
 							
 							{% set colorVariable=colorsRTime[key] %}								
