@@ -324,6 +324,7 @@ body {
 		#container #main #right #centerRight .titleDiv.link{
 			color:#0069b4;
 			cursor:pointer;
+			text-decoration: none;
 		}
 		
 		#container #main #right #centerRight .titleDiv.link:hover{ opacity:0.5;}
