@@ -73,7 +73,7 @@
 						<div class="contentAP"> 
 							
 							<div class="leftAP">
-								<p class="titleDiv"><a class="titleDiv link" href="{{direccion}}"><strong>{{ aPlan.name }}</strong></a></p>
+								<p class="titleDiv">{% if direccion!='' %}<a class="titleDiv link" href="{{direccion}}">{% endif %}<strong>{{ aPlan.name }}</strong>{% if direccion!='' %}</a>{% endif %}</p>
 								<p>{{ aPlan.description }}</p>
 							</div>
 								
