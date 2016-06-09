@@ -3,6 +3,7 @@
 {% block javascripts %}
     <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/ui-lightness/jquery-ui-1.10.3.custom.min.css') }}"/>
 	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/source.css') }}"/>
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/actionPlanTable.css') }}"/>
 	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>
     <script src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -15,8 +16,8 @@
 		
 	$(function(){		
 		$("#datepicker").hide();
-		$(".showDiv").slideToggle();
-		$(".showDiv2").slideToggle();
+//		$(".Schedule1Content").slideToggle();
+//		$(".Schedule2Content").slideToggle();
 		
 		var startDate;
 		var endDate;
@@ -25,7 +26,7 @@
 			window.setTimeout(function () {
 				$('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
 			}, 1);
-		}
+		};
 		
 		$('#datepicker').datepicker( {
 			/*showWeek: true,
@@ -65,13 +66,13 @@
 		
 		//double-clik on table
 		$("#showSchedule").click(function(){
-			$(".showDiv").slideToggle();
+			$(".Schedule1Content").slideToggle();
 			$("#showSchedule .closedList").toggle();
 			$("#showSchedule .openList").toggle();
 		});
 		
 		$("#showSchedule2").click(function(){
-			$(".showDiv2").slideToggle();
+			$(".Schedule2Content").slideToggle();
 			$("#showSchedule2 .closedList").toggle();
 			$("#showSchedule2 .openList").toggle();
 		});
@@ -197,10 +198,11 @@
 	
 	
 	$(document).ready(function(){
-		$("#chart_btn").click(function(){
+		$("#showChart").click(function(){
+			$(".chartContent").toggle();
 			$("#chart_div").toggle();
-			$("#chart_btn .closedList").toggle();
-			$("#chart_btn .openList").toggle();
+			$("#showChart .closedList").toggle();
+			$("#showChart .openList").toggle();
 			if($('#chart_div:visible')){
 				
 				data = new google.visualization.DataTable();
@@ -292,15 +294,15 @@
 					<!-- tabla de valores -->
 					<div class="contentTableResults">
 						{% if( dataActionPlan != null) %}
-						<table id="tablaActionPlan" border="0" style="font-size: 12px;">
+						<table id="tablaActionPlan">
 							<tbody>
 								<tr class="headerDays">
-									<td colspan="2" style="border-right: 2px solid;"></td>
+									<td colspan="2" class="borderRight"></td>
 									{% for i in 0..6 %}
 									<td>
 										{% if dataActionPlan is defined %}	
 											{% if dataActionPlan[i] is defined %}	
-												{{ (dataActionPlan[i].nameAbbreviatedDay) }}
+												{{ (dataActionPlan[i].nameAbbreviatedDay) }}</br>
 												{{ (dataActionPlan[i].abbreviatedDay) }}
 											{% endif %}
 										{% endif %}
@@ -310,39 +312,39 @@
 								
 								<!-- Top values --> 
 								<tr>
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Load {%endtrans%}(kWh) </td>
+									<td colspan="2" class="rawTitle borderRight">{%trans%} Load {%endtrans%}(kWh) </td>
 									{% for i in 0..6 %}									
-										<td style="background-color: #f2f2f2;">{{ dataActionPlan[i].load_total|round(1, 'floor') }}</td>				
+										<td class="blue">{{ dataActionPlan[i].load_total|round(1, 'floor') }}</td>
 									{% endfor %}
 								</tr>	
 								<tr>
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Grid {%endtrans%}(kWh) </td>
+									<td colspan="2" class="rawTitle borderRight">{%trans%} Grid {%endtrans%}(kWh) </td>
 									{% for i in 0..6 %}									
-										<td style="background-color: #f2f2f2;">{{ dataActionPlan[i].grid_total|round(1, 'floor') }}</td>				
+										<td class="blue">{{ dataActionPlan[i].grid_total|round(1, 'floor') }}</td>
 									{% endfor %}
 								</tr>
 								<tr>
-									<td colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;">{%trans%} Production {%endtrans%}(kWh) </td>
+									<td colspan="2" class="rawTitle borderRight">{%trans%} Production {%endtrans%}(kWh) </td>
 									{% for i in 0..6 %}									
-										<td style="background-color: #f2f2f2;">	{{ dataActionPlan[i].res_total|round(1, 'floor') }}</td>				
+										<td class="blue">	{{ dataActionPlan[i].res_total|round(1, 'floor') }}</td>
 									{% endfor %}
 								</tr>
 								
 								<!-- Peak Shaving -->
-								<tr id="showSchedule">
-									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span>{%trans%}Show suggestions for shaving peaks {%endtrans%}</td>
+								<tr id="showSchedule" class="toggleRaw">
+									<td colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span>{%trans%}Show suggestions for shaving peaks {%endtrans%}</td>
 								</tr>
 								
 								<!-- FIRST COLUMN -->
-								<tr class="showDiv">
-									<td class="firstCellShowDiv" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%}Suggestions</br>for shaving peaks {%endtrans%}</td>
+								<tr class="showDiv Schedule1Content" style="display: none;">
+									<td class="firstCellShowDiv rawTitle borderBottom" rowspan="25">{%trans%}Suggestions</br>for shaving peaks {%endtrans%}</td>
 								</tr>
 								
 								{% for i in 0..23 %}
-								<tr class="showDiv">
+								<tr class="showDiv Schedule1Content" style="display: none;">
 								
 									<!-- TIME COLUMN -->
-									<td class="secondCellShowDiv" style="background-color: #d9e1f2; border-right: 2px solid; {%if(i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
+									<td class="secondCellShowDiv borderRight {%if(i==23)%}borderBottom{% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
 															
 									<!-- WEEK DAYS COLUMNS -->
 									{% for j in 0..6 %}
@@ -350,13 +352,20 @@
 										<!-- DAILY COLUMNS -->
 									
 										{% if dataActionPlan[j].shaving[i] is defined %}		
-											<td style="{%if(i==23)%} border-bottom: 2px solid; {% endif %}" 
-												{% if(dataActionPlan[j].shaving[i] > 0) %} class="suggestionPos" {% elseif(dataActionPlan[j].shaving[i] < 0) %} class="suggestionNeg" {% endif %} >
+											<td class="{%if(i==23)%} borderBottom{% endif %}
+												{% if(dataActionPlan[j].shaving[i] > 0) %}
+													suggestionPos
+												{% elseif(dataActionPlan[j].shaving[i] < 0) %}
+													suggestionNeg
+												{% endif %}">
 												{{ (dataActionPlan[j].shaving[i])   |round(1, 'floor') }}													
 											</td>
 											
-										{% else %}	
-											<td style="background-color:#777777;{%if(i==23)%} border-bottom: 2px solid; {% endif %}"> no data </td>
+										{% else %}
+											<td class="disabled
+												{% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%}selectedDayCell{% endif %}
+												{%if(i==23)%} borderBottom{% endif %}
+												"> no data </td>
 										{% endif %}									
 										
 									{% endfor %}
@@ -364,20 +373,20 @@
 								{% endfor %}
 								
 								<!-- Battery Use -->
-								<tr id="showSchedule2">
-									<td style="background-color:#aeaaaa; text-align:left; border-top:2px solid; border-bottom:2px solid;" colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span>{%trans%}Show suggestions for optimizing battery use {%endtrans%}</td>
+								<tr id="showSchedule2" class="toggleRaw">
+									<td colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span>{%trans%}Show suggestions for optimizing battery use {%endtrans%}</td>
 								</tr>
 								
 								<!-- FIRST COLUMN -->
-								<tr class="showDiv2">
-									<td class="firstCellShowDiv2" rowspan="25" style="background-color: #d9e1f2; border-bottom: 2px solid;">{%trans%} Suggestions for</br>optimizing battery use Use {%endtrans%}</td>
+								<tr class="showDiv Schedule2Content" style="display: none;">
+									<td class="firstCellShowDiv rawTitle borderBottom" rowspan="25">{%trans%} Suggestions for</br>optimizing battery use Use {%endtrans%}</td>
 								</tr>
 								
 								{% for i in 0..23 %}
-								<tr class="showDiv2">
+								<tr class="showDiv Schedule2Content" style="display: none;">
 								
 									<!-- TIME COLUMN -->
-									<td class="secondCellShowDiv2" style="background-color: #d9e1f2; border-right: 2px solid; {%if(i==23)%} border-bottom: 2px solid; {% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
+									<td class="secondCellShowDiv borderRight {%if(i==23)%}borderBottom{% endif %}">{{ i }}:00 - {{ i+1}}:00 h</td>
 															
 									<!-- WEEK DAYS COLUMNS -->
 									{% for j in 0..6 %}
@@ -385,16 +394,15 @@
 										<!-- DAILY COLUMNS -->
 									
 										{% if dataActionPlan[j].storage[i] is defined %}		
-											<td {% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%} 
-													class="selectedDayCell" 
-												{% endif %}
-													style="background-color:
-												 {%if(i==23)%} border-bottom: 2px solid; {% endif %}" >
+											<td class="{% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%}selectedDayCell{% endif %}
+												{%if(i==23)%} borderBottom{% endif %}" >
 												{{ (dataActionPlan[j].storage[i])   |round(1, 'floor') }}													
 											</td>
 											
 										{% else %}	
-											<td style="background-color:#777777;{%if(i==23)%} border-bottom: 2px solid; {% endif %}"> no data </td>
+											<td class="disabled
+												{% if( dataActionPlan[j].day=='now'|date('Y-m-d'))%}selectedDayCell{% endif %}
+												{%if(i==23)%} borderBottom{% endif %}"> no data </td>
 										{% endif %}									
 										
 									{% endfor %}
@@ -403,43 +411,48 @@
 								
 								<!-- Confirm Action Plan -->
 								<tr>
-									<td class="value" colspan="2" style="background-color: #d9e1f2; border-right: 2px solid;"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
+									<td class="value rawTitle borderRight" colspan="2"><strong>{%trans%} Please confirm the action plan {%endtrans%}</strong></td>
 									
 									{% for i in 0..6 %}
-										<td style="text-align: left;">
+										<td class="ActionPlanConfirm {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%}disabled{% endif %}">
 											<form id="form_{{i}}" method="post">
-									 
-												<div class="inputsFilters" style=" float:left; margin-right:3px;">
-													<p style="font-size:11px; margin:0;">
+
+												<div class="inputsFilters">
+													<p>
 														<input type="radio" name="filter" value="0" {%if( dataActionPlan[i].day >'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
 													</p>
-													<p style="font-size:11px; margin:0;">
+													<p>
 														<input type="radio" name="filter" value="1" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
 													</p>
-													<p style="font-size:11px; margin:0;">
+													<p>
 														<input type="radio" name="filter" value="2" {%if( dataActionPlan[i].day>'now'|date('Y-m-d'))%} disabled="disabled"{% endif %} {% if(dataActionPlan[i].statusDay==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
 													</p>
 													<input type="hidden" value="{{dataActionPlan[i].day|date('Y-m-d') }}" name="day" id="day" />
 													<input type="hidden" value="{{idActionPlan}}" name="idActionPlan" id="idActionPlan" />
 												</div>
-												
+
 											</form>
 										</td>
 									{% endfor %}
+								</tr>
+
+								<!-- Chart Use -->
+								<tr id="showChart" class="toggleRaw">
+									<td colspan="9"><span class="closedList"> &#9658;</span><span class="openList" hidden>&#9660;</span> Show graphical schedule (per hour)</td>
+								</tr>
+								<tr class="showDiv chartContent" style="display: none;">
+									<td class="borderBottom" colspan="9">
+										<div id="chart_div" style="display: none;">
+											<div id="chart_days"><ul>{% for i in 0..6 %} <li class="chart_days_li {% if(i==0) %} selected {% endif %}">{{ (dataActionPlan[i].nameAbbreviatedDay) }} {{ (dataActionPlan[i].abbreviatedDay) }}</li> {% endfor %}</ul/></div>
+											<div id="linechart"> </div>
+										</div>
+									</td>
 								</tr>
 							</tbody>
 							
 						</table>
 						{% endif %}
 					</div>
-					<button id="chart_btn" style="background-color:#aeaaaa; text-align:left; border-top:1px solid; border-bottom:2px solid;"> <span class="closedList"> &#9658;</span><span class="openList" hidden> &#9660;</span>show graphical schedule (per hour)</button>
-					<div id="chart_div" hidden>
-						<div id="chart_days" style="font-size: 14px;"><ul>{% for i in 0..6 %} <li class="chart_days_li {% if(i==0) %} selected {% endif %}">{{ (dataActionPlan[i].nameAbbreviatedDay) }} {{ (dataActionPlan[i].abbreviatedDay) }}</li> {% endfor %}</ul/></div>
-						<div id="linechart" style="margin-top: 10px; margin-bottom: 10px;" > </div>
-					</div>
-					
-					
-					
 				</div>
 		</div>		
 		
