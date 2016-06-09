@@ -1,0 +1,101 @@
+.selectedDayCell
+{
+    border-left: 3px solid #00D !Important;
+    border-right: 3px solid #00D !Important;
+}
+#tablaActionPlan .chartContent > td {
+    text-align: center;
+}
+#tablaActionPlan #chart_days {
+    margin-left: 0;
+}
+#tablaActionPlan #linechart {
+    margin: 10px auto;
+    display: inline-block;
+}
+#tablaActionPlan {
+    font-size: 12px;
+    border: none;
+}
+#tablaActionPlan .headerDays {
+    font-weight:bold;
+}
+#tablaActionPlan .headerDays > td {
+    text-align:center;
+}
+#tablaActionPlan .rawTitle {
+    text-align:left;
+    color:#0069b4;
+    padding-left:15px;
+    font-size:11px;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+#tablaActionPlan .rawTitle.subTitle {
+    text-align:right;
+    font-size: 75%;
+    /*color: inherit;*/
+}
+#tablaActionPlan .cell {
+    border: 1px solid #efefef;
+}
+#tablaActionPlan .cell.input {
+    padding: 0;
+}
+#tablaActionPlan .borderRight {
+    border-right: 2px solid #efefef;
+}
+#tablaActionPlan .borderBottom {
+    border-bottom: 2px solid #efefef;
+}
+#tablaActionPlan .toggleRaw > td {
+    background-color:#aeaaaa;
+    text-align:left;
+    border-top:2px solid #efefef;
+    border-bottom:2px solid #efefef;
+    padding-left:15px;
+}
+#tablaActionPlan .temp_internal, #tablaActionPlan .enth_internal {
+    text-align:right;
+    width: 50px;
+    border-style:none;
+    margin: 2px;
+}
+#contentGraficas .tableLegent .colorIndicator {
+    display:inline-block;
+    border:1px solid #44546a;
+}
+#tablaActionPlan .gray {
+    background-color: #f2f2f2;
+}
+#tablaActionPlan .blue {
+    background-color: #d9e1f2;
+}
+#tablaActionPlan .orange {
+    background-color: #FF7F50;
+}
+#tablaActionPlan .pink, #contentGraficas .tableLegent .colorIndicator.pink{
+    background-color: #FFAAAA;
+}
+#tablaActionPlan .green, #contentGraficas .tableLegent .colorIndicator.green {
+    background-color: #AAEEAA;
+}
+#tablaActionPlan .disabled {
+    background-color: #f2f2f2;
+    color: #949494;
+}
+#tablaActionPlan .ActionPlanConfirm {
+    text-align: left;
+}
+#tablaActionPlan .ActionPlanConfirm p {
+    font-size: 11px !important;
+    margin: 0 !important;
+}
+#tablaActionPlan .ActionPlanConfirm.disabled p {
+    color: #949494 !important;
+}
+#tablaActionPlan .ActionPlanConfirm .inputsFilters {
+    float:left;
+    margin-right:3px;
+}
