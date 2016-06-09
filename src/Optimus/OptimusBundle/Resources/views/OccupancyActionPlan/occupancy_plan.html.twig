@@ -231,7 +231,8 @@
                     </div>
                     <table id="tablaActionPlan" class="table_container">
                         <tr class="headerDays">
-                            <td class="borderRight">
+                            <td class="borderRight" colspan="2">
+                                &nbsp;
                             </td>
                             {% for i in 0..6 %}
                                 <td colspan="2">
@@ -240,7 +241,7 @@
                             {% endfor %}
                         </tr>
                         <tr class="headerDays">
-                            <td class="rawTitle borderRight">
+                            <td class="rawTitle borderRight borderBottom" colspan="2">
                                 Building Partitioning
                             </td>
                             {% for i in 0..6 %}
@@ -253,10 +254,8 @@
                             {% endfor %}
                         </tr>
                         <tr>
-                            <td class="rawTitle borderRight">
+                            <td class="rawTitle" rowspan="7">
                                 Building
-                            </td>
-                            <td colspan="14">
                             </td>
                         </tr>
                         <tr>
@@ -339,8 +338,13 @@
                         </tr>
                             {% for section in building_sections|keys %}
                                 <tr>
-                                    <td class="rawTitle borderRight">
-                                        {% for i in 1..building_sections[(section)] %}{% endfor %}{{ section }}<span style="float:right;text-transform: initial;">-c</span>
+                                    <td class="rawTitle borderBottom"  rowspan="8">
+                                        {% for i in 1..building_sections[(section)] %}{% endfor %}{{ section }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="rawTitle subTitle borderRight">
+                                        <span style="float:right;text-transform: initial;">-c</span>
                                     </td>
                                     {% set curr_date = date(startDate) %}
                                     {% for i in 0..6 %}
@@ -444,7 +448,7 @@
                                 </tr>
                             {% endfor %}
                         <tr>
-                            <td class="value rawTitle borderRigh">
+                            <td class="value rawTitle borderRigh" colspan="2">
                                 <strong>{%trans%} Please confirm the action plan {%endtrans%}</strong>
                             </td>
                             {% set curr_date = date(startDate) %}
