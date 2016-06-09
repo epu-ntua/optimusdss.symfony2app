@@ -77,6 +77,19 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: memory }
 
+#KnpSnappyBundle Configuration -- generate either pdf or image files from your html documents
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     "\"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe\""
+        options:    []
+    image:
+        enabled:    true
+        binary:     "\"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltoimage.exe\""
+        options:    []
+
+
+
 parameters:
     optimus_instance: Savona
     optimus_endpoint: "http://optimusdss.epu.ntua.gr:8890/sparql"

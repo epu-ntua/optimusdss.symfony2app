@@ -123,7 +123,7 @@ class ArgvInput extends Input
     private function parseShortOptionSet($name)
     {
         $len = strlen($name);
-        for ($i = 0; $i < $len; $i++) {
+        for ($i = 0; $i < $len; ++$i) {
             if (!$this->definition->hasShortcut($name[$i])) {
                 throw new \RuntimeException(sprintf('The "-%s" option does not exist.', $name[$i]));
             }
@@ -221,7 +221,7 @@ class ArgvInput extends Input
         }
 
         if (null !== $value && !$option->acceptValue()) {
-            throw new \RuntimeException(sprintf('The "--%s" option does not accept a value.', $name, $value));
+            throw new \RuntimeException(sprintf('The "--%s" option does not accept a value.', $name));
         }
 
         if (null === $value && $option->acceptValue() && count($this->parsed)) {
@@ -309,9 +309,11 @@ class ArgvInput extends Input
     public function getParameterOption($values, $default = false)
     {
         $values = (array) $values;
-
         $tokens = $this->tokens;
-        while ($token = array_shift($tokens)) {
+
+        while (0 < count($tokens)) {
+            $token = array_shift($tokens);
+
             foreach ($values as $value) {
                 if ($token === $value || 0 === strpos($token, $value.'=')) {
                     if (false !== $pos = strpos($token, '=')) {

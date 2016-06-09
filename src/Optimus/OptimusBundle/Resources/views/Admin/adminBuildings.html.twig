@@ -19,9 +19,9 @@
 			</div>
 			-->
 			
+			<button id="button_valuesTracker"  style="float:right; margin-bottom:0;" class="buttonBig">{%trans%} TRACKER {%endtrans%}</button>
 			
-			
-			<div>
+			<div style="overflow:hidden; width:100%;">
 				<button id="button_addBuilding" class="buttonBig">{%trans%} ADD BUILDING {%endtrans%}</button> <!-- border:1px solid #ddd; float:left; margin:30px 0 20px 350px; padding:15px; cursor:pointer; color:#626262;-->
 			{% for building in buildings %}					
 			
@@ -124,6 +124,10 @@
 					{{ render(controller('OptimusOptimusBundle:Building:new')) }}
 				</div>
 				
+				<div id="valuesTrackerForm">
+					{{ render(controller('OptimusOptimusBundle:Tracker:valuesTracker')) }}
+				</div>
+				
 			</div>
 		</div>
 	</div>
@@ -132,6 +136,8 @@
 	<script>
 		$(function() {
 			$(".buttonBig").button();
+			
+			//Add Building
 			$( "#addBuildingForm" ).dialog({
 				autoOpen: false,
 				/*height: 300,*/
@@ -151,6 +157,22 @@
 				$( "#addBuildingForm" ).dialog( "open" );
 			});
 			
+			//Values TRACKER
+			$( "#valuesTrackerForm" ).dialog({
+				autoOpen: false,
+				/*height: 300,*/
+				width: 600,
+				modal: true,
+				buttons: {				
+				},
+				close: function() {					
+					//allFields.removeClass( "ui-state-error" );
+				}
+			});			
+			
+			$( "#button_valuesTracker" ).button().on( "click", function() {
+				$( "#valuesTrackerForm" ).dialog( "open" );
+			});
 			
 			{% for building in buildings %}
 				$( "#editBuildingForm_{{building.id}}" ).dialog({

@@ -3,7 +3,7 @@
     "type": "symfony-bundle",
     "description": "Symfony FrameworkBundle",
     "keywords": [],
-    "homepage": "http://symfony.com",
+    "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
         {
@@ -12,18 +12,18 @@
         },
         {
             "name": "Symfony Community",
-            "homepage": "http://symfony.com/contributors"
+            "homepage": "https://symfony.com/contributors"
         }
     ],
     "require": {
         "php": ">=5.3.3",
-        "symfony/dependency-injection" : "~2.6,>=2.6.2",
-        "symfony/config" : "~2.4",
+        "symfony/dependency-injection": "~2.6,>=2.6.2",
+        "symfony/config": "~2.4",
         "symfony/event-dispatcher": "~2.5",
         "symfony/http-foundation": "~2.4.9|~2.5,>=2.5.4",
         "symfony/http-kernel": "~2.6",
         "symfony/filesystem": "~2.3",
-        "symfony/routing": "~2.2",
+        "symfony/routing": "~2.3.26|~2.6,>=2.6.5",
         "symfony/security-core": "~2.6",
         "symfony/security-csrf": "~2.6",
         "symfony/stopwatch": "~2.3",
@@ -32,6 +32,7 @@
         "doctrine/annotations": "~1.0"
     },
     "require-dev": {
+        "symfony/phpunit-bridge": "~2.7",
         "symfony/browser-kit": "~2.4",
         "symfony/console": "~2.5,>=2.5.2",
         "symfony/css-selector": "~2.0,>=2.0.5",
@@ -39,7 +40,7 @@
         "symfony/finder": "~2.0,>=2.0.5",
         "symfony/intl": "~2.3",
         "symfony/security": "~2.6",
-        "symfony/form": "~2.6",
+        "symfony/form": "~2.6,>=2.6.10",
         "symfony/class-loader": "~2.1",
         "symfony/expression-language": "~2.6",
         "symfony/process": "~2.0,>=2.0.5",

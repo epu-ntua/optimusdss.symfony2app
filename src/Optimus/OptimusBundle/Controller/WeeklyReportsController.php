@@ -12,8 +12,15 @@ use Optimus\OptimusBundle\Entity\WeeklyReportActionPlan;
 use Optimus\OptimusBundle\Entity\WeeklyReportUsers;
 use Optimus\OptimusBundle\Entity\EvaluationCriteria;
 
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 class WeeklyReportsController extends Controller
 {
+	//protected $dir= realpath('%kernel.root_dir%'. '/../web/bundles/optimus/pdf/');
+	private $dir= __DIR__."/../../../../web/bundles/optimus/pdf/";
+	
 	public function lastsReportsAction ($idBuilding, $idActionPlan=null)
 	{
 		$em = $this->getDoctrine()->getManager();
@@ -36,15 +43,25 @@ class WeeklyReportsController extends Controller
 		
 		//check report status 0 pdf : if no exist file --> create
 		
+		//dump(realpath($this->dir));
+		
 		return $this->render('OptimusOptimusBundle:Reports:tableLastsReports.html.twig', $data);
 	}
 
 	public function openFormReportAction($idBuilding, $idWeeklyReport)
-	{
-		$em = $this->getDoctrine()->getManager();
+	{		
 		$data['idBuilding']=$idBuilding;
 		$data['nameBuilding']=$this->get('service_data_capturing')->getNameBuilding($idBuilding);
 		
+		$data['dataForm']=$this->getDataFormWeeklyReport($idBuilding, $idWeeklyReport);	
+		
+		return $this->render('OptimusOptimusBundle:Reports:basicForm.html.twig', $data);
+		//return $this->render('OptimusOptimusBundle:Reports:viewPDF.html.twig', $data);
+	}
+	
+	private function getDataFormWeeklyReport($idBuilding, $idWeeklyReport)
+	{
+		$em = $this->getDoctrine()->getManager();
 		//get all weekly report
 		$data['weeklyReport']=$em->getRepository('OptimusOptimusBundle:WeeklyReport')->find($idWeeklyReport);
 		
@@ -54,10 +71,8 @@ class WeeklyReportsController extends Controller
 		//Get EvaluationCriteria
 		$data['evCriteria']=$em->getRepository('OptimusOptimusBundle:EvaluationCriteria')->findBy(array("fk_weeklyreport"=>$idWeeklyReport));
 		
-		//Dates
-		
-		$monday=$data['weeklyReport']->getMonday();
-		//dump($monday);
+		//Dates		
+		$monday=$data['weeklyReport']->getMonday();		
 		$startDate=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Monday this week")->format("Y-m-d");
 		$endDate=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Saturday this week")->format("Y-m-d");
 		$data['sundayDate']=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Sunday this week")->format("Y-m-d");
@@ -109,17 +124,9 @@ class WeeklyReportsController extends Controller
 		}else{
 			$data['weeklyReportActionPlan']='';
 			$data['statusWeekActionPlan']='';
-		}	
+		}
 		
-		// Test de PDF
-		/*$this->get('knp_snappy.pdf')->generateFromHtml(
-			$this->renderView(
-				'OptimusOptimusBundle:Reports:basicForm.html.twig',	$data),
-			'C:\xampp\htdocs\optimus\web\bundles\optimus\pdf\testPDF_1.pdf');*/
-		
-		//View
-		//dump($data);
-		return $this->render('OptimusOptimusBundle:Reports:basicForm.html.twig', $data);
+		return $data;
 	}
 	
 	public function saveDataFormReportAction($idBuilding, $idWeeklyReport, Request $request)
@@ -192,6 +199,47 @@ class WeeklyReportsController extends Controller
 				
 		return $this->redirect($this->generateUrl('tableReports', array('idBuilding'=>$idBuilding, 'insertDB'=>true)));
 	}
+
+	public function getPDFWRAction($idBuilding, $idWeeklyReport)
+	{
+		$em = $this->getDoctrine()->getManager();
+		$weeklyReport=$em->getRepository('OptimusOptimusBundle:WeeklyReport')->find($idWeeklyReport);
+		if($weeklyReport)
+		{			
+			if($weeklyReport->getStatus()==0)
+			{
+				//check if exist pdf
+				$fs = new Filesystem();
+				
+				$nameFile=realpath($this->dir)."/report_".$idWeeklyReport.".pdf";
+				if($fs->exists($nameFile)==false)	
+				{
+					//Create PDF					
+					$data['idBuilding']=$idBuilding;
+					$data['nameBuilding']=$this->get('service_data_capturing')->getNameBuilding($idBuilding);
+					$data['dataForm']=$this->getDataFormWeeklyReport($idBuilding, $idWeeklyReport);	
+					
+					// Test de PDF					
+					$this->get('knp_snappy.pdf')->generateFromHtml(
+						$this->renderView(
+							'OptimusOptimusBundle:Reports:viewPDF.html.twig',	$data),
+						$nameFile);
+					
+					
+					/*$html = $this->renderView('OptimusOptimusBundle:Reports:viewPDF.html.twig', $data);
+					return new Response(
+						$this->get('knp_snappy.pdf')->getOutputFromHtml($html),
+						200,
+						array(
+							'Content-Type'          => 'application/pdf',
+							'Content-Disposition'   => 'attachment; filename="file.pdf"'
+						)
+					);*/
+				}
+			}
+		}
+	}
+
 }
 
 ?>

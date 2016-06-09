@@ -12,6 +12,7 @@
 namespace Symfony\Component\Serializer\Normalizer;
 
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use Symfony\Component\Serializer\Exception\LogicException;
 use Symfony\Component\Serializer\Exception\RuntimeException;
 
 /**
@@ -37,7 +38,7 @@ class PropertyNormalizer extends SerializerAwareNormalizer implements Normalizer
     private $camelizedAttributes = array();
 
     /**
-     * Set normalization callbacks
+     * Set normalization callbacks.
      *
      * @param array $callbacks help normalize the result
      *
@@ -67,7 +68,7 @@ class PropertyNormalizer extends SerializerAwareNormalizer implements Normalizer
     }
 
     /**
-     * Set attributes to be camelized on denormalize
+     * Set attributes to be camelized on denormalize.
      *
      * @param array $camelizedAttributes
      */
@@ -90,7 +91,7 @@ class PropertyNormalizer extends SerializerAwareNormalizer implements Normalizer
             }
 
             // Override visibility
-            if (! $property->isPublic()) {
+            if (!$property->isPublic()) {
                 $property->setAccessible(true);
             }
 
@@ -100,6 +101,10 @@ class PropertyNormalizer extends SerializerAwareNormalizer implements Normalizer
                 $attributeValue = call_user_func($this->callbacks[$property->name], $attributeValue);
             }
             if (null !== $attributeValue && !is_scalar($attributeValue)) {
+                if (!$this->serializer instanceof NormalizerInterface) {
+                    throw new LogicException(sprintf('Cannot normalize attribute "%s" because injected serializer is not a normalizer', $property->name));
+                }
+
                 $attributeValue = $this->serializer->normalize($attributeValue, $format);
             }
 
@@ -150,7 +155,7 @@ class PropertyNormalizer extends SerializerAwareNormalizer implements Normalizer
                 $property = $reflectionClass->getProperty($propertyName);
 
                 // Override visibility
-                if (! $property->isPublic()) {
+                if (!$property->isPublic()) {
                     $property->setAccessible(true);
                 }
 
@@ -208,7 +213,7 @@ class PropertyNormalizer extends SerializerAwareNormalizer implements Normalizer
 
         // We look for at least one non-static property
         foreach ($class->getProperties() as $property) {
-            if (! $property->isStatic()) {
+            if (!$property->isStatic()) {
                 return true;
             }
         }

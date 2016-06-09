@@ -271,6 +271,10 @@ saveDataFormReport:
     pattern:  /save-data-form-report/{idBuilding}/{idWeeklyReport}
     defaults: { _controller: OptimusOptimusBundle:WeeklyReports:saveDataFormReport}
 
+pdfReport:
+    pattern:  /pdf-weekly-report/{idBuilding}/{idWeeklyReport}
+    defaults: { _controller: OptimusOptimusBundle:WeeklyReports:getPDFWR}
+
 lastsEvents:
     pattern:  /lasts-events/{idBuilding}
     defaults: { _controller: OptimusOptimusBundle:Events:lastsEvents}
@@ -278,3 +282,7 @@ lastsEvents:
 tracker:
     pattern:  /view-tracker
     defaults: { _controller: OptimusOptimusBundle:Tracker:tracker}
+
+valuesTracker:
+    pattern:  /values-tracker
+    defaults: { _controller: OptimusOptimusBundle:Tracker:valuesTracker}

@@ -36,6 +36,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('foobar', $config['handlers']);
         $this->assertEquals('stream', $config['handlers']['foobar']['type']);
         $this->assertEquals('/foo/bar', $config['handlers']['foobar']['path']);
+        $this->assertFalse($config['handlers']['foobar']['nested']);
     }
 
     public function provideProcessStringChannels()
@@ -217,6 +218,31 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('mailer', $config['handlers']['swift']['mailer']);
     }
 
+    public function testWithElasticsearchHandler() {
+        $configs = array(
+            array(
+                'handlers' => array(
+                    'elasticsearch' => array(
+                        'type' => 'elasticsearch',
+                        'elasticsearch' => array(
+                            'id' => 'elastica.client'
+                        ),
+                        'index' => 'my-index',
+                        'document_type' => 'my-record',
+                        'ignore_error' => true
+                    )
+                )
+            )
+        );
+
+        $config = $this->process($configs);
+
+        $this->assertEquals(true, $config['handlers']['elasticsearch']['ignore_error']);
+        $this->assertEquals('my-record', $config['handlers']['elasticsearch']['document_type']);
+        $this->assertEquals('my-index', $config['handlers']['elasticsearch']['index']);
+
+    }
+
     public function testWithConsoleHandler()
     {
         $configs = array(
@@ -294,6 +320,20 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(0666, $config['handlers']['foo']['file_permission']);
         $this->assertSame(0777, $config['handlers']['bar']['file_permission']);
+    }
+
+    public function testWithNestedHandler()
+    {
+        $configs = array(
+            array(
+                'handlers' => array('foobar' => array('type' => 'stream', 'path' => '/foo/bar', 'nested' => true))
+            )
+        );
+
+        $config = $this->process($configs);
+
+
+        $this->assertTrue($config['handlers']['foobar']['nested']);
     }
 
     /**

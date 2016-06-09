@@ -94,7 +94,7 @@ class ExceptionListener
             } elseif ($exception instanceof AccessDeniedException) {
                 return $this->handleAccessDeniedException($event, $exception);
             } elseif ($exception instanceof LogoutException) {
-                return $this->handleLogoutException($event, $exception);
+                return $this->handleLogoutException($exception);
             }
         } while (null !== $exception = $exception->getPrevious());
     }
@@ -160,7 +160,7 @@ class ExceptionListener
         }
     }
 
-    private function handleLogoutException(GetResponseForExceptionEvent $event, LogoutException $exception)
+    private function handleLogoutException(LogoutException $exception)
     {
         if (null !== $this->logger) {
             $this->logger->info(sprintf('Logout exception occurred; wrapping with AccessDeniedHttpException (%s)', $exception->getMessage()));
@@ -201,7 +201,7 @@ class ExceptionListener
     protected function setTargetPath(Request $request)
     {
         // session isn't required when using HTTP basic authentication mechanism for example
-        if ($request->hasSession() && $request->isMethodSafe()) {
+        if ($request->hasSession() && $request->isMethodSafe() && !$request->isXmlHttpRequest()) {
             $request->getSession()->set('_security.'.$this->providerKey.'.target_path', $request->getUri());
         }
     }

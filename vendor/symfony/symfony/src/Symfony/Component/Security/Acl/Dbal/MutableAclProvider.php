@@ -63,10 +63,10 @@ class MutableAclProvider extends AclProvider implements MutableAclProviderInterf
             $this->connection->executeQuery($this->getInsertObjectIdentityRelationSql($pk, $pk));
 
             $this->connection->commit();
-        } catch (\Exception $failed) {
+        } catch (\Exception $e) {
             $this->connection->rollBack();
 
-            throw $failed;
+            throw $e;
         }
 
         // re-read the ACL from the database to ensure proper caching, etc.
@@ -91,10 +91,10 @@ class MutableAclProvider extends AclProvider implements MutableAclProviderInterf
             $this->deleteObjectIdentity($oidPK);
 
             $this->connection->commit();
-        } catch (\Exception $failed) {
+        } catch (\Exception $e) {
             $this->connection->rollBack();
 
-            throw $failed;
+            throw $e;
         }
 
         // evict the ACL from the in-memory identity map
@@ -256,7 +256,7 @@ class MutableAclProvider extends AclProvider implements MutableAclProviderInterf
                 if (null === $propertyChanges['parentAcl'][1]) {
                     $sets[] = 'parent_object_identity_id = NULL';
                 } else {
-                    $sets[] = 'parent_object_identity_id = '.intval($propertyChanges['parentAcl'][1]->getId());
+                    $sets[] = 'parent_object_identity_id = '.(int) $propertyChanges['parentAcl'][1]->getId();
                 }
 
                 $this->regenerateAncestorRelations($acl);
@@ -338,10 +338,10 @@ class MutableAclProvider extends AclProvider implements MutableAclProviderInterf
             }
 
             $this->connection->commit();
-        } catch (\Exception $failed) {
+        } catch (\Exception $e) {
             $this->connection->rollBack();
 
-            throw $failed;
+            throw $e;
         }
 
         $this->propertyChanges->offsetSet($acl, array());
@@ -478,7 +478,7 @@ QUERY;
             $query,
             $this->options['entry_table_name'],
             $classId,
-            null === $objectIdentityId ? 'NULL' : intval($objectIdentityId),
+            null === $objectIdentityId ? 'NULL' : (int) $objectIdentityId,
             null === $field ? 'NULL' : $this->connection->quote($field),
             $aceOrder,
             $securityIdentityId,
@@ -596,7 +596,7 @@ QUERY;
             $classId,
             null === $oid ?
                 $this->connection->getDatabasePlatform()->getIsNullExpression('object_identity_id')
-                : 'object_identity_id = '.intval($oid),
+                : 'object_identity_id = '.(int) $oid,
             null === $field ?
                 $this->connection->getDatabasePlatform()->getIsNullExpression('field_name')
                 : 'field_name = '.$this->connection->quote($field),
@@ -853,9 +853,8 @@ QUERY;
     {
         $sids = new \SplObjectStorage();
         $classIds = new \SplObjectStorage();
-        $currentIds = array();
         foreach ($changes[1] as $field => $new) {
-            for ($i = 0, $c = count($new); $i<$c; $i++) {
+            for ($i = 0, $c = count($new); $i < $c; ++$i) {
                 $ace = $new[$i];
 
                 if (null === $ace->getId()) {
@@ -880,9 +879,7 @@ QUERY;
 
                     $aceIdProperty = new \ReflectionProperty('Symfony\Component\Security\Acl\Domain\Entry', 'id');
                     $aceIdProperty->setAccessible(true);
-                    $aceIdProperty->setValue($ace, intval($aceId));
-                } else {
-                    $currentIds[$ace->getId()] = true;
+                    $aceIdProperty->setValue($ace, (int) $aceId);
                 }
             }
         }
@@ -898,7 +895,7 @@ QUERY;
     {
         $currentIds = array();
         foreach ($changes[1] as $field => $new) {
-            for ($i = 0, $c = count($new); $i < $c; $i++) {
+            for ($i = 0, $c = count($new); $i < $c; ++$i) {
                 $ace = $new[$i];
 
                 if (null !== $ace->getId()) {
@@ -908,7 +905,7 @@ QUERY;
         }
 
         foreach ($changes[0] as $old) {
-            for ($i = 0, $c = count($old); $i < $c; $i++) {
+            for ($i = 0, $c = count($old); $i < $c; ++$i) {
                 $ace = $old[$i];
 
                 if (!isset($currentIds[$ace->getId()])) {
@@ -931,8 +928,7 @@ QUERY;
 
         $sids = new \SplObjectStorage();
         $classIds = new \SplObjectStorage();
-        $currentIds = array();
-        for ($i = 0, $c = count($new); $i<$c; $i++) {
+        for ($i = 0, $c = count($new); $i < $c; ++$i) {
             $ace = $new[$i];
 
             if (null === $ace->getId()) {
@@ -957,9 +953,7 @@ QUERY;
 
                 $aceIdProperty = new \ReflectionProperty($ace, 'id');
                 $aceIdProperty->setAccessible(true);
-                $aceIdProperty->setValue($ace, intval($aceId));
-            } else {
-                $currentIds[$ace->getId()] = true;
+                $aceIdProperty->setValue($ace, (int) $aceId);
             }
         }
     }
@@ -975,7 +969,7 @@ QUERY;
         list($old, $new) = $changes;
         $currentIds = array();
 
-        for ($i = 0, $c = count($new); $i<$c; $i++) {
+        for ($i = 0, $c = count($new); $i < $c; ++$i) {
             $ace = $new[$i];
 
             if (null !== $ace->getId()) {
@@ -983,7 +977,7 @@ QUERY;
             }
         }
 
-        for ($i = 0, $c = count($old); $i < $c; $i++) {
+        for ($i = 0, $c = count($old); $i < $c; ++$i) {
             $ace = $old[$i];
 
             if (!isset($currentIds[$ace->getId()])) {

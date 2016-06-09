@@ -16,8 +16,9 @@ use Symfony\Component\Validator\Validation;
 /**
  * @since  2.5.3
  * @author Bernhard Schussek <bschussek@gmail.com>
+ * @group  legacy
  */
-class LegacyFalseValidator2Dot4ApiTest extends FalseValidatorTest
+class LegacyFalseValidator2Dot4ApiTest extends IsFalseValidatorTest
 {
     protected function getApiVersion()
     {

@@ -143,6 +143,11 @@ services:
         tags:
             -  { name: console.command }
 
+    app.command.currentStatus:
+        class: Optimus\OptimusBundle\Command\CurrentStatusCommand
+        tags:
+            -  { name: console.command }
+
     service_apeconomizer:
         class: Optimus\OptimusBundle\Servicios\ServiceAPEconomizerCalculation
         arguments: ["@doctrine.orm.entity_manager", "@service_ontologia", "@service_predict_data_invoke", "@service_event"]
@@ -150,3 +155,7 @@ services:
     service_apeconomizer_presenter:
         class: Optimus\OptimusBundle\Servicios\ServiceAPEconomizerPresenter
         arguments: ["@doctrine.orm.entity_manager", "@service_ontologia"]
+
+    service_tracker:
+        class: 	Optimus\OptimusBundle\Servicios\ServiceTracker
+        arguments: ["@doctrine.orm.entity_manager"]

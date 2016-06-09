@@ -35,7 +35,7 @@
         </service>
 
         <service id="data_collector.doctrine" class="%doctrine.data_collector.class%" public="false">
-            <tag name="data_collector" template="@Doctrine/Collector/db.html.twig" id="db" />
+            <tag name="data_collector" template="@Doctrine/Collector/db.html.twig" id="db" priority="250" />
             <argument type="service" id="doctrine" />
         </service>
 
@@ -43,7 +43,7 @@
             <argument>%doctrine.dbal.connection_factory.types%</argument>
         </service>
 
-        <service id="doctrine.dbal.connection" class="Doctrine\DBAL\Connection" factory-service="doctrine.dbal.connection_factory" factory-method="createConnection" abstract="true" />
+        <service id="doctrine.dbal.connection" class="Doctrine\DBAL\Connection" abstract="true" />
 
         <service id="doctrine.dbal.connection.event_manager" class="%doctrine.dbal.connection.event_manager.class%" public="false" abstract="true">
             <argument type="service" id="service_container" />

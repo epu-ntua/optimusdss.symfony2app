@@ -16,8 +16,9 @@ use Symfony\Component\Validator\Validation;
 /**
  * @since  2.5.3
  * @author Bernhard Schussek <bschussek@gmail.com>
+ * @group  legacy
  */
-class LegacyTrueValidatorLegacyApiTest extends TrueValidatorTest
+class LegacyTrueValidatorLegacyApiTest extends IsTrueValidatorTest
 {
     protected function getApiVersion()
     {

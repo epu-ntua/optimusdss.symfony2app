@@ -14,7 +14,10 @@
 
 namespace Doctrine\Bundle\DoctrineBundle\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -22,8 +25,21 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Christophe Coevoet <stof@notk.org>
  */
-class ProfilerController extends ContainerAware
+class ProfilerController implements ContainerAwareInterface
 {
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
     /**
      * Renders the profiler panel for the given token.
      *
@@ -54,15 +70,36 @@ class ProfilerController extends ContainerAware
         /** @var $connection \Doctrine\DBAL\Connection */
         $connection = $this->container->get('doctrine')->getConnection($connectionName);
         try {
-            $results = $connection->executeQuery('EXPLAIN '.$query['sql'], $query['params'], $query['types'])
-                ->fetchAll(\PDO::FETCH_ASSOC);
+            if ($connection->getDatabasePlatform() instanceof SQLServerPlatform) {
+                $results = $this->explainSQLServerPlatform($connection, $query);
+            } else {
+                $results = $this->explainOtherPlatform($connection, $query);
+            }
         } catch (\Exception $e) {
             return new Response('This query cannot be explained.');
         }
 
-        return $this->container->get('templating')->renderResponse('DoctrineBundle:Collector:explain.html.twig', array(
+        return $this->container->get('templating')->renderResponse('@Doctrine/Collector/explain.html.twig', array(
             'data' => $results,
             'query' => $query,
         ));
+    }
+
+    private function explainSQLServerPlatform(Connection $connection, $query)
+    {
+        if (stripos($query['sql'], 'SELECT') === 0) {
+            $sql = 'SET STATISTICS PROFILE ON; ' . $query['sql'] . '; SET STATISTICS PROFILE OFF;';
+        } else {
+            $sql = 'SET SHOWPLAN_TEXT ON; GO; SET NOEXEC ON; ' . $query['sql'] .'; SET NOEXEC OFF; GO; SET SHOWPLAN_TEXT OFF;';
+        }
+        $stmt = $connection->executeQuery($sql, $query['params'], $query['types']);
+        $stmt->nextRowset();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    private function explainOtherPlatform(Connection $connection, $query)
+    {
+        return $connection->executeQuery('EXPLAIN '.$query['sql'], $query['params'], $query['types'])
+            ->fetchAll(\PDO::FETCH_ASSOC);
     }
 }
