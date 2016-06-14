@@ -5,6 +5,8 @@ namespace Optimus\OptimusBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Optimus\OptimusBundle\Servicios\ServiceAPSource;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class EnergySourceActionPlanController extends Controller
 {
@@ -64,5 +66,38 @@ class EnergySourceActionPlanController extends Controller
 	
 		$this->get('service_calculo')->createPredictionAndCalculates($from, $idBuilding, $ip, $user); // <--- !!!!!!! TEMP
 		return $this->plan_indexAction($idBuilding, $idAPType, $from, $to);
+	}
+	
+	public function changeStatusDayAction(Request $request, $idOutputDay)
+	{		
+		$em = $this->getDoctrine()->getManager();		
+		$outputDay=$em->getRepository('OptimusOptimusBundle:APFlowsOutputDay')->findBy(array("id"=>$idOutputDay));
+		$elementsForm=array();
+		
+		if($outputDay)
+		{			
+			parse_str($request->request->get('data'), $elementsForm);		
+			$status=(int)$elementsForm['filter'];
+			$outputDay[0]->setStatus($status);
+			$em->flush();
+			
+			//create event status <--- !!!!!!! TEMP		
+			$user=$em->getRepository('OptimusOptimusBundle:Users')->find($this->container->get('security.context')->getToken()->getUser()->getId());
+			
+			if($status==0) 			$newStatus="unknowns";
+			elseif($status==1) 		$newStatus="accepts";
+			else 					$newStatus="declines";
+			
+			$textEvent=" Scheduling the operation of heating and electricity systems towards energy cost optimization - Change Status ";
+			$context="Action plan -  Scheduling the operation of heating and electricity systems towards energy cost optimization";
+			$visible=1;
+			$ip=$this->container->get('request_stack')->getCurrentRequest()->getClientIp();
+			
+			$idActionPlan=(int)$elementsForm['idActionPlan'];
+			
+			$this->get('service_event')->createEvent($user, $textEvent, $context, $idActionPlan, 1, $ip, $request->request->get('idBuilding'), $newStatus);
+		}
+		
+		return new Response("ok");
 	}
 }
