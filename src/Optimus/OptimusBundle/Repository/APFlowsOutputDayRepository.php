@@ -21,6 +21,26 @@ class APFlowsOutputDayRepository extends EntityRepository{
 			//$query->setMaxResults(1);		
 		
         return $query->getResult();
+    }
+
+	public function getDQLLastOutputByDay($day)
+	{		
+		$dqlQuery = 'SELECT apflowsoutputday';
+        $dqlQuery .= ' FROM '.$this->_entityName.' apflowsoutputday';
+        $dqlQuery .= " WHERE apflowsoutputday.date = '".$day."' ";
+		$dqlQuery .= ' ORDER BY apflowsoutputday.fkApCalculation DESC';
+        return $dqlQuery;	
+    }
+	
+	public function findLastOutputByDay($day){
+      
+        $em = $this->getEntityManager();
+		
+        $dqlQuery = $this->getDQLLastOutputByDay($day);
+        $query = $em->createQuery($dqlQuery);
+		$query->setMaxResults(1);		
+		
+        return $query->getResult();
     }    
 }
 

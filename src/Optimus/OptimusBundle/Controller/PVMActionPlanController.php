@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+	  
 class PVMActionPlanController extends Controller
 {
 	public function indexAction($idBuilding, $idAPType='', $from='', $to='', $timeSelected='')

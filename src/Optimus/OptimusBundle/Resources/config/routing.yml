@@ -241,6 +241,11 @@ energySourcePlan:
     pattern:  /energy_flows/{idBuilding}/{idAPType}/{from}/{to}
     defaults: { _controller: OptimusOptimusBundle:EnergySourceActionPlan:plan_index, from:'', to:''}
 
+changeEnergySourceStatusDay:
+    path:    /change-status-energySource/{idOutputDay}
+    defaults: { _controller: OptimusOptimusBundle:EnergySourceActionPlan:changeStatusDay }
+    requirements: { _method: post }
+
 changeEconomizerStatusDay:
     path:    /change-status-economizer/{idOutputDay}
     defaults: { _controller: OptimusOptimusBundle:EconomizerActionPlan:changeStatusDay }

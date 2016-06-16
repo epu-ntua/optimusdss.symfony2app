@@ -178,7 +178,7 @@ class ServiceAPEnergySourceCalculation
 		if($xml!==false){
 			$aValues = $this->readXML_Maintenance($xml);
 		} else {
-			echo "Error invoking service\n\n </br></br>";
+			//echo "Error invoking service\n\n </br></br>";
 		}
 	/*	
 		$iHourStart = 0;
@@ -244,7 +244,7 @@ class ServiceAPEnergySourceCalculation
 					
 
 					//day
-
+					/*
 					$sCurrentDate = $this->getDateString($value[self::$datetime_name], 0);
 					$currentDate=\DateTime::createFromFormat('Y-m-d', $sCurrentDate );
 					
@@ -253,8 +253,14 @@ class ServiceAPEnergySourceCalculation
 						$outputDay = new APFlowsOutputDay();
 						$outputDay->setDate($currentDate);
 						
-						// Specific for this action plan:
-						$outputDay->setStatus(0);						// Alarm status by user
+						$lastOutputDay = $this->em->getRepository('OptimusOptimusBundle:APFlowsOutputDay')->findLastOutputByDay($sCurrentDate); //
+						if($lastOutputDay != null){
+							$outputDay->setStatus($lastOutputDay[0]->getStatus());
+						}
+						else{
+							$outputDay->setStatus(0);	
+						}
+						
 						$outputDay->setFkApCalculation($calculation);
 				
 						$this->em->persist($outputDay);
@@ -262,6 +268,31 @@ class ServiceAPEnergySourceCalculation
 						
 						$prevDay = $sCurrentDate;
 					}
+					*/
+				}
+				
+				$sCurrentDate = $this->getDateString($value[self::$datetime_name], 0);
+				$currentDate=\DateTime::createFromFormat('Y-m-d', $sCurrentDate );
+				
+				if ($prevDay != $sCurrentDate){
+					// 4.To manage inputs from users:	
+					$outputDay = new APFlowsOutputDay();
+					$outputDay->setDate($currentDate);
+					
+					$lastOutputDay = $this->em->getRepository('OptimusOptimusBundle:APFlowsOutputDay')->findLastOutputByDay($sCurrentDate); //
+					if($lastOutputDay != null){
+						$outputDay->setStatus($lastOutputDay[0]->getStatus());
+					}
+					else{
+						$outputDay->setStatus(0);	
+					}
+					
+					$outputDay->setFkApCalculation($calculation);
+			
+					$this->em->persist($outputDay);
+					$this->em->flush();
+					
+					$prevDay = $sCurrentDate;
 				}
 				
 			}
