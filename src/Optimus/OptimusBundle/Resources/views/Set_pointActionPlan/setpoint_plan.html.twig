@@ -222,11 +222,6 @@
 					<p class="boxContent borderRight"  style=" cursor:pointer;" onclick="createURLView();">
 						<img src="{{asset('bundles/optimus/img/View.png')}}" />
 					</p>
-					<!-- 
-					<p class="boxContent borderRight" style="cursor:pointer;" onclick="createURLPredictor();">
-						<strong style="color:#0069b4">Calculate</strong>
-					</p>
-					-->
             </div>
             <div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
             <div id="contentGraficas">
@@ -357,44 +352,16 @@
                                     </td>
                                 </tr>
                                 {% for i in 0..23 %}
-                                    <tr class="section_{{ key }}_feedback" style="display: none;">
+                                    <tr class="section_{{ key }}_feedback feedback_row" style="display: none;">
                                         <td class="noBorder subTitle borderRight">
                                             {{ i }}:00
                                         </td>
                                         {% set j = 0 %}
                                         {% for date in partitions[(section)].feedback %}
-                                            <td class="cell {% if (i < 7) or (i > 21) or ('S' in weekly_proposed_temperatures[j].date) %}disabled{% elseif date[i].size >= 3 %}tcv-sensation {{ date[i]|sensation_class }}{% endif %}">
+                                            <td class="cell {% if (i < 7) or (i > 21) or ('S' in weekly_proposed_temperatures[j].date) %}disabled{% elseif date[i].size >= 1 %}tcv-sensation {{ date[i]|sensation_class }}{% endif %}">
                                                 &nbsp;
                                             </td>
-<<<<<<< HEAD
-                                            {% for i in 0..6 %}
-                                                <td class="next_cols" style="background:#2e75b6;">
-                                                    <p class="cells" style="color:white; font-size:70%;">{{ weekly_proposed_temperatures[i].date }}</p>
-                                                </td>
-                                            {% endfor %}
-                                        </tr>
-                                        {% for i in 0..23 %}
-                                            <tr class="row" style="line-height:1px;">
-                                                <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none; height:20px;">
-                                                </td>
-                                                <td class="second_col {% if i == 23 %}special{% endif %}" style="background:#111; height:20px;">
-                                                    <p class="cells" style="color:white;">{{ i }}:00</p>
-                                                </td>
-                                                {% set j = 0 %}
-                                                {% for date in partitions[(section)].feedback %}
-                                                    {% if (i in 7..21) and ('S' not in weekly_proposed_temperatures[j].date) %}
-                                                        <td class="next_cols {% if i == 23 %}special{% endif %} {% if date[i].size >= 1 %} tcv-sensation {{ date[i]|sensation_class }}" style="height:20px;" {% else %}" style="background: #f2f2f2; height:20px;"{% endif %} >
-                                                        </td>
-                                                    {% else %}
-                                                        <td class="non_working_cols {% if i == 23 %}special{% endif %}" style="height:20px;">
-                                                        </td>
-                                                    {% endif %}
-                                                    {% set j = j + 1 %}
-                                                {% endfor %}
-                                            </tr>
-=======
                                             {% set j = j + 1 %}
->>>>>>> 8dd71b0dc55b376cf72c73e2791997bfa1b426d2
                                         {% endfor %}
                                     </tr>
                                 {% endfor %}
