@@ -119,3 +119,6 @@
 #tablaActionPlan .expandButton.open:before {
     content: "\25BC";
 }
+#tablaActionPlan .feedback_row td{
+	height: 20px;
+}
