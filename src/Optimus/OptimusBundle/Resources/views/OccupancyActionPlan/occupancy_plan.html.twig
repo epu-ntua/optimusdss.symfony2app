@@ -240,8 +240,8 @@
                                 </td>
                             {% endfor %}
                         </tr>
-                        <tr class="headerDays">
-                            <td class="rawTitle borderRight borderBottom" colspan="2">
+                        <tr class="headerDays borderBottom">
+                            <td class="rawTitle borderRight" colspan="2">
                                 Building Partitioning
                             </td>
                             {% for i in 0..6 %}
@@ -323,22 +323,22 @@
                                 </td>
                             {% endfor %}
                         </tr>
-                        <tr>
-                            <td class="rawTitle subTitle borderRight borderBottom">
+                        <tr class="borderBottom">
+                            <td class="rawTitle subTitle borderRight">
                                 Late afternoon 2 </br>(18:00-19:00)
                             </td>
                             {% for i in 0..6 %}
                                 {% set date = dates[i] %}
-                                <td class="cell borderBottom">
+                                <td class="cell">
                                     {{ estimated_occupancy[(date)]['Late afternoon 2'] }}
                                 </td>
-                                <td class="cell blue borderBottom">&nbsp;
+                                <td class="cell blue">&nbsp;
                                 </td>
                             {% endfor %}
                         </tr>
                             {% for section in building_sections|keys %}
                                 <tr>
-                                    <td class="rawTitle borderBottom"  rowspan="8">
+                                    <td class="rawTitle"  rowspan="8">
                                         {% for i in 1..building_sections[(section)] %}{% endfor %}{{ section }}
                                     </td>
                                 </tr>
@@ -432,8 +432,8 @@
                                         </td>
                                     {% endfor %}
                                 </tr>
-                                <tr>
-                                    <td class="rawTitle subTitle borderRight borderBottom">
+                                <tr class="borderBottom">
+                                    <td class="rawTitle subTitle borderRight">
                                         Late afternoon 2 </br>(18:00-19:00)
                                     </td>
                                     {% for i in 0..6 %}
