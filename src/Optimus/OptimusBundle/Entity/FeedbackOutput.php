@@ -22,12 +22,6 @@ class FeedbackOutput
     private $id;
 
     /**
-	 * @ORM\ManyToOne(targetEntity="APCalculation")
-	 * @ORM\JoinColumn(name="fk_ap_calculation", referencedColumnName="id", onDelete="CASCADE")
-	 */
-    protected $fkApCalculation;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="full_date", type="datetime")
@@ -35,11 +29,17 @@ class FeedbackOutput
     private $full_date;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="fk_Proposition_Id", type="integer")
+     * @ORM\Column(name="section", type="string", length=255)
      */
-    protected $fkPropositionId;
+    protected $section;
+	
+	/**
+	 * @ORM\ManyToOne(targetEntity="APCalculation")
+	 * @ORM\JoinColumn(name="fk_ap_calculation", referencedColumnName="id", onDelete="CASCADE")
+	 */
+    protected $fkApCalculation;
 
     /**
      * @var float
@@ -90,26 +90,49 @@ class FeedbackOutput
     }
 
     /**
-     * Set fkPropositionId
+     * Set section
      *
-     * @param integer $fkPropositionId
+     * @param string $section
      * @return Feedback_Output
      */
-    public function setFkPropositionId($fkPropositionId)
+    public function setSection($section)
     {
-        $this->fkPropositionId = $fkPropositionId;
+        $this->section = $section;
 
         return $this;
     }
 
     /**
-     * Get fkPropositionId
+     * Get section
      *
-     * @return integer
+     * @return string
      */
-    public function getFkPropositionId()
+    public function getSection()
     {
-        return $this->fkPropositionId;
+        return $this->section;
+    }
+	
+	/**
+     * Set fkApCalculation
+     *
+     * @param \Optimus\OptimusBundle\Entity\APCalculation $fkApCalculation
+     * @return AP_PV_Output
+     */
+    public function setFkApCalculation(\Optimus\OptimusBundle\Entity\APCalculation $fkApCalculation = null)
+    {
+        $this->fkApCalculation = $fkApCalculation;
+
+        return $this;
+    }
+
+    /**
+     * Get fkApCalculation
+     *
+     * @return \Optimus\OptimusBundle\Entity\APCalculation 
+     */
+    public function getFkApCalculation()
+    {
+        return $this->fkApCalculation;
     }
 
     /**
@@ -156,30 +179,6 @@ class FeedbackOutput
     public function getFeedbackSize()
     {
         return $this->feedbackSize;
-    }
-
-
-    /**
-     * Set fkApCalculation
-     *
-     * @param \Optimus\OptimusBundle\Entity\APCalculation $fkApCalculation
-     * @return AP_PV_Output
-     */
-    public function setFkApCalculation(\Optimus\OptimusBundle\Entity\APCalculation $fkApCalculation = null)
-    {
-        $this->fkApCalculation = $fkApCalculation;
-
-        return $this;
-    }
-
-    /**
-     * Get fkApCalculation
-     *
-     * @return \Optimus\OptimusBundle\Entity\APCalculation 
-     */
-    public function getFkApCalculation()
-    {
-        return $this->fkApCalculation;
     }
 
 }

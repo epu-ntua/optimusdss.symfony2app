@@ -74,8 +74,8 @@ class SetPointPlanController extends Controller
 			}
             
 
-            $result['weekly_proposed_temperatures'] = $this->getDataAdaptive($result['startDate'], $idCalculation);
-            $result['partitions'] = $this->getDataTCV($result['startDate'], $idCalculation, $sections);
+            $result['weekly_proposed_temperatures'] = $this->getDataAdaptive($result['startDate'], $idActionPlan);
+            $result['partitions'] = $this->getDataTCV($result['startDate'], $idActionPlan, $sections);
             $this->APIntegration($result, $sections);
             $this->partitionArray($result['building_sections'], $sections, 0);
             array_shift($result['building_sections']);
@@ -215,40 +215,42 @@ class SetPointPlanController extends Controller
         return $allPartitions;
     }
 
-    private function perPartition(&$data, $Days, $calculation, $sections) {
+    private function perPartition(&$data, $Days, $idActionPlan, $sections) {
         foreach($sections as $key=>$value) {
             if(is_array($value)) {
-                $this->perPartition($data, $Days, $calculation, $value);
+                $this->perPartition($data, $Days, $idActionPlan, $value);
             }
             else {
                 $numDays=count($Days);
+				$idCalculation=0;
                 for($i=0; $i < $numDays; $i++) {
                     $em = $this->getDoctrine()->getEntityManager();
-                    $output = $em->getRepository('OptimusOptimusBundle:APTCVOutput')->findOutputByDate($Days[$i], $calculation, $value);
+			
+					$qCalculation=$em->getRepository('OptimusOptimusBundle:APCalculation')->findCalculationByDate($Days[$i], $idActionPlan);
+					if(!empty($qCalculation)){
+						$idCalculation=$qCalculation[0]->getId();
+					}
+					
+                    $output = $em->getRepository('OptimusOptimusBundle:APTCVOutput')->findOutputByDate($Days[$i], $idCalculation, $value);
 
                     if (!empty($output)) {
                         $data[$value]['proposed_temperature'][$i] = $output[0]->getProposedTemperature();
-                        $outputId = $output[0]->getId();
-                        $Full_Days = $this->getHoursFromDate($Days[$i]);
-                        for ($hour = 0; $hour < 24; $hour++) {
-                            $feedback = $em->getRepository('OptimusOptimusBundle:FeedbackOutput')->findOutputByFullDate($Full_Days[$hour], $calculation, $outputId);
-                            if (!empty($feedback)) {
-                                $data[$value]['feedback'][$i][$hour]['value'] = $feedback[0]->getFeedback();
-                                $data[$value]['feedback'][$i][$hour]['size'] = $feedback[0]->getFeedbackSize();
-                            }
-                            else {
-                                $data[$value]['feedback'][$i][$hour]['value'] = 0.0;
-                                $data[$value]['feedback'][$i][$hour]['size'] = 0;
-                            }
-                        }
-
+                        //$outputId = $output[0]->getId();
                     } else {
                         $data[$value]['proposed_temperature'][$i] = '--';
-                        for ($hour = 0; $hour < 24; $hour++) {
-                            $data[$value]['feedback'][$i][$hour]['value'] = 0.0;
-                            $data[$value]['feedback'][$i][$hour]['size'] = 0;
-                        }
                     }
+					$Full_Days = $this->getHoursFromDate($Days[$i]);
+					for ($hour = 0; $hour < 24; $hour++) {
+						$feedback = $em->getRepository('OptimusOptimusBundle:FeedbackOutput')->findOutputByFullDate($Full_Days[$hour], $value);
+						if (!empty($feedback)) {
+							$data[$value]['feedback'][$i][$hour]['value'] = $feedback[0]->getFeedback();
+							$data[$value]['feedback'][$i][$hour]['size'] = $feedback[0]->getFeedbackSize();
+						}
+						else {
+							$data[$value]['feedback'][$i][$hour]['value'] = 0.0;
+							$data[$value]['feedback'][$i][$hour]['size'] = 0;
+						}
+					}
 
 
 
@@ -257,7 +259,7 @@ class SetPointPlanController extends Controller
         }
     }
 
-    private function getDataTCV($start_date, $calculation, $sections)
+    private function getDataTCV($start_date, $idActionPlan, $sections)
     {
         $start_date .= " 00:00:00";
         $actDay=\DateTime::createFromFormat('Y-m-d H:i:s', $start_date);
@@ -265,11 +267,11 @@ class SetPointPlanController extends Controller
 
         $Days=$this->getDaysFromDate($start_date, $finalDay);
         $data=array();
-        $this->perPartition($data, $Days, $calculation, $sections);
+        $this->perPartition($data, $Days, $idActionPlan, $sections);
         return $data;
     }
 
-    private function getDataAdaptive($start_date, $calculation)
+    private function getDataAdaptive($start_date, $idActionPlan)
     {
         $start_date .= " 00:00:00";
         $actDay=\DateTime::createFromFormat('Y-m-d H:i:s', $start_date);
@@ -278,9 +280,16 @@ class SetPointPlanController extends Controller
         $Days=$this->getDaysFromDate($start_date, $finalDay);
         $data=array();
         $numDays=count($Days);
+		$idCalculation=0;
         for($i=0; $i < $numDays; $i++) {
-            $em = $this->getDoctrine()->getEntityManager();
-            $output = $em->getRepository('OptimusOptimusBundle:APAdaptiveOutput')->findOutputByDate($Days[$i], $calculation);
+			$em = $this->getDoctrine()->getEntityManager();
+			
+			$qCalculation=$em->getRepository('OptimusOptimusBundle:APCalculation')->findCalculationByDate($Days[$i], $idActionPlan);
+			if(!empty($qCalculation)){
+				$idCalculation=$qCalculation[0]->getId();
+			}
+			
+            $output = $em->getRepository('OptimusOptimusBundle:APAdaptiveOutput')->findOutputByDate($Days[$i], $idCalculation);
 
             if (!empty($output)) {
                 $date_obj = \DateTime::createFromFormat("Y-m-d H:i:s", $Days[$i]);

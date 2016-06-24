@@ -232,6 +232,11 @@
 					<p class="boxContent borderRight"  style=" cursor:pointer;" onclick="createURLView();">
 						<img src="{{asset('bundles/optimus/img/View.png')}}" />
 					</p>
+					<!-- 
+					<p class="boxContent borderRight" style="cursor:pointer;" onclick="createURLPredictor();">
+						<strong style="color:#0069b4">Calculate</strong>
+					</p>
+					-->
             </div>
             <div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
             <div id="contentGraficas">
@@ -406,19 +411,19 @@
                                             {% endfor %}
                                         </tr>
                                         {% for i in 0..23 %}
-                                            <tr class="row">
-                                                <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                            <tr class="row" style="line-height:1px;">
+                                                <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none; height:20px;">
                                                 </td>
-                                                <td class="second_col {% if i == 23 %}special{% endif %}" style="background:#111;">
+                                                <td class="second_col {% if i == 23 %}special{% endif %}" style="background:#111; height:20px;">
                                                     <p class="cells" style="color:white;">{{ i }}:00</p>
                                                 </td>
                                                 {% set j = 0 %}
                                                 {% for date in partitions[(section)].feedback %}
                                                     {% if (i in 7..21) and ('S' not in weekly_proposed_temperatures[j].date) %}
-                                                        <td class="next_cols {% if i == 23 %}special{% endif %} {% if date[i].size >= 3 %}tcv-sensation {{ date[i]|sensation_class }}" {% else %}" style="background: #f2f2f2;"{% endif %}
+                                                        <td class="next_cols {% if i == 23 %}special{% endif %} {% if date[i].size >= 1 %} tcv-sensation {{ date[i]|sensation_class }}" style="height:20px;" {% else %}" style="background: #f2f2f2; height:20px;"{% endif %} >
                                                         </td>
                                                     {% else %}
-                                                        <td class="non_working_cols {% if i == 23 %}special{% endif %}">
+                                                        <td class="non_working_cols {% if i == 23 %}special{% endif %}" style="height:20px;">
                                                         </td>
                                                     {% endif %}
                                                     {% set j = j + 1 %}
