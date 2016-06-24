@@ -9,6 +9,9 @@
 #tablaActionPlan #chart_days {
     margin-left: 0;
 }
+#tablaActionPlan .noBorder {
+    border: none;
+}
 #tablaActionPlan #linechart {
     margin: 10px auto;
     display: inline-block;
@@ -16,6 +19,7 @@
 #tablaActionPlan {
     font-size: 12px;
     border: none;
+    cursor: inherit;
 }
 #tablaActionPlan .headerDays {
     font-weight:bold;
@@ -24,6 +28,7 @@
     text-align:center;
 }
 #tablaActionPlan .rawTitle {
+    border: none;
     text-align:left;
     color:#0069b4;
     padding-left:15px;
@@ -48,6 +53,9 @@
 }
 #tablaActionPlan .borderBottom {
     border-bottom: 2px solid #efefef;
+}
+#tablaActionPlan .borderTop {
+    border-top: 2px solid #efefef;
 }
 #tablaActionPlan .toggleRaw > td {
     background-color:#aeaaaa;
@@ -98,4 +106,16 @@
 #tablaActionPlan .ActionPlanConfirm .inputsFilters {
     float:left;
     margin-right:3px;
+}
+#tablaActionPlan .expandButton {
+    cursor: pointer;
+}
+#tablaActionPlan .expandButton:hover {
+    background-color: #e8f3f9;
+}
+#tablaActionPlan .expandButton:before {
+    content: "\25BA";
+}
+#tablaActionPlan .expandButton.open:before {
+    content: "\25BC";
 }
