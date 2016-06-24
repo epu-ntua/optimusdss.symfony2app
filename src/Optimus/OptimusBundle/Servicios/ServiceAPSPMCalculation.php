@@ -35,52 +35,67 @@ class ServiceAPSPMCalculation {
 
 	public function insertNewCalculation($aoRelSensorsActionPlan, $from,  $calculation, $idBuilding, $ip, $user)
 	{
-		// Obs:
-		// - There is no prediction data for this action plan.
-		// - This calculation need be done here because web services are only invoked one time in the night.
+		$this->em->getConnection()->beginTransaction();
+		// Try and make the transaction
+		try {   
+			$actionPlan = $aoRelSensorsActionPlan['actionPlan'];
+			$idAPType = $actionPlan->getType();
 
-		$actionPlan = $aoRelSensorsActionPlan['actionPlan'];
-		$idAPType = $actionPlan->getType();
+			// 1.Init data structure:
+			$from = $this->getDateString($from, 0);
+			echo $from . '\n';
 
-		// 1.Init data structure:
-		$from = $this->getDateString($from, 0);
-		echo $from . '\n';
+			$start_date = new \DateTime($from);
 
-		$start_date = new \DateTime($from);
+			$nDays = 7;
+			
+			//Partitions buildings
+			$sections = $this->getPartitions($idBuilding);
+			
 
-		$nDays = 7;
+			echo "invoke service of the Adaptive Comfort inference rule\n";
+			//invoke service of the Adaptive Comfort inference rule
+			$this->apadaptative->invoke_service($idBuilding, $start_date->format('Y-m-d 00:00:00'), $idAPType, $calculation);
+			echo "invoke service of the TCV inference rule based on last week data\n";
+			// invoke service of the TCV inference rule based on last week data
+			$this->aptcv->invoke_service($idBuilding, $start_date->format('Y-m-d 00:00:00'), $idAPType, $calculation, $sections);
 
-		echo "invoke service of the Adaptive Comfort inference rule\n";
-		//invoke service of the Adaptive Comfort inference rule
-		$this->apadaptative->invoke_service($idBuilding, $start_date->format('Y-m-d 00:00:00'), $idAPType, $calculation);
-		echo "invoke service of the TCV inference rule based on last week data\n";
-		// invoke service of the TCV inference rule based on last week data
-		//$this->aptcv->invoke_service($idBuilding, $start_date->format('Y-m-d 00:00:00'), $idAPType, $calculation);
+			for($iDay=0; $iDay<$nDays; $iDay++)
+			{
+				$sCurrentDate = $this->getDateString($from, $iDay);
+				$currentDate=\DateTime::createFromFormat('Y-m-d', $sCurrentDate );
 
-		for($iDay=0; $iDay<$nDays; $iDay++)
-		{
-			$sCurrentDate = $this->getDateString($from, $iDay);
-			$currentDate=\DateTime::createFromFormat('Y-m-d', $sCurrentDate );
+				$statusDay=$this->getLastCalculationDay($currentDate->format('Y-m-d'), $aoRelSensorsActionPlan['actionPlan']->getId());
 
-			$statusDay=$this->getLastCalculationDay($currentDate->format('Y-m-d'), $aoRelSensorsActionPlan['actionPlan']->getId());
+				$outputDay = new APSPMOutputDay();
+				$outputDay->setDate($currentDate);
 
-			$outputDay = new APSPMOutputDay();
-			$outputDay->setDate($currentDate);
+				$lastOutputDay = $this->em->getRepository('OptimusOptimusBundle:APSPMOutputDay')->findLastOutputByDay($sCurrentDate); //
+				if($lastOutputDay != null){
+					$outputDay->setStatus($lastOutputDay[0]->getStatus());
+				}
+				else{
+					$outputDay->setStatus(0);	
+				}
+				
+				$outputDay->setFkApCalculation($calculation);
 
-			$lastOutputDay = $this->em->getRepository('OptimusOptimusBundle:APSPMOutputDay')->findLastOutputByDay($sCurrentDate); //
-			//dump($lastOutputDay);
-			if($lastOutputDay != null){
-				$outputDay->setStatus($lastOutputDay[0]->getStatus());
-			}
-			else{
-				$outputDay->setStatus(0);	
+				$this->em->persist($outputDay);
+				$this->em->flush();
 			}
 			
-			$outputDay->setFkApCalculation($calculation);
-
-			$this->em->persist($outputDay);
+			// Try and commit the transaction
+			$this->em->getConnection()->commit();
+			
+		}catch (\Exception $e) {
+			// Rollback the failed transaction attempt
+			$this->em->getConnection()->rollback();
+			$apcalculation = $this->em->getRepository('OptimusOptimusBundle:APCalculation')->find($calculation);
+			$this->em->remove($apcalculation);
 			$this->em->flush();
+			throw $e;
 		}
+		
 	}
 
 	private function getLastCalculationDay($day, $idActionPlan)
