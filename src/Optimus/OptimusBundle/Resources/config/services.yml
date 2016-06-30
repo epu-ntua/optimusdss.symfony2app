@@ -107,7 +107,7 @@ services:
 
     service_weeklyReport:
         class: 	Optimus\OptimusBundle\Servicios\ServiceWeeklyReport
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@service_apo_presenter", "@service_apspm_presenter", "@service_apph_presenter", "@service_appvm_presenter", "@service_appv_presenter", "@service_apsource_presenter", "@service_apeconomizer_presenter", "@templating", "@knp_snappy.pdf", "@mailer", %mailer_from%, %mailer_to%]
 
 
     service_sensorsRTime:
@@ -158,4 +158,4 @@ services:
 
     service_tracker:
         class: 	Optimus\OptimusBundle\Servicios\ServiceTracker
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@service_sensorsRTime"]

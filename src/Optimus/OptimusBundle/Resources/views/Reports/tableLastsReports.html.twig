@@ -55,14 +55,14 @@
 									<td >{{ report.datetime |date("W")}}</td>
 									<td >{{ report.period }}	</td>
 									
-									<td>{{ report.energyConsumption }}	</td>
-									<td>{{ report.energyCost }}	</td>
+									<td>{{ report.energyConsumption|round(2, 'floor') }}	</td>
+									<td>{{ report.energyCost|round(2, 'floor') }}	</td>
 									<td>{{ report.userActions }} </td>
 									<td>{{ report.datetime |date("Y-m-d") }}</td>
 									{% if report.status==1 %}
 										<td style="border-right:0px; padding: 3px;"><a href="{{ path('openFormReport', {'idBuilding':idBuilding, 'idWeeklyReport':report.id} ) }}">Edit</a></td>
 									{% else %}
-										<td style="border-right:0px; padding: 3px;"><a onclick="getPDF({{report.id}});" >PDF</a></td> <!--href="{{ path('pdfReport', {'idBuilding':idBuilding, 'idWeeklyReport':report.id} ) }}" -->
+										<td style="border-right:0px; padding: 3px;"><a  href="{{ asset('bundles/optimus/pdf/report_'~report.id~'.pdf') }}" target="_blank" >PDF</a></td> <!--href="{{ path('pdfReport', {'idBuilding':idBuilding, 'idWeeklyReport':report.id} ) }}" -->
 									{% endif %}
 								</tr>
 								

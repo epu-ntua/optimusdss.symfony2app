@@ -2,44 +2,31 @@
 <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic' rel='stylesheet' type='text/css'>
 {% block content %} 
 <style>
-#left {
-    border-bottom: 1px solid #cbcbcb;
-    color: #0069b4;
-    float: left;
-    font-family: "Open Sans";
-    font-size: 14px;
-    padding: 13px 0 13px 10px;
-    width: 99.2%;
-
+#header {
+    background: #006ab8 none repeat scroll 0 0;
+    height: 80px;
+    overflow: hidden;
+    width: 100%;
 }
-#left p {
-    color: #0069b4;
+#header img {
+    float: left;
+    margin-left: 30px;
+    margin-top: 15px;
+}
+#header h3 {
+    color: #fff;
     float: right;
-    font-size: 18px;
-    padding-right: 30px;
-    padding-top: 6px;
-	margin: 0;
+    font-family: "Exo";
+    font-size: 38px;
+    font-weight: normal;
+	margin:15px 30px 0 0;
+    text-align: center;
+	font-weight:bold;   
 }
 
-#left ul {
-    float: left;
-    list-style: outside none none; 
-	margin: 0;
-}
-
-#left ul li {
-    background-color: #fff;
-    border-radius: 15px;
-    float: left;
-    padding: 8px 20px;
-}
-#left ul li a {
-    color: #9d9c9c;
-    text-decoration: none;
-}
 
 #right {
-    background-color: #f6f6f6;
+    background-color: #fff;
     border: 0 none;
     float: left;
     width: 100%;
@@ -47,13 +34,21 @@
 
 #right p {
     color: #44546a;
-    font-size: 12px;   
-   margin: 10px;
+    font-size: 12px; 
+	font-family: "Open Sans";
+	margin: 10px;
+}
+#right p.date {
+    color: #0069b4;
+    float: right;
+    font-size: 18px;
+    padding-right: 30px;
+    padding-top: 6px;
+	margin: 0;	
 }
 
 #right #topRight {
-    background-color: #fff;
-    border-bottom: 1px solid #cbcbcb;
+    background-color: #fff;    
     float: left;
     padding: 13px 30px;
     width: 95%;
@@ -68,6 +63,19 @@
     margin: 0;
     text-transform: uppercase;
 }
+#right #topRight p.date {
+    color: #0069b4;
+    float: right;
+    font-size: 18px;
+	font-weight: 500;   
+    padding-top: 6px;
+	padding-right: 0;
+	margin: 0;
+	font-family: "Open Sans";
+	text-transform: none;
+	line-height: 18px;
+}
+
 #right #topRight ul {
     float: right;
     font-family: "Open Sans";
@@ -88,6 +96,7 @@
 }
 
 #right #centerRight {
+	border-top: 1px solid #cbcbcb;
     overflow: hidden;
     padding: 30px;
     position: relative;
@@ -132,32 +141,27 @@ table tr.headerDays td {
 
 
 </style>
-	<div id="left">				
-		<ul type="none">
-			<li><a href="{{path('tracker')}}">Tracker</a></li>
-			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
-			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
-		</ul>
-		<p>{{ "now"|date('l, F d, Y') }}</p>		
+	
+	<div id="header">
+		<img src="{{ imgLogo }}" title="Logo Optimus" alt="Logo Optimus">
+		<h3 style="cursor:pointer;"> {{optimus_instance}} </h3>
 	</div>
 	
 	<div id="right">
 		<div id="topRight">			
 			<p> {{ nameBuilding }}</p>			
-			<ul type="none">				
-				<li class="active"><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
-			</ul>			
+			<p class="date">{{ "now"|date('l, F d, Y') }}</p>			
 		</div>
 		
 		<div id="centerRight">			
-			<div style=" margin-bottom:10px; overflow:hidden;">				
-				<p>
+			<div style=" margin-bottom:10px; overflow:hidden; font-size:16px;">				
+				<p style="font-size:16px; color: #0069b4;">
 					<strong>Responsible person:</strong> 
 					{% for user in dataForm.usersInWR %}
 						<span>{{user.getFkUser().name}} {{user.getFkUser().lastname}},</span>
 					{% endfor %}
 				</p>
-				<p><strong>Week:</strong> {{dataForm.weeklyReport.period }}</p>
+				<p style="font-size:16px; color: #0069b4;"><strong>Week:</strong> {{dataForm.weeklyReport.period }}</p>
 			</div>
 			
 			<form class="nueva-entrevista-form" enctype="multipart/form-data" method="post" action="{{ path('saveDataFormReport', {'idBuilding':idBuilding, 'idWeeklyReport':dataForm.weeklyReport.id })}}" style="font-size:11px;">
@@ -242,7 +246,9 @@ table tr.headerDays td {
 											{% elseif actionPlan.type== 5 %}
 												<a target="_blank" href="{{path('actionPlan_PVMaintenance', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>
 											{% elseif actionPlan.type== 6 %}													
-												<a target="_blank" href="{{path('actionPlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>
+												<a target="_blank" href="{{path('actionPlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>										
+											{% elseif actionPlan.type== 7 %}													
+												<a target="_blank" href="{{path('energySourcePlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>
 											{% endif %}
 										</td>
 									</tr>

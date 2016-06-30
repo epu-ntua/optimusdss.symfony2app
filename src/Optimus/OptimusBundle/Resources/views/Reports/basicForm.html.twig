@@ -105,11 +105,11 @@
 										
 											{% for statusDay in dataForm.statusWeekActionPlan[actionPlan.id] %} <!-- 0=Unknown, 1=Accepted, 2=Declined -->
 												{% if statusDay.status==0 %}
-													<td>Unknown</td>
+													<td style="background-color:#fdbb4d;">Unknown</td>
 												{% elseif statusDay.status==1 %}
-													<td>Accept</td>
+													<td style="background-color:#00da8a;">Accept</td>
 												{% else %}
-													<td>Decline</td>
+													<td style="background-color:#ff0101;">Decline</td>
 												{% endif %}											
 											{% endfor %}
 										{% endif %}	
@@ -128,6 +128,8 @@
 												<a target="_blank" href="{{path('actionPlan_PVMaintenance', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>
 											{% elseif actionPlan.type== 6 %}													
 												<a target="_blank" href="{{path('actionPlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>
+											{% elseif actionPlan.type== 7 %}													
+												<a target="_blank" href="{{path('energySourcePlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>
 											{% endif %}
 										</td>
 									</tr>

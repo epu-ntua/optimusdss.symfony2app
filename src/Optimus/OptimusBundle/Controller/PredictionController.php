@@ -48,7 +48,7 @@ class PredictionController extends Controller
 		//$data['dataFinal'] = array();
 		
 		
-		$data['dataRT']=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFrom, $idBuilding);
+		$data['dataRT']=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFrom, '', $idBuilding);
 		//dump($data['dataRT']);
 		
 		

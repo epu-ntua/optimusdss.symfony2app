@@ -23,3 +23,14 @@ monolog:
             level: debug
         console:
             type:  console
+
+#KnpSnappyBundle Configuration -- generate either pdf or image files from your html documents
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     "\"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe\""
+        options:    []
+    image:
+        enabled:    true
+        binary:     "\"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltoimage.exe\""
+        options:    []

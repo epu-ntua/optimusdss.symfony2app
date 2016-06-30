@@ -15,9 +15,16 @@ class TrackerController extends Controller
 	{	
 		$em=$this->getDoctrine()->getManager();
 		$dataTracker=$em->getRepository('OptimusOptimusBundle:Tracker')->find(1);
-		$dataCurrentStatus=$em->getRepository('OptimusOptimusBundle:CurrentStatus')->findBy(array(), array('date'=>'desc'));
+		$data['dataTracker']=$dataTracker;
 		
-		return $this->render('OptimusOptimusBundle:Tracker:tracker.html.twig');
+		//Get max user target 
+		$data['maxValue']=max($dataTracker->getTargetEConsumption(), $dataTracker->getTargetCO2(), $dataTracker->getTargetECost(), $dataTracker->getTargetREUse());
+		
+		//$this->get('service_tracker')->currentStatusTracker();
+		
+		$data['currentStatus']=$em->getRepository('OptimusOptimusBundle:CurrentStatus')->findBy(array(), array('date'=>'desc'));
+		
+		return $this->render('OptimusOptimusBundle:Tracker:tracker.html.twig', $data);
 	}
 	
 	public function valuesTrackerAction(Request $request)
