@@ -2,6 +2,7 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/set_point.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/optimus/css/actionPlanTable.css') }}"/>
 {% endblock %}
 
 {% block javascripts %}
@@ -20,7 +21,6 @@
         $(function(){
 
             $("#datepicker").hide();
-            $(".showDiv").slideToggle();
 
             $('.more_info').on('click', function() {
                 var content=$(this).attr('data-content');
@@ -40,31 +40,29 @@
             var idBuilding = $('#idBuilding').html();
             var idAPType = $('#idAPType').html();
 
-            $('.section_more').on('click', function() {
-                $('.extended').addClass('hidden');
-                $('.small').removeClass('hidden');
-                var content = $(this).attr('data-content');
-                $('#'+content).addClass('hidden');
-                var hidden = $(this).attr('data-hidden');
-                $('.'+hidden).removeClass('hidden');
-            });
-
-            $('.section_less').on('click', function() {
-                var content = $(this).attr('data-content');
-                $('.'+content).addClass('hidden');
-                var hidden = $(this).attr('data-hidden');
-                $('#'+hidden).removeClass('hidden');
-            });
-
-            $('.sectionId').on('mouseover', function() {
-                if (!$(this).hasClass('clicked')) {
-                    $(this).css('background-color', '#BCDBAD');
+            $('.expandButton').on('click', function() {
+                var type = $(this).attr('data-type') || 'section';
+                var section = (type == 'section') ? this.id : $(this).attr('data-parent');
+                var state = $(this).hasClass('open');
+                if (!state && type == 'section') {
+                    $('.extended').hide().removeClass('extended');
+                    $('.open[rowspan]').attr('rowspan', 2);
+                    var oldId = $('.open[rowspan]').attr('id');
+                    $('.'+oldId+'_shortBottom').toggleClass('borderBottom');
+                    $('.open').removeClass('open');
                 }
-            });
-
-            $('.sectionId').on('mouseleave', function() {
-                if (!$(this).hasClass('clicked')) {
-                    $(this).css('background-color', 'white');
+                if (type=='section'){
+                    $('.'+section+'_content').toggleClass('extended').toggle();
+                    $(this).toggleClass('open');
+                    $('#'+section).attr('rowspan', (state)?2:10);
+                    $('.'+section+'_shortBottom').toggleClass('borderBottom');
+                    if (state){
+                        $('.'+section+'_feedback.extended').removeClass('extended').hide();
+                    }
+                } else if (type=='feedback'){
+                    $('.'+section+'_feedback').toggleClass('extended').toggle();
+                    $(this).toggleClass('open');
+                    $('#'+section).attr('rowspan', (state)?10:35);
                 }
             });
 
@@ -75,7 +73,7 @@
                 window.setTimeout(function () {
                     $('#datepicker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
                 }, 1);
-            }
+            };
 
             $('#datepicker').datepicker( {
                 showOtherMonths: true,
@@ -127,14 +125,6 @@
 				//});
 			});
 		{% endfor %}
-		
-		/* ----- */
-
-
-            //double-clik on table
-            $("#showSchedule").click(function(){
-                $(".showDiv").slideToggle();
-            });
 
         });
 
@@ -232,254 +222,191 @@
 					<p class="boxContent borderRight"  style=" cursor:pointer;" onclick="createURLView();">
 						<img src="{{asset('bundles/optimus/img/View.png')}}" />
 					</p>
+					<!-- 
+					<p class="boxContent borderRight" style="cursor:pointer;" onclick="createURLPredictor();">
+						<strong style="color:#0069b4">Calculate</strong>
+					</p>
+					-->
             </div>
             <div id="datepicker" style=" margin-bottom:40px; float:left; background-color:#ddd;"></div>
             <div id="contentGraficas">
                 <!-- Filtros -->
                 <div class="contentTableResults">
 
-                    <table class="table_container">
-                        <tr style="margin:0; line-height:0px;">
-                            <td class="first_col" style="background:#b0b0b0;">
-                                <p style="color:#111; text-align:right;">Building Partitioning</p>
-                            </td>
-                            <td class="second_col" style="background:#777;">
-                                <p style="color:#111; text-align:right;">Dates</p>
+                    <table id="tablaActionPlan" class="table_container">
+                        <tr class="headerDays">
+                            <td class="borderRight" colspan="2">
+                                &nbsp;
                             </td>
                             {% for i in 0..6 %}
-                                <td class="next_cols" style="background:#b0b0b0;  text-align:right;">
-                                    <p class="cells" style="color:#111;">{{ weekly_proposed_temperatures[i].date }}</p>
+                                <td>
+                                    {{ weekly_proposed_temperatures[i].date|escape|replace({' ':'\<br\>'})|raw }}
                                 </td>
                             {% endfor %}
                         </tr>
-                    </table>
-                    <table class="table_container">
-                        <tr class="row" style="line-height:6px;">
-                            <td class="first_col special" style="background:white;">
-                                <p style="color:#555; text-align:left;">Building</p>
+                        <tr  class="borderBottom">
+                            <td class="rawTitle borderRight" colspan="2">
+                                Building
                             </td>
-                            <td style="background:white; width:83%;">
+                            <td colspan="7">
+                                &nbsp;
                             </td>
                         </tr>
-                    </table>
-                    {% for section in building_sections|keys %}
-                        {% if section not in partitions|keys %}
-                            <table>
-                                <tr class="row" style="line-height:6px;">
-                                    <td class="first_col special" style="background:white;">
-                                        <p style="color:#555; text-align:left;">{% for i in 1..building_sections[(section)] %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ section }}</p>
+                        {% for section in building_sections|keys %}
+                            {% if section not in partitions|keys %}
+                                <tr class="borderBottom">
+                                    <td class="rawTitle borderRight" colspan="2" style="padding-left: {{ (building_sections[(section)]+1) * 15 }}px">
+                                        {{ section }}
                                     </td>
-                                    <td {% if section != building_sections|keys|first %}class="floor"{% endif %} style="background:white; width:83%;">
+                                    <td colspan="7">
+                                        &nbsp;
                                     </td>
                                 </tr>
-                            </table>
-                        {% else %}
-                            {% set key = section|lower|replace({' ' : '_'}) %}
-                            <table class="table_container small" id="proposed_{{ key }}">
-                                <tr class="row" style="line-height:3px;">
-                                    <td class="first_col special sectionId section_more" style="background:white;" data-content="proposed_{{ key }}" data-hidden="extra_{{ key }}">
-                                        <p class="sections">{% for i in 1..building_sections[(section)] %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ section }}</p>
+                            {% else %}
+                                {% set key = section|lower|replace({' ' : '_'}) %}
+                                <tr>
+                                    <td rowspan="2" class="noBorder rawTitle expandButton" id="section_{{ key }}" data-type="section" style="padding-left: {{ (building_sections[(section)]+1) * 15 }}px">
+                                        {{ section }}
                                     </td>
-                                    <td class="second_col special" style="background:#777;">
-                                        <p style="color:#111; margin-right:0;">Set-point suggestion (<sup>o</sup>C)</p>
+                                </tr>
+                                <tr class="section_{{ key }}_content" style="display: none;">
+                                    <td class="noBorder subTitle borderRight">
+                                        &nbsp;
+                                    </td>
+                                    <td colspan="7" class="cell rawTitle" style="text-align: center;">
+                                        Final Suggestion
+                                    </td>
+                                </tr>
+                                <tr class="section_{{ key }}_shortBottom borderBottom">
+                                    <td class="noBorder subTitle borderRight">
+                                        Set-point suggestion (<sup>o</sup>C)
                                     </td>
                                     {% for i in 0..6 %}
-                                        <td class="next_cols special" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}background:white;{% endif %}">
-                                            <p class="cells" style="color:#111;">{% if 'S' not in weekly_proposed_temperatures[i].date %}{% if date(weekly_proposed_temperatures[i].full_date) <= date(currDate) %}{{ partitions[(section)].final_suggestions[i] }}{% else %}--{% endif %}{% endif %}</p>
+                                        <td class="cell {% if 'S' in weekly_proposed_temperatures[i].date %}disabled{% elseif date(weekly_proposed_temperatures[i].full_date) <= date(currDate) %}green{% else %}pink{% endif %}">
+                                            {% if 'S' not in weekly_proposed_temperatures[i].date %}
+                                                {% if date(weekly_proposed_temperatures[i].full_date) <= date(currDate) %}
+                                                    {{ partitions[(section)].final_suggestions[i] }}
+                                                {% else %}
+                                                    --
+                                                {% endif %}
+                                            {% endif %}
                                         </td>
                                     {% endfor %}
                                 </tr>
-                            </table>
-                            <div class="hidden extra_{{ key }} extended">
-                                <table class="table_container">
-                                    <tr class="row" style="line-height:10px;">
-                                        <td class="sectionId section_less first_col clicked" style="border-bottom-style:none;" data-content="extra_{{ key }}" data-hidden="proposed_{{ key }}">
-                                            <p class="sections">{% for i in 1..building_sections[(section)] %}&nbsp;&nbsp;&nbsp;&nbsp;{% endfor %}{{ section }}</p>
+                                <tr class="section_{{ key }}_content" style="display: none;">
+                                    <td class="noBorder subTitle borderRight">
+                                        Outdoor temperature (<sup>o</sup>C)
+                                    </td>
+                                    {% for i in 0..6 %}
+                                        <td class="cell{% if 'S' in weekly_proposed_temperatures[i].date %} disabled{% endif %}">
+                                            {% if ('S' not in weekly_proposed_temperatures[i].date) and (date(startDate) <= date(currDate)) %}{{ weekly_proposed_temperatures[i].daily_mean }}{% endif %}
                                         </td>
-                                        <td style="background:#999;width:83%; border: 1px solid #333; border-bottom-style:none;">
-                                            <p class="important_info" style="color:#111;">Final Suggestion</p>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="section_{{ key }}_content" style="display: none;">
+                                    <td class="noBorder subTitle borderRight">
+                                        Selected Inference Rule
+                                    </td>
+                                    {% for i in 0..6 %}
+                                        <td class="cell{% if 'S' in weekly_proposed_temperatures[i].date %} disabled{% endif %}">
+                                            {% if ('S' not in weekly_proposed_temperatures[i].date) and (date(startDate) <= date(currDate)) %}{{ partitions[(section)].decision[i] }}{% endif %}
                                         </td>
-                                    </tr>
-                                </table>
-                                <table class="table_container">
-                                    <tr class="row">
-                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                    {% endfor %}
+                                </tr>
+                                <tr class="section_{{ key }}_content" style="display: none;">
+                                    <td class="noBorder subTitle borderRight">
+                                        &nbsp;
+                                    </td>
+                                    <td colspan="7" class="cell rawTitle" style="text-align: center;">
+                                        Suggestion 1: TCV
+                                    </td>
+                                </tr>
+                                <tr class="section_{{ key }}_content" style="display: none;">
+                                    <td class="noBorder subTitle borderRight">
+                                        Set-point suggestion (<sup>o</sup>C)
+                                    </td>
+                                    {% for i in 0..6 %}
+                                        <td class="cell {% if 'S' in weekly_proposed_temperatures[i].date %}disabled{% elseif partitions[(section)].proposed_temperature[i] != 0 %}green{% else %}pink{% endif %}">
+                                            {% if ('S' not in weekly_proposed_temperatures[i].date) and (partitions[(section)].proposed_temperature[i] != 0) %}{{ partitions[(section)].proposed_temperature[i] }}{% endif %}
                                         </td>
-                                        <td class="second_col" style="background:#b0b0b0;">
-                                            <p style="color:#111;margin-right: 0">Set-point suggestion (<sup>o</sup>C)</p>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="section_{{ key }}_content" style="display: none;">
+                                    <td class="noBorder subTitle borderRight">
+                                        &nbsp;
+                                    </td>
+                                    <td colspan="7" class="cell rawTitle expandButton" data-type="feedback" data-parent="section_{{ key }}" style="text-align: center;">
+                                        Feedback from users
+                                    </td>
+                                </tr>
+                                <tr class="section_{{ key }}_feedback" style="display: none;">
+                                    <td class="noBorder subTitle borderRight">
+                                        &nbsp;
+                                    </td>
+                                    <td class="cell" colspan="7">
+                                        <div class="tcv-feedback-index">
+                                            <span class="tcv-sensation-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Index:</span>
+                                            <span class="tcv-sensation tcv-sensation-minus3"></span> <span class="tcv-sensation-label">Cold</span>
+                                            <span class="tcv-sensation tcv-sensation-minus2"></span> <span class="tcv-sensation-label">Cool</span>
+                                            <span class="tcv-sensation tcv-sensation-minus1"></span> <span class="tcv-sensation-label">Slightly Cool</span>
+                                            <span class="tcv-sensation tcv-sensation-minus0"></span> <span class="tcv-sensation-label">Neutral</span>
+                                            <span class="tcv-sensation tcv-sensation-1"></span> <span class="tcv-sensation-label">Slightly Warm</span>
+                                            <span class="tcv-sensation tcv-sensation-2"></span> <span class="tcv-sensation-label">Warm</span>
+                                            <span class="tcv-sensation tcv-sensation-3"></span> <span class="tcv-sensation-label">Hot</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% for i in 0..23 %}
+                                    <tr class="section_{{ key }}_feedback feedback_row" style="display: none;">
+                                        <td class="noBorder subTitle borderRight">
+                                            {{ i }}:00
                                         </td>
-                                        {% for i in 0..6 %}
-                                            <td class="next_cols" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}{% if date(weekly_proposed_temperatures[i].full_date) <= date(currDate) %}background:#79F29F;{% else %}background:#FA96AF;{% endif %}{% endif %}">
-                                                <p class="cells" style="color:#111;">{% if ('S' not in weekly_proposed_temperatures[i].date) and (date(weekly_proposed_temperatures[i].full_date) <= date(currDate)) %}{{ partitions[(section)].final_suggestions[i] }}{% endif %}</p>
+                                        {% set j = 0 %}
+                                        {% for date in partitions[(section)].feedback %}
+                                            <td class="cell {% if (i < 7) or (i > 21) or ('S' in weekly_proposed_temperatures[j].date) %}disabled{% elseif date[i].size >= 1 %}tcv-sensation {{ date[i]|sensation_class }}{% endif %}">
+                                                &nbsp;
                                             </td>
+                                            {% set j = j + 1 %}
                                         {% endfor %}
                                     </tr>
-                                    <tr class="row">
-                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
+                                {% endfor %}
+                                <tr class="section_{{ key }}_content" style="display: none;">
+                                    <td class="noBorder subTitle borderRight">
+                                        &nbsp;
+                                    </td>
+                                    <td colspan="7" class="cell rawTitle" style="text-align: center;">
+                                        Suggestion 2: Adaptive Comfort
+                                    </td>
+                                </tr>
+                                <tr class="section_{{ key }}_content borderBottom" style="display: none;">
+                                    <td class="noBorder subTitle borderRight">
+                                        Set-point suggestion (<sup>o</sup>C)
+                                    </td>
+                                    {% for i in 0..6 %}
+                                        <td class="cell {% if 'S' in weekly_proposed_temperatures[i].date %}disabled{% elseif date(weekly_proposed_temperatures[i].full_date) <= date(currDate) %}green{% else %}pink{% endif %}">
+                                            {% if ('S' not in weekly_proposed_temperatures[i].date) and (date(weekly_proposed_temperatures[i].full_date) <= date(currDate)) %}{{ weekly_proposed_temperatures[i].set_point_temperature }}{% endif %}
                                         </td>
-                                        <td class ="second_col" style="background:#D6D2D3;">
-                                            <p style="color:#333; margin-right: 0">Outdoor temperature (<sup>o</sup>C)</p>
-                                        </td>
-                                        {% for i in 0..6 %}
-                                            <td class="next_cols" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}background:#f2f2f2;{% endif %}">
-                                                <p class="cells" style="color:#111;">{% if ('S' not in weekly_proposed_temperatures[i].date) and (date(startDate) <= date(currDate)) %}{{ weekly_proposed_temperatures[i].daily_mean }}{% endif %}</p>
-                                            </td>
-                                        {% endfor %}
-                                    </tr>
-                                    <tr class="row" style="line-height:12px;">
-                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
-                                        </td>
-                                        <td class="second_col special" style="background:#D6D2D3;">
-                                            <p style="color:#333; margin-right: 0">Selected Inference Rule:</p>
-                                        </td>
-                                        {% for i in 0..6 %}
-                                            <td class="next_cols special" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}background:#f2f2f2;{% endif %}">
-                                                <p class="cells" style="color:#111;">{% if ('S' not in weekly_proposed_temperatures[i].date) and (date(startDate) <= date(currDate)) %}{{ partitions[(section)].decision[i] }}{% endif %}</p>
-                                            </td>
-                                        {% endfor %}
-                                    </tr>
-                                </table>
-                                <table class="table_container">
-                                    <tr class="row" style="line-height:8px;">
-                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
-                                        </td>
-                                        <td class="second_col special" style="background:#999; width:83%;">
-                                            <p class="cells" style="color:#111;">Suggestion 1: TCV</p>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <table class="table_container">
-                                    <tr class="row">
-                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
-                                        </td>
-                                        <td class="second_col special" style="background:#D6D2D3;">
-                                            <p style="color:#333; margin-right: 0">Set-point suggestion (<sup>o</sup>C)</p>
-                                        </td>
-                                        {% for i in 0..6 %}
-                                            <td class="next_cols special" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}{% if partitions[(section)].proposed_temperature[i] != 0 %}background:#79F29F;{% else %}background:#FA96AF;{% endif %}{% endif %}">
-                                                <p class="cells" style="color:#111;font-size:80%;">{% if ('S' not in weekly_proposed_temperatures[i].date) and (partitions[(section)].proposed_temperature[i] != 0) %}{{ partitions[(section)].proposed_temperature[i] }}{% endif %}</p>
-                                            </td>
-                                        {% endfor %}
-                                    </tr>
-                                </table>
-                                <table id="more_info_tcv_{{ key }}" class="table_container">
-                                    <tr class="row">
-                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
-                                        </td>
-                                        <td class="full_col special">
-                                            <p style="text-align:left;"><img src="{{ asset('bundles/optimus/img/arrow_down.jpg') }}" class="more_info" data-content="view_more_tcv_{{ key }}" data-hidden="more_info_tcv_{{ key }}" style="cursor:pointer;"/> View more info...</p>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <div id="view_more_tcv_{{ key }}" class="hidden">
-
-                                    <table class="table_container">
-                                        <tr class="row" style="line-height:6px;">
-                                            <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
-                                            </td>
-                                            <td class="full_col special">
-                                                <p class="cells" style="color:#111;"><strong>Feedback from users</strong></p>
-                                                <div class="tcv-feedback-index">
-                                                    <span class="tcv-sensation-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Index:</span>
-                                                    <span class="tcv-sensation tcv-sensation-minus3"></span> <span class="tcv-sensation-label">Cold</span>
-                                                    <span class="tcv-sensation tcv-sensation-minus2"></span> <span class="tcv-sensation-label">Cool</span>
-                                                    <span class="tcv-sensation tcv-sensation-minus1"></span> <span class="tcv-sensation-label">Slightly Cool</span>
-                                                    <span class="tcv-sensation tcv-sensation-minus0"></span> <span class="tcv-sensation-label">Neutral</span>
-                                                    <span class="tcv-sensation tcv-sensation-1"></span> <span class="tcv-sensation-label">Slightly Warm</span>
-                                                    <span class="tcv-sensation tcv-sensation-2"></span> <span class="tcv-sensation-label">Warm</span>
-                                                    <span class="tcv-sensation tcv-sensation-3"></span> <span class="tcv-sensation-label">Hot</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <table class="table_container">
-                                        <tr class="row">
-                                            <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
-                                            </td>
-                                            <td class="second_col" style="background:#2e75b6;">
-                                                <p class="cells" style="color:white;">Date</p>
-                                            </td>
-                                            {% for i in 0..6 %}
-                                                <td class="next_cols" style="background:#2e75b6;">
-                                                    <p class="cells" style="color:white; font-size:70%;">{{ weekly_proposed_temperatures[i].date }}</p>
-                                                </td>
-                                            {% endfor %}
-                                        </tr>
-                                        {% for i in 0..23 %}
-                                            <tr class="row">
-                                                <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
-                                                </td>
-                                                <td class="second_col {% if i == 23 %}special{% endif %}" style="background:#111;">
-                                                    <p class="cells" style="color:white;">{{ i }}:00</p>
-                                                </td>
-                                                {% set j = 0 %}
-                                                {% for date in partitions[(section)].feedback %}
-                                                    {% if (i in 7..21) and ('S' not in weekly_proposed_temperatures[j].date) %}
-                                                        <td class="next_cols {% if i == 23 %}special{% endif %} {% if date[i].size >= 3 %}tcv-sensation {{ date[i]|sensation_class }}" {% else %}" style="background: #f2f2f2;"{% endif %}
-                                                        </td>
-                                                    {% else %}
-                                                        <td class="non_working_cols {% if i == 23 %}special{% endif %}">
-                                                        </td>
-                                                    {% endif %}
-                                                    {% set j = j + 1 %}
-                                                {% endfor %}
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-                                    <table class="table_container">
-                                        <tr class="row" style="line-height:1px;">
-                                            <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
-                                            </td>
-                                            <td class="full_col special">
-                                                <p style="text-align:left;"><img src="{{ asset('bundles/optimus/img/arrow_up.jpg') }}" class="less_info" data-content="more_info_tcv_{{ key }}" data-hidden="view_more_tcv_{{ key }}" style="cursor:pointer;"/> View less info...</p>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <table class="table_container">
-                                    <tr class="row" style="line-height:8px;">
-                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
-                                        </td>
-                                        <td class="second_col special" style="background:#999; width:83%;">
-                                            <p class="cells" style="color:#111;">Suggestion 2: Adaptive Comfort</p>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <table>
-                                    <tr class="row">
-                                        <td class="first_col" style="background:white; border-bottom-style:none; border-top-style:none;">
-                                        </td>
-                                        <td class="second_col special" style="background:#D6D2D3;">
-                                            <p style="color:#333;margin-right: 0">Set-point suggestion (<sup>o</sup>C)</p>
-                                        </td>
-                                        {% for i in 0..6 %}
-                                            <td class="next_cols special" style="margin:0; {% if 'S' in weekly_proposed_temperatures[i].date %}background:#e0e0e0; {% else %}{% if date(weekly_proposed_temperatures[i].full_date) <= date(currDate) %}background:#79F29F;{% else %}background:#FA96AF;{% endif %}{% endif %}">
-                                                <p class="cells" style="color:#111;">{% if ('S' not in weekly_proposed_temperatures[i].date) and (date(weekly_proposed_temperatures[i].full_date) <= date(currDate)) %}{{ weekly_proposed_temperatures[i].set_point_temperature }}{% endif %}</p>
-                                            </td>
-                                        {% endfor %}
-                                    </tr>
-                                </table>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                    <table class="table_container">
-                        <tr style="margin:5px -20px; line-height: 20px;">
-                            <td class="first_col" style="background:#DAEBEB; width:34.2%;">
-                                <p style="color:#111; text-align:right;">Please confirm the action plan:</p>
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        <tr>
+                            <td class="value rawTitle borderRigh" colspan="2">
+                                <strong>{%trans%} Please confirm the action plan {%endtrans%}</strong>
                             </td>
                             {% set curr_date = date(startDate) %}
                             {% for i in 0..6 %}
-                                <td class="next_cols" style="{% if ('S' in weekly_proposed_temperatures[i].date) or (curr_date < date()|date_modify('-1 day')) %}background:#e0e0e0;{% else %}background:white;{% endif %} text-align:left;">
+                                <td class="ActionPlanConfirm{% if ('S' in weekly_proposed_temperatures[i].date) or (curr_date < date()|date_modify('-1 day')) %} disabled{% endif %}">
                                     <form id="form_{{i}}" method="post">
-										<div class="inputsFilters" style=" float:left; margin-right:3px;">
-											<p style="font-size:11px; margin:0;">
-												<input type="radio" name="filter" value="0" {% if(statusDay[i].status==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
+										<div class="inputsFilters">
+											<p>
+												<input type="radio" name="filter" value="0" {% if ('S' in weekly_proposed_temperatures[i].date) or (curr_date < date()|date_modify('-1 day')) %} disabled="disabled" {% endif %} {% if(statusDay[i].status==0) %} checked="checked" {% endif %} >{%trans%} Unknown {%endtrans%}
 											</p>
-											<p style="font-size:11px; margin:0;">
-												<input type="radio" name="filter" value="1" {% if(statusDay[i].status==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
+											<p>
+												<input type="radio" name="filter" value="1" {% if ('S' in weekly_proposed_temperatures[i].date) or (curr_date < date()|date_modify('-1 day')) %} disabled="disabled" {% endif %} {% if(statusDay[i].status==1) %} checked="checked" {% endif %} >{%trans%} Accepted {%endtrans%}
 											</p>
-											<p style="font-size:11px; margin:0;">
-												<input type="radio" name="filter" value="2" {% if(statusDay[i].status==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
+											<p>
+												<input type="radio" name="filter" value="2" {% if ('S' in weekly_proposed_temperatures[i].date) or (curr_date < date()|date_modify('-1 day')) %} disabled="disabled" {% endif %} {% if(statusDay[i].status==2) %} checked="checked" {% endif %} >{%trans%} Declined {%endtrans%}
 											</p>
 											<input type="hidden" value="{{idActionPlan}}" name="idActionPlan" id="idActionPlan" />
 										</div>

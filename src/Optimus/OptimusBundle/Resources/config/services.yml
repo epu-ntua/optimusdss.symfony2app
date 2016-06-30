@@ -41,7 +41,7 @@ services:
 
     service_aptcv:
         class: Optimus\OptimusBundle\Servicios\ServiceAPTCV
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@service_ontologia"]
 
     service_apspmc:
         class: Optimus\OptimusBundle\Servicios\ServiceAPSPMCalculation
