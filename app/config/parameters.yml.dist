@@ -1,18 +1,27 @@
-# This file is a "template" of what your parameters.yml file should look like
-parameters:
-    database_driver:   pdo_mysql
-    database_host:     127.0.0.1
-    database_port:     ~
-    database_name:     symfony
-    database_user:     root
-    database_password: ~
-    # You should uncomment this if you want use pdo_sqlite
-    # database_path: "%kernel.root_dir%/data.db3"
+#Add parameters Mail to file parameters.yml
+parameters:    
+#mailer_transport--> Ex: smtp, gmail, ...
+    mailer_transport: ~
 
-    mailer_transport:  smtp
-    mailer_host:       127.0.0.1
-    mailer_user:       ~
-    mailer_password:   ~
+#mailer_host--> Ex: smtp.office365.com
+    mailer_host: ~ 
+
+#mailer_user --> Ex: info@optimus.org
+    mailer_user: ~
+
+    mailer_password: ~
+
+#mailer_port --> Ex: 587, 485
+    mailer_port: ~
+
+#mailer_encryption --> Ex: tls, ssl,...
+    mailer_encryption: ~
+
+#mailer_from --> Ex: mail@mail.com
+    mailer_from: ~
+
+#mailer_to --> Ex: mail@mail.com,mail2@mail.com,mail3@mail.com
+    mailer_to: ~
 
     locale:            en
 

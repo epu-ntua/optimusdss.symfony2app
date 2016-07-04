@@ -12,8 +12,12 @@ use Optimus\OptimusBundle\Entity\WeeklyReportActionPlan;
 use Optimus\OptimusBundle\Entity\WeeklyReportUsers;
 use Optimus\OptimusBundle\Entity\EvaluationCriteria;
 
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 class WeeklyReportsController extends Controller
-{
+{	
 	public function lastsReportsAction ($idBuilding, $idActionPlan=null)
 	{
 		$em = $this->getDoctrine()->getManager();
@@ -25,103 +29,57 @@ class WeeklyReportsController extends Controller
 	}
 	
 	public function tableReportsAction($idBuilding, $insertDB=false)
-	{
+	{		
 		$data['idBuilding']=$idBuilding;
 		$data['nameBuilding']=$this->get('service_data_capturing')->getNameBuilding($idBuilding);
 		
 		$em = $this->getDoctrine()->getManager();
 		$building=$em->getRepository('OptimusOptimusBundle:Building')->find($idBuilding);
+		
+		//Dates
+		$dateActual=new \DateTime();			
+		$dFromThisWeek = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";
+		$dFromLastWeek=\DateTime::createFromFormat('Y-m-d H:i:s', $dFromThisWeek)->modify("-7 days")->format("Y-m-d")." 00:00:00";
+		$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");
+		//data: e.consumption & e.cost
+		$dataThisWeek=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFromThisWeek, '', $idBuilding);
+			
+		//User actions
+		$userActionsWeek=$em->getRepository('OptimusOptimusBundle:Events')->getUserActionsAPS($idBuilding, $dFromThisWeek, $dTo);		
 						
 		$data['lastReports']=$em->getRepository('OptimusOptimusBundle:WeeklyReport')->findBy(array("fk_Building"=>$idBuilding), array('datetime'=>'DESC'));
 		
-		//check report status 0 pdf : if no exist file --> create
+		foreach($data['lastReports'] as $report)
+		{		
+			if($report->getStatus()==1)			
+			{
+				$report->setEnergyConsumption($dataThisWeek['Energy consumption']);
+				$report->setEnergyCost($dataThisWeek['Energy cost']);
+				$report->setUserActions($userActionsWeek[0][1]);
+				$em->persist($report);
+				$em->flush();
+			}
+		}
+				
+		//$this->get('service_weeklyReport')->createWeeklyReport();
 		
 		return $this->render('OptimusOptimusBundle:Reports:tableLastsReports.html.twig', $data);
 	}
 
 	public function openFormReportAction($idBuilding, $idWeeklyReport)
-	{
-		$em = $this->getDoctrine()->getManager();
+	{		
 		$data['idBuilding']=$idBuilding;
 		$data['nameBuilding']=$this->get('service_data_capturing')->getNameBuilding($idBuilding);
 		
-		//get all weekly report
-		$data['weeklyReport']=$em->getRepository('OptimusOptimusBundle:WeeklyReport')->find($idWeeklyReport);
+		$data['dataForm']=$this->get('service_weeklyReport')->getDataFormWeeklyReport($idBuilding, $idWeeklyReport);	
 		
-		//Usuarios del weekly report
-		$data['usersInWR']=$em->getRepository('OptimusOptimusBundle:WeeklyReportUsers')->findBy(array("fk_weeklyreport"=>$idWeeklyReport));
+		/*$dir=__DIR__."/../../../../web/bundles/optimus/";
+		$data['imgLogo']=realpath($dir)."/img/Logo-Optimus.png";*/
 		
-		//Get EvaluationCriteria
-		$data['evCriteria']=$em->getRepository('OptimusOptimusBundle:EvaluationCriteria')->findBy(array("fk_weeklyreport"=>$idWeeklyReport));
-		
-		//Dates
-		
-		$monday=$data['weeklyReport']->getMonday();
-		//dump($monday);
-		$startDate=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Monday this week")->format("Y-m-d");
-		$endDate=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Saturday this week")->format("Y-m-d");
-		$data['sundayDate']=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Sunday this week")->format("Y-m-d");
-		$data['startDate']=$startDate;
-		
-		//actionsPlans
-		$data['allActionsPlans']=$em->getRepository('OptimusOptimusBundle:ActionPlans')->findBy(array("fk_Building"=>$idBuilding, "status"=>1));
-		if($data['allActionsPlans'])
-		{	
-			$data['weeklyReportActionPlan']=array();
-			$data['statusWeekActionPlan']=array();		
-			foreach($data['allActionsPlans'] as $actionPlan)
-			{
-				//Get fk_calculation según dates
-				switch ($actionPlan->getType())
-				{
-					case 1:
-						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->get('service_apo_presenter')->getStatusWeek($actionPlan->getId(), $startDate, $endDate);					
-					break;
-					
-					case 2:
-						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->get('service_apspm_presenter')->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
-					break;
-					
-					case 3:						
-					break;
-					
-					case 4:
-						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->get('service_apph_presenter')->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
-					break;
-					
-					case 5:
-						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->get('service_appvm_presenter')->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
-					break;
-					
-					case 6:
-						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->get('service_appv_presenter')->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
-					break;
-					
-					case 7:
-						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->get('service_apsource_presenter')->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
-					break;case 8:
-						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->get('service_apeconomizer_presenter')->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
-					break;
-				}
-				//getData weeklyReportActionsPlans
-				$data['weeklyReportActionPlan'][$actionPlan->getId()]=$em->getRepository('OptimusOptimusBundle:WeeklyReportActionPlan')->findBy(array("fk_weeklyreport"=>$idWeeklyReport, "fk_actionplan"=>$actionPlan->getId()));
-			}		
-		}else{
-			$data['weeklyReportActionPlan']='';
-			$data['statusWeekActionPlan']='';
-		}	
-		
-		// Test de PDF
-		/*$this->get('knp_snappy.pdf')->generateFromHtml(
-			$this->renderView(
-				'OptimusOptimusBundle:Reports:basicForm.html.twig',	$data),
-			'C:\xampp\htdocs\optimus\web\bundles\optimus\pdf\testPDF_1.pdf');*/
-		
-		//View
-		//dump($data);
 		return $this->render('OptimusOptimusBundle:Reports:basicForm.html.twig', $data);
+		//return $this->render('OptimusOptimusBundle:Reports:viewPDF.html.twig', $data);
 	}
-	
+		
 	public function saveDataFormReportAction($idBuilding, $idWeeklyReport, Request $request)
 	{
 		$em = $this->getDoctrine()->getManager();
@@ -192,6 +150,9 @@ class WeeklyReportsController extends Controller
 				
 		return $this->redirect($this->generateUrl('tableReports', array('idBuilding'=>$idBuilding, 'insertDB'=>true)));
 	}
+
+	
+
 }
 
 ?>

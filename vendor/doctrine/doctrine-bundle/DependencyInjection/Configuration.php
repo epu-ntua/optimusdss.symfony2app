@@ -132,6 +132,7 @@ class Configuration implements ConfigurationInterface
             ->fixXmlConfig('mapping_type')
             ->fixXmlConfig('slave')
             ->fixXmlConfig('shard')
+            ->fixXmlConfig('default_table_option')
             ->children()
                 ->scalarNode('driver')->defaultValue('pdo_mysql')->end()
                 ->scalarNode('platform_service')->end()
@@ -150,6 +151,11 @@ class Configuration implements ConfigurationInterface
                     ->prototype('scalar')->end()
                 ->end()
                 ->arrayNode('mapping_types')
+                    ->useAttributeAsKey('name')
+                    ->prototype('scalar')->end()
+                ->end()
+                ->arrayNode('default_table_options')
+                    ->info("This option is used by the schema-tool and affects generated SQL. Possible keys include 'charset','collate', and 'engine'.")
                     ->useAttributeAsKey('name')
                     ->prototype('scalar')->end()
                 ->end()
@@ -191,11 +197,13 @@ class Configuration implements ConfigurationInterface
     {
         $node
             ->children()
+                ->scalarNode('url')->info('A URL with connection information; any parameter value parsed from this string will override explicitly set parameters')->end()
                 ->scalarNode('dbname')->end()
                 ->scalarNode('host')->defaultValue('localhost')->end()
                 ->scalarNode('port')->defaultNull()->end()
                 ->scalarNode('user')->defaultValue('root')->end()
                 ->scalarNode('password')->defaultNull()->end()
+                ->scalarNode('application_name')->end()
                 ->scalarNode('charset')->end()
                 ->scalarNode('path')->end()
                 ->booleanNode('memory')->end()
@@ -223,8 +231,30 @@ class Configuration implements ConfigurationInterface
                         'the server for PostgreSQL.'
                     )
                 ->end()
+                ->scalarNode('sslrootcert')
+                    ->info(
+                        'The name of a file containing SSL certificate authority (CA) certificate(s). '.
+                        'If the file exists, the server\'s certificate will be verified to be signed by one of these authorities.'
+                    )
+                ->end()
                 ->booleanNode('pooled')->info('True to use a pooled server with the oci8/pdo_oracle driver')->end()
                 ->booleanNode('MultipleActiveResultSets')->info('Configuring MultipleActiveResultSets for the pdo_sqlsrv driver')->end()
+                ->booleanNode('use_savepoints')->info('Use savepoints for nested transactions')->end()
+                ->scalarNode('instancename')
+                ->info(
+                    'Optional parameter, complete whether to add the INSTANCE_NAME parameter in the connection.'.
+                    ' It is generally used to connect to an Oracle RAC server to select the name'.
+                    ' of a particular instance.'
+                )
+                ->end()
+                ->scalarNode('connectstring')
+                ->info(
+                    'Complete Easy Connect connection descriptor, see https://docs.oracle.com/database/121/NETAG/naming.htm.'.
+                    'When using this option, you will still need to provide the user and password parameters, but the other '.
+                    'parameters will no longer be used. Note that when using this parameter, the getHost and getPort methods'.
+                    ' from Doctrine\DBAL\Connection will no longer function as expected.'
+                )
+                ->end()
             ->end()
             ->beforeNormalization()
                 ->ifTrue(function ($v) {return !isset($v['sessionMode']) && isset($v['session_mode']);})
@@ -453,6 +483,7 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('default_repository_class')->defaultValue('Doctrine\ORM\EntityRepository')->end()
                     ->scalarNode('auto_mapping')->defaultFalse()->end()
                     ->scalarNode('naming_strategy')->defaultValue('doctrine.orm.naming_strategy.default')->end()
+                    ->scalarNode('quote_strategy')->defaultValue('doctrine.orm.quote_strategy.default')->end()
                     ->scalarNode('entity_listener_resolver')->defaultNull()->end()
                     ->scalarNode('repository_factory')->defaultNull()->end()
                 ->end()

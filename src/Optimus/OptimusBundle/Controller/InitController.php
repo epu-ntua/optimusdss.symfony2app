@@ -122,14 +122,14 @@ class InitController extends Controller
 		{
 			foreach($buildings as $building)
 			{
-				$dataThisWeek=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFromThisWeek, $building->getId());
+				$dataThisWeek=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFromThisWeek,'', $building->getId());
 				
 				$energyCostTW+=$dataThisWeek['Energy cost'];
 				$co2TW+=$dataThisWeek['CO2'];
 				$energyConsumptionTW+=$dataThisWeek['Energy consumption'];
 				$pREnergyTW+=$dataThisWeek['Produced renewable energy'];
 				
-				$dataLastWeek=$this->get('service_sensorsRTime')->getRTTime($dFromThisWeek, $dFromLastWeek, $building->getId());
+				$dataLastWeek=$this->get('service_sensorsRTime')->getRTTime($dFromThisWeek, $dFromLastWeek,'', $building->getId());
 				
 				$energyCostLW+=$dataLastWeek['Energy cost'];
 				$co2LW+=$dataLastWeek['CO2'];

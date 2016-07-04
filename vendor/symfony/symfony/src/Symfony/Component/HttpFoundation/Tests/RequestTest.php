@@ -223,6 +223,21 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $request = Request::create('http://test.com/?foo');
         $this->assertEquals('/?foo', $request->getRequestUri());
         $this->assertEquals(array('foo' => ''), $request->query->all());
+
+        ## assume rewrite rule: (.*) --> app/app.php ; app/ is a symlink to a symfony web/ directory
+        $request = Request::create('http://test.com/apparthotel-1234', 'GET', array(), array(), array(),
+            array(
+                'DOCUMENT_ROOT' => '/var/www/www.test.com',
+                'SCRIPT_FILENAME' => '/var/www/www.test.com/app/app.php',
+                'SCRIPT_NAME' => '/app/app.php',
+                'PHP_SELF' => '/app/app.php/apparthotel-1234',
+            ));
+        $this->assertEquals('http://test.com/apparthotel-1234', $request->getUri());
+        $this->assertEquals('/apparthotel-1234', $request->getPathInfo());
+        $this->assertEquals('', $request->getQueryString());
+        $this->assertEquals(80, $request->getPort());
+        $this->assertEquals('test.com', $request->getHttpHost());
+        $this->assertFalse($request->isSecure());
     }
 
     /**
@@ -708,35 +723,37 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             'HTTP_X_FORWARDED_PROTO' => 'https',
             'HTTP_X_FORWARDED_PORT' => '8443',
         ));
-        $port = $request->getPort();
-
-        $this->assertEquals(8443, $port, 'With PROTO and PORT set PORT takes precedence.');
+        $this->assertEquals(80, $request->getPort(), 'With PROTO and PORT on untrusted connection server value takes precedence.');
+        $request->server->set('REMOTE_ADDR', '1.1.1.1');
+        $this->assertEquals(8443, $request->getPort(), 'With PROTO and PORT set PORT takes precedence.');
 
         $request = Request::create('http://example.com', 'GET', array(), array(), array(), array(
             'HTTP_X_FORWARDED_PROTO' => 'https',
         ));
-        $port = $request->getPort();
-
-        $this->assertEquals(443, $port, 'With only PROTO set getPort() defaults to 443.');
+        $this->assertEquals(80, $request->getPort(), 'With only PROTO set getPort() ignores trusted headers on untrusted connection.');
+        $request->server->set('REMOTE_ADDR', '1.1.1.1');
+        $this->assertEquals(443, $request->getPort(), 'With only PROTO set getPort() defaults to 443.');
 
         $request = Request::create('http://example.com', 'GET', array(), array(), array(), array(
             'HTTP_X_FORWARDED_PROTO' => 'http',
         ));
-        $port = $request->getPort();
-
-        $this->assertEquals(80, $port, 'If X_FORWARDED_PROTO is set to HTTP return 80.');
+        $this->assertEquals(80, $request->getPort(), 'If X_FORWARDED_PROTO is set to HTTP getPort() ignores trusted headers on untrusted connection.');
+        $request->server->set('REMOTE_ADDR', '1.1.1.1');
+        $this->assertEquals(80, $request->getPort(), 'If X_FORWARDED_PROTO is set to HTTP getPort() returns port of the original request.');
 
         $request = Request::create('http://example.com', 'GET', array(), array(), array(), array(
             'HTTP_X_FORWARDED_PROTO' => 'On',
         ));
-        $port = $request->getPort();
-        $this->assertEquals(443, $port, 'With only PROTO set and value is On, getPort() defaults to 443.');
+        $this->assertEquals(80, $request->getPort(), 'With only PROTO set and value is On, getPort() ignores trusted headers on untrusted connection.');
+        $request->server->set('REMOTE_ADDR', '1.1.1.1');
+        $this->assertEquals(443, $request->getPort(), 'With only PROTO set and value is On, getPort() defaults to 443.');
 
         $request = Request::create('http://example.com', 'GET', array(), array(), array(), array(
             'HTTP_X_FORWARDED_PROTO' => '1',
         ));
-        $port = $request->getPort();
-        $this->assertEquals(443, $port, 'With only PROTO set and value is 1, getPort() defaults to 443.');
+        $this->assertEquals(80, $request->getPort(), 'With only PROTO set and value is 1, getPort() ignores trusted headers on untrusted connection.');
+        $request->server->set('REMOTE_ADDR', '1.1.1.1');
+        $this->assertEquals(443, $request->getPort(), 'With only PROTO set and value is 1, getPort() defaults to 443.');
 
         $request = Request::create('http://example.com', 'GET', array(), array(), array(), array(
             'HTTP_X_FORWARDED_PROTO' => 'something-else',
@@ -903,8 +920,28 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $req = new Request();
         $retval = $req->getContent(true);
         $this->assertInternalType('resource', $retval);
-        $this->assertEquals("", fread($retval, 1));
+        $this->assertEquals('', fread($retval, 1));
         $this->assertTrue(feof($retval));
+    }
+
+    public function testGetContentReturnsResourceWhenContentSetInConstructor()
+    {
+        $req = new Request(array(), array(), array(), array(), array(), array(), 'MyContent');
+        $resource = $req->getContent(true);
+
+        $this->assertTrue(is_resource($resource));
+        $this->assertEquals('MyContent', stream_get_contents($resource));
+    }
+
+    public function testContentAsResource()
+    {
+        $resource = fopen('php://memory','r+');
+        fwrite($resource, 'My other content');
+        rewind($resource);
+
+        $req = new Request(array(), array(), array(), array(), array(), array(), $resource);
+        $this->assertEquals('My other content', stream_get_contents($req->getContent(true)));
+        $this->assertEquals('My other content', $req->getContent());
     }
 
     /**
@@ -913,9 +950,37 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetContentCantBeCalledTwiceWithResources($first, $second)
     {
+        if (PHP_VERSION_ID >= 50600) {
+            $this->markTestSkipped('PHP >= 5.6 allows to open php://input several times.');
+        }
+
         $req = new Request();
         $req->getContent($first);
         $req->getContent($second);
+    }
+
+    /**
+     * @dataProvider getContentCantBeCalledTwiceWithResourcesProvider
+     */
+    public function testGetContentCanBeCalledTwiceWithResources($first, $second)
+    {
+        if (PHP_VERSION_ID < 50600) {
+            $this->markTestSkipped('PHP < 5.6 does not allow to open php://input several times.');
+        }
+
+        $req = new Request();
+        $a = $req->getContent($first);
+        $b = $req->getContent($second);
+
+        if ($first) {
+            $a = stream_get_contents($a);
+        }
+
+        if ($second) {
+            $b = stream_get_contents($b);
+        }
+
+        $this->assertEquals($a, $b);
     }
 
     public function getContentCantBeCalledTwiceWithResourcesProvider()
@@ -923,7 +988,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         return array(
             'Resource then fetch' => array(true, false),
             'Resource then resource' => array(true, true),
-            'Fetch then resource' => array(false, true),
         );
     }
 
@@ -1006,6 +1070,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $request->headers->set('X_FORWARDED_PROTO', 'https');
 
         Request::setTrustedProxies(array('1.1.1.1'));
+        $this->assertFalse($request->isSecure());
+        $request->server->set('REMOTE_ADDR', '1.1.1.1');
         $this->assertTrue($request->isSecure());
         Request::setTrustedProxies(array());
 
@@ -1327,7 +1393,27 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array(
-                '/foo%20bar',
+                '/fruit/strawberry/1234index.php/blah',
+                array(
+                    'SCRIPT_FILENAME' => 'E:/Sites/cc-new/public_html/fruit/index.php',
+                    'SCRIPT_NAME' => '/fruit/index.php',
+                    'PHP_SELF' => '/fruit/index.php',
+                ),
+                '/fruit',
+                '/strawberry/1234index.php/blah',
+            ),
+            array(
+                '/fruit/strawberry/1234index.php/blah',
+                array(
+                    'SCRIPT_FILENAME' => 'E:/Sites/cc-new/public_html/index.php',
+                    'SCRIPT_NAME' => '/index.php',
+                    'PHP_SELF' => '/index.php',
+                ),
+                '',
+                '/fruit/strawberry/1234index.php/blah',
+            ),
+            array(
+                '/foo%20bar/',
                 array(
                     'SCRIPT_FILENAME' => '/home/John Doe/public_html/foo bar/app.php',
                     'SCRIPT_NAME' => '/foo bar/app.php',
@@ -1465,7 +1551,15 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(443, $request->getPort());
         $this->assertTrue($request->isSecure());
 
+        // trusted proxy via setTrustedProxies()
+        Request::setTrustedProxies(array('3.3.3.4', '2.2.2.2'));
+        $this->assertEquals('3.3.3.3', $request->getClientIp());
+        $this->assertEquals('example.com', $request->getHost());
+        $this->assertEquals(80, $request->getPort());
+        $this->assertFalse($request->isSecure());
+
         // check various X_FORWARDED_PROTO header values
+        Request::setTrustedProxies(array('3.3.3.3', '2.2.2.2'));
         $request->headers->set('X_FORWARDED_PROTO', 'ssl');
         $this->assertTrue($request->isSecure());
 
@@ -1617,7 +1711,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('evil.com', $request->getHost());
 
         // add a trusted domain and all its subdomains
-        Request::setTrustedHosts(array('.*\.?trusted.com$'));
+        Request::setTrustedHosts(array('^([a-z]{9}\.)?trusted\.com$'));
 
         // untrusted host
         $request->headers->set('host', 'evil.com');

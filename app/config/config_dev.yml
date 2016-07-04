@@ -45,4 +45,16 @@ assetic:
     use_controller: true
 
 #swiftmailer:
-#    delivery_address: me@example.com
+#    delivery_address: ottaviafg@gmail.com
+
+#KnpSnappyBundle Configuration -- generate either pdf or image files from your html documents
+#"\"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe\""
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     /usr/local/bin/wkhtmltopdf 
+        options:    []
+    image:
+        enabled:    true
+        binary:     /usr/local/bin/wkhtmltoimage
+        options:    []

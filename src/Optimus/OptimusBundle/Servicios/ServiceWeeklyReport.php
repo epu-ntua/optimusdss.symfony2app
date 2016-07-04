@@ -8,13 +8,61 @@ use Optimus\OptimusBundle\Entity\WeeklyReportActionPlan;
 use Optimus\OptimusBundle\Entity\WeeklyReportUsers;
 use Optimus\OptimusBundle\Entity\EvaluationCriteria;
 
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
+use Knp\Bundle\SnappyBundle\Snappy\LoggableGenerator;
+use Symfony\Component\Templating\EngineInterface;
+
 class ServiceWeeklyReport {
 	 
     protected $em;	
+    protected $apo;	
+    protected $apspm;	
+    protected $aph;	
+    protected $appvm;	
+    protected $appv;	
+    protected $apsource;	
+    protected $apeconomizer;
 	
-    public function __construct(EntityManager $em)
+	private $templating;
+	private $knpSnappyPdf;
+	private $mailer;
+	
+	protected $mailer_from;
+	protected $mailer_to;
+	
+	private $dir= __DIR__."/../../../../web/bundles/optimus/";
+	
+    public function __construct(EntityManager $em,
+								ServiceAPOPresenter $apo,
+								ServiceAPSPMPresenter $apspm,
+								ServiceAPPHPresenter $aph,
+								ServiceAPPVMPresenter $appvm,
+								ServiceAPPVPresenter $appv,
+								ServiceAPEnergySourcePresenter $apsource,
+								ServiceAPEconomizerPresenter $apeconomizer,
+								EngineInterface $templating,
+								LoggableGenerator $knpSnappyPdf,
+								\Swift_Mailer $mailer,
+								$mailer_from,
+								$mailer_to
+								)
     {
 		$this->em=$em;		
+		$this->apo=$apo;		
+		$this->apspm=$apspm;		
+		$this->aph=$aph;		
+		$this->appvm=$appvm;		
+		$this->appv=$appv;		
+		$this->apsource=$apsource;		
+		$this->apeconomizer=$apeconomizer;
+		$this->templating   = $templating;
+		$this->knpSnappyPdf = $knpSnappyPdf;
+		$this->mailer = $mailer;
+		$this->mailer_from = $mailer_from;
+		$this->mailer_to = $mailer_to;
     }
 	
 	public function createWeeklyReport()
@@ -22,7 +70,9 @@ class ServiceWeeklyReport {
 		$buildings=$this->em->getRepository('OptimusOptimusBundle:Building')->findAll();
 		
 		foreach($buildings as $building)
-		{	
+		{
+			echo " -- Building: ".$building->getName()." -- \n";
+			
 			$dateActual=new \DateTime();			
 			$monday =\DateTime::createFromFormat('Y-m-d', $dateActual->format("Y-m-d"))->modify("Monday next week");
 			
@@ -35,10 +85,13 @@ class ServiceWeeklyReport {
 			$lastWeeklyReportBuilding=$this->em->getRepository('OptimusOptimusBundle:WeeklyReport')->findBy(array("fk_Building"=>$building->getId()), array("datetime"=>'DESC'));
 			if(isset($lastWeeklyReportBuilding[0])) 
 			{
-				echo "set status last weekly report";
+				echo "set status 0 last weekly report \n";
 				$lastWeeklyReportBuilding[0]->setStatus(0);//$status
 				$this->em->persist($lastWeeklyReportBuilding[0]);
 				$this->em->flush();
+				
+				//create PDF
+				$this->getPDFWRAction($building, $lastWeeklyReportBuilding[0]->getId());
 			}
 		
 			//Insert a new weekly report
@@ -58,7 +111,7 @@ class ServiceWeeklyReport {
 			$this->em->persist($weeklyReport);
 			$this->em->flush();	
 			
-			echo "new WeeklyReport";
+			echo "new WeeklyReport \n";
 		
 			//Insert weekly report - action plan
 			$allActionPlans=$this->em->getRepository('OptimusOptimusBundle:ActionPlans')->findBy(array("fk_Building"=>$building->getId(), "status"=>1));
@@ -75,7 +128,7 @@ class ServiceWeeklyReport {
 				$this->em->persist($weeklyReportAP);
 				$this->em->flush();	
 				
-				echo "new WeeklyReportActionPlan".$actionPlan->getId();
+				echo "new WeeklyReportActionPlan".$actionPlan->getId()." \n";
 			}
 			
 			//insert a new weekly report - evaluation criteria
@@ -99,7 +152,118 @@ class ServiceWeeklyReport {
 			$this->em->persist($evCriteria);
 			$this->em->flush();	
 			
-			echo "new EvaluationCriteria";
+			echo "new EvaluationCriteria \n";
+		}
+	}
+
+	public function getDataFormWeeklyReport($idBuilding, $idWeeklyReport)
+	{		
+		//get all weekly report
+		$data['weeklyReport']=$this->em->getRepository('OptimusOptimusBundle:WeeklyReport')->find($idWeeklyReport);
+		
+		//Usuarios del weekly report
+		$data['usersInWR']=$this->em->getRepository('OptimusOptimusBundle:WeeklyReportUsers')->findBy(array("fk_weeklyreport"=>$idWeeklyReport));
+		
+		//Get EvaluationCriteria
+		$data['evCriteria']=$this->em->getRepository('OptimusOptimusBundle:EvaluationCriteria')->findBy(array("fk_weeklyreport"=>$idWeeklyReport));
+		
+		//Dates		
+		$monday=$data['weeklyReport']->getMonday();		
+		$startDate=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Monday this week")->format("Y-m-d");
+		$endDate=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Saturday this week")->format("Y-m-d");
+		$data['sundayDate']=\DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("Sunday this week")->format("Y-m-d");
+		$data['startDate']=$startDate;
+		
+		//actionsPlans
+		$data['allActionsPlans']=$this->em->getRepository('OptimusOptimusBundle:ActionPlans')->findBy(array("fk_Building"=>$idBuilding, "status"=>1));
+		if($data['allActionsPlans'])
+		{	
+			$data['weeklyReportActionPlan']=array();
+			$data['statusWeekActionPlan']=array();		
+			foreach($data['allActionsPlans'] as $actionPlan)
+			{
+				//Get fk_calculation según dates
+				switch ($actionPlan->getType())
+				{
+					case 1:
+						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->apo->getStatusWeek($actionPlan->getId(), $startDate, $endDate);					
+					break;
+					
+					case 2:
+						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->apspm->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
+					break;
+					
+					case 3:						
+					break;
+					
+					case 4:
+						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->aph->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
+					break;
+					
+					case 5:
+						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->appvm->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
+					break;
+					
+					case 6:
+						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->appv->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
+					break;
+					
+					case 7:
+						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->apsource->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
+					break;case 8:
+						$data['statusWeekActionPlan'][$actionPlan->getId()]=$this->apeconomizer->getStatusWeek($actionPlan->getId(), $startDate, $endDate);
+					break;
+				}
+				//getData weeklyReportActionsPlans
+				$data['weeklyReportActionPlan'][$actionPlan->getId()]=$this->em->getRepository('OptimusOptimusBundle:WeeklyReportActionPlan')->findBy(array("fk_weeklyreport"=>$idWeeklyReport, "fk_actionplan"=>$actionPlan->getId()));
+			}		
+		}else{
+			$data['weeklyReportActionPlan']='';
+			$data['statusWeekActionPlan']='';
+		}
+		
+		return $data;
+	}
+
+	public function getPDFWRAction($building, $idWeeklyReport)
+	{		
+		$weeklyReport=$this->em->getRepository('OptimusOptimusBundle:WeeklyReport')->find($idWeeklyReport);
+		if($weeklyReport)
+		{			
+			if($weeklyReport->getStatus()==0)
+			{
+				//check if exist pdf
+				$fs = new Filesystem();
+				
+				$nameFile=realpath($this->dir)."/pdf/report_".$idWeeklyReport.".pdf";
+				if($fs->exists($nameFile)==false)	
+				{
+					//Create PDF					
+					$data['idBuilding']=$building->getId();
+					$data['nameBuilding']=$building->getName();
+					$data['dataForm']=$this->getDataFormWeeklyReport($building->getId(), $idWeeklyReport);	
+					$data['imgLogo']=realpath($this->dir)."/img/Logo-Optimus.png";
+					
+					$this->knpSnappyPdf->generateFromHtml(
+						$this->templating->render(
+							'OptimusOptimusBundle:Reports:viewPDF.html.twig',	$data),
+						$nameFile);
+					
+					$toEmails=explode(",", $this->mailer_to);
+					
+					//Send mail with pdf create
+					$message = \Swift_Message::newInstance()
+						->setSubject('OPTIMUSDSS - Weekly Report')
+						->setFrom($this->mailer_from)
+						->setCc($toEmails)
+						->setContentType("text/html")
+						->setBody("Mail with pdf")
+						->attach(\Swift_Attachment::fromPath($nameFile));
+						
+					$this->mailer->send($message);
+										
+				}
+			}
 		}
 	}
 }

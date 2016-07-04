@@ -325,7 +325,7 @@ class ServiceAPTCV {
                     $idCalculation = $calculation->getId();
                     $output = $this->em->getRepository('OptimusOptimusBundle:APTCVOutput')->findOutputByDate($date_obj->format('Y-m-d H:i:s'), $idCalculation, $value);
 
-                    if (!$output) {
+                    if ((!$output) && ($proposed_temperature != 0.0)) {
                         $output = new APTCVOutput();
                         $output->setDate($date_obj);
                         $output->setSection($value);
@@ -417,9 +417,19 @@ class ServiceAPTCV {
 
 		$array_ret = $this->ontologia->getDataFromSensorList($start, $end, 168, $idSensor);
 		
+		
 		for($i=0; $i<7; $i++){
+			$allzeroTemp = true;
 			for($j=0; $j<24; $j++){
 				$actual_temperature[$prev_dates[$i]][$j] = (string)$array_ret[$i*24 + $j][0];
+				if($actual_temperature[$prev_dates[$i]][$j] != "0"){
+					$allzeroTemp = false;
+				}
+			}
+			if($allzeroTemp == true){
+				for($j=0; $j<24; $j++){
+					$actual_temperature[$prev_dates[$i]][$j] = null;
+				}
 			}
 		}
 		
@@ -428,12 +438,21 @@ class ServiceAPTCV {
 
 		$array_ret = $this->ontologia->getDataFromSensorList($start, $end, 168, $idSensor);
 		
+		
 		for($i=0; $i<7; $i++){
+			$allzeroHum= true;
 			for($j=0; $j<24; $j++){
 				$actual_humidity[$prev_dates[$i]][$j] = (string)$array_ret[$i*24 + $j][0];
+				if($actual_humidity[$prev_dates[$i]][$j] != "0"){
+					$allzeroHum = false;
+				}
+			}
+			if($allzeroHum == true){
+				for($j=0; $j<24; $j++){
+					$actual_humidity[$prev_dates[$i]][$j] = null;
+				}
 			}
 		}
-			
 		
 
         //calculate average humidity
@@ -465,7 +484,8 @@ class ServiceAPTCV {
         $query = "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX optimus: <http://www.optimus-smartcity.eu/ontology/>\nPREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>\nSELECT ?r ?time ?r_building_type ?v\nWHERE {?r a optimus:tcv_record.\n FILTER ((regex(str(?r), '$name_key', 'i')))\n?r optimus:building_type ?r_building_type.\n?r optimus:thermal_sensation ?v.\n?r sem:hasTimeStamp ?time. $feedback_filter\n}";
         $tcv_records_curr = $this->execute_sparql_query($query);
 		
-        $this->saveData($actual_temperature, $actual_humidity, $average_humidity, $tcv_records_prev, $tcv_records_curr, $prev_dates, $curr_dates, $sections, $pmv_calc, $idBuilding, $calculation);
-    }
+		
+		$this->saveData($actual_temperature, $actual_humidity, $average_humidity, $tcv_records_prev, $tcv_records_curr, $prev_dates, $curr_dates, $sections, $pmv_calc, $idBuilding, $calculation);
+	}
 }
 ?>

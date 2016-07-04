@@ -219,7 +219,7 @@ class ServiceBuildingSensorsRTime
 	
 	
 	
-	public function getRTTime($to, $from, $idBuilding)
+	public function getRTTime($to, $from, $dateActual='', $idBuilding)
 	{
 		$data = array();
 		$data[self::$sensor_energyCost_name] = 0;
@@ -251,7 +251,7 @@ class ServiceBuildingSensorsRTime
 		if($sensorMapping) {
 			$sensor = $this->em->getRepository('OptimusOptimusBundle:Sensor')->findById($sensorMapping[0]->getFkSensor());	
 			
-			$dataConsumption  = $this->datacapturing->getDataVariables($sensor, $to, $from, '', 'variable', $idBuilding);
+			$dataConsumption  = $this->datacapturing->getDataVariables($sensor, $to, $from, $dateActual, 'variable', $idBuilding);			
 		}
 		
 		////////////////////////////
@@ -267,7 +267,8 @@ class ServiceBuildingSensorsRTime
 			
 			$sensor = $this->em->getRepository('OptimusOptimusBundle:Sensor')->findById($sensorMapping[0]->getFkSensor());	
 			
-			$dataCost  = $this->datacapturing->getDataVariables($sensor, $to, $from, '', 'variable', $idBuilding);
+			$dataCost  = $this->datacapturing->getDataVariables($sensor, $to, $from, $dateActual, 'variable', $idBuilding);
+			
 		}			
 		
 		////////////////////////////
@@ -279,7 +280,7 @@ class ServiceBuildingSensorsRTime
 
 			$sensor = $this->em->getRepository('OptimusOptimusBundle:Sensor')->findById($sensorMapping[0]->getFkSensor());	
 			
-			$dataProduction  = $this->datacapturing->getDataVariables($sensor, $to, $from, '', 'variable', $idBuilding);
+			$dataProduction  = $this->datacapturing->getDataVariables($sensor, $to, $from, $dateActual, 'variable', $idBuilding);
 		}
 			
 			
