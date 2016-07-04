@@ -6,6 +6,12 @@
     "autoload": {
         "psr-0": { "": "src/", "SymfonyStandard": "app/" }
     },
+    "repositories": [
+    {
+        "url": "https://github.com/msalgador/arc2-sparql11.git",
+        "type": "git"
+    }
+    ],
     "require": {
         "php": ">=5.3.3",
         "symfony/symfony": "2.6.x-dev",
@@ -18,9 +24,9 @@
         "sensio/distribution-bundle": "~3.0",
         "sensio/framework-extra-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "~2.0",
-		"h4cc/wkhtmltopdf-amd64": "0.12.x",
-		"h4cc/wkhtmltoimage-amd64": "0.12.x",
-		"knplabs/knp-snappy-bundle": "dev-master"
+		"knplabs/knp-snappy-bundle": "dev-master",
+        "semsol/arc2": "dev-master",
+        "wemersonjanuario/wkhtmltopdf-windows": "*"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
@@ -53,9 +59,6 @@
         "symfony-app-dir": "app",
         "symfony-web-dir": "web",
         "symfony-assets-install": "relative",
-        "incenteev-parameters": {
-            "file": "app/config/parameters.yml"
-        },
         "branch-alias": {
             "dev-master": "2.6-dev"
         }
