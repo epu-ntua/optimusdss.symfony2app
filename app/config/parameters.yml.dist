@@ -20,7 +20,7 @@ parameters:
 #mailer_from --> Ex: mail@mail.com
     mailer_from: ~
 
-#mailer_to --> Ex: mail@mail.com
+#mailer_to --> Ex: mail@mail.com,mail2@mail.com,mail3@mail.com
     mailer_to: ~
 
     locale:            en

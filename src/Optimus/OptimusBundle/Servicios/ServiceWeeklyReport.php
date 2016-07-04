@@ -249,16 +249,18 @@ class ServiceWeeklyReport {
 							'OptimusOptimusBundle:Reports:viewPDF.html.twig',	$data),
 						$nameFile);
 					
+					$toEmails=explode(",", $this->mailer_to);
+					
 					//Send mail with pdf create
-					/*$message = \Swift_Message::newInstance()
+					$message = \Swift_Message::newInstance()
 						->setSubject('OPTIMUSDSS - Weekly Report')
 						->setFrom($this->mailer_from)
-						->setCc($this->mailer_to)
+						->setCc($toEmails)
 						->setContentType("text/html")
 						->setBody("Mail with pdf")
 						->attach(\Swift_Attachment::fromPath($nameFile));
 						
-					$this->mailer->send($message);*/
+					$this->mailer->send($message);
 										
 				}
 			}

@@ -61,7 +61,7 @@ class ServiceTracker {
 		dump($initDay);
 		dump($lastDay);
 		dump($numDays);
-		dump('--------------');
+		dump('---- Get data RTime ----');
 		
 		//////
 		//3.
@@ -75,7 +75,7 @@ class ServiceTracker {
 			foreach($buildings as $building)
 			{
 				$dataRTime=$this->rtime->getRTTime($actualDay, $initDay, $lastDay, $building->getId());
-				dump($dataRTime);
+				//dump($dataRTime);
 				
 				$energyCost+=$dataRTime['Energy cost'];
 				$co2+=$dataRTime['CO2'];
@@ -88,10 +88,10 @@ class ServiceTracker {
 			/////
 			
 			
-			if($energyCost!=0) 				$energyCost=$energyCost/count($buildings);			
+			/*if($energyCost!=0) 				$energyCost=$energyCost/count($buildings);			
 			if($co2!=0) 					$co2=$co2/count($buildings);
 			if($energyConsumption!=0)		$energyConsumption=$energyConsumption/count($buildings);
-			if($pREnergy!=0)				$pREnergy=$pREnergy/count($buildings);
+			if($pREnergy!=0)				$pREnergy=$pREnergy/count($buildings);*/
 			
 			dump("---- Media total ---");
 			dump($energyCost);
