@@ -165,7 +165,7 @@ class ServiceBuildingSensorsRTime
 				
 				//Data production correction and Max/Min
 				if(count($dataProduction) > 0) {
-					$dataProduction[0]["values"][$i]["value"] /= 1000;	//From Wh to kWh
+					//$dataProduction[0]["values"][$i]["value"] /= 1000;	//From Wh to kWh
 					if($maxValueProd < $dataProduction[0]["values"][$i]["value"]) 	$maxValueProd = $dataProduction[0]["values"][$i]["value"];
 					if($minValueProd > $dataProduction[0]["values"][$i]["value"]) 	$minValueProd = $dataProduction[0]["values"][$i]["value"];
 				}
@@ -175,32 +175,51 @@ class ServiceBuildingSensorsRTime
 					$dataCo2[0]["values"][$i]["value"] -= $dataProduction[0]["values"][$i]["value"];
 					
 				$dataCo2[0]["values"][$i]["value"] *= $this->CO2emissionsCoefficient;
+				if($dataCo2[0]["values"][$i]["value"] < 0) {
+					$dataCo2[0]["values"][$i]["value"] = 0;
+				}
 				
 				if($maxValueCo2 < $dataCo2[0]["values"][$i]["value"]) 	$maxValueCo2 = $dataCo2[0]["values"][$i]["value"];
 				if($minValueCo2 > $dataCo2[0]["values"][$i]["value"]) 	$minValueCo2 = $dataCo2[0]["values"][$i]["value"];
 				
 				//Data cost correction and Max Min
 				if(count($dataCost) > 0) {
-					if(count($dataProduction) > 0) 
+					if(count($dataProduction) > 0) {
 						//The cost is (DataConsumption-DataProduction * price)
-						$dataCost[0]["values"][$i]["value"] *= ($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]) / 1000;	//THE PRICE IS IN MegaWatts
-					else
-						$dataCost[0]["values"][$i]["value"] *= $dataConsumption[0]["values"][$i]["value"] / 1000;	//THE PRICE IS IN MegaWatts
+						if(($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]) >= 0)
+							$dataCost[0]["values"][$i]["value"] *= ($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]) / 1000;	//THE PRICE IS IN MegaWatts
+						else 
+							$dataCost[0]["values"][$i]["value"] = 0;
+					} else {
+						if($dataConsumption[0]["values"][$i]["value"] >= 0)
+							$dataCost[0]["values"][$i]["value"] *= $dataConsumption[0]["values"][$i]["value"] / 1000;	//THE PRICE IS IN MegaWatts
+						else
+							$dataCost[0]["values"][$i]["value"] = 0;
+					}
 						
 					if($maxValueCost < $dataCost[0]["values"][$i]["value"]) 	$maxValueCost = $dataCost[0]["values"][$i]["value"];
 					if($minValueCost > $dataCost[0]["values"][$i]["value"]) 	$minValueCost = $dataCost[0]["values"][$i]["value"];
 				}
 				if(count($dataProduction) > 0) {
 					//Data consumption correction . Data production is autoconsumed
-					$dataConsumption[0]["values"][$i]["value"] -= $dataProduction[0]["values"][$i]["value"] / 1000;
+					//$dataConsumption[0]["values"][$i]["value"] -= $dataProduction[0]["values"][$i]["value"] /*/ 1000*/;
 				}
 			}
 		
+			if($maxValueProd > $maxValue)
+				$maxValue = $maxValueProd;
+			
+			if($maxValue > $maxValueProd)
+				$maxValueProd = $maxValue;
+			
+			
 			$aMapping[]=array("name"=>self::$sensor_energyConsumption_name, "color"=>self::$sensor_energyConsumption_color, "stack" => 0, "units"=>self::$sensor_energyConsumption_units,  "maxValue"=>$maxValue, "minValue"=>$minValue, "data"=>$dataConsumption[0]["values"]);
 			$aMapping[]=array("name"=>self::$sensor_co2_name, "color"=>self::$sensor_co2_color, "stack" => 0, "units"=>self::$sensor_co2_units, "maxValue"=>$maxValueCo2, "minValue"=>$minValueCo2, "data"=>$dataCo2[0]["values"]);
 		
 			//if($maxValue > $maxValueProd)
 			//	$maxValueProd = $maxValue;
+			
+			
 			
 			if(count($dataCost) > 0) 
 				$aMapping[]=array("name"=>self::$sensor_energyCost_name, "color"=>self::$sensor_energyCost_color, "stack" => 0, "units"=>self::$sensor_energyCost_units, "maxValue"=>$maxValueCost, "minValue"=>$minValueCost, "data"=>$dataCost[0]["values"]);
@@ -213,6 +232,8 @@ class ServiceBuildingSensorsRTime
 				$aMapping[]=array("name"=>self::$sensor_energyProduction_name, "color"=>self::$sensor_energyProduction_color, "stack" => 1, "units"=>self::$sensor_energyProduction_units , "maxValue"=>$maxValueProd, "minValue"=>$minValueProd, "data"=>array());					
 		}
 		
+		
+		dump($aMapping);
 		
 		return $aMapping;
 	}
@@ -291,20 +312,24 @@ class ServiceBuildingSensorsRTime
 				
 				//Data production correction and Max/Min
 				if(count($dataProduction) > 0) {
-					$data[self::$sensor_energyProduction_name] += $dataProduction[0]["values"][$i]["value"]/1000;
+					$data[self::$sensor_energyProduction_name] += $dataProduction[0]["values"][$i]["value"] /*/1000*/;
 				}
 							
 				//Data cost correction and Max Min
 				if(count($dataCost) > 0) {
-					if(count($dataProduction) > 0) 
+					if(count($dataProduction) > 0) {
 						//The cost is (DataConsumption-DataProduction * price)
-						$data[self::$sensor_energyCost_name] += $dataCost[0]["values"][$i]["value"] * ($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]/1000) / 1000;
-					else
-						$data[self::$sensor_energyCost_name] += $dataCost[0]["values"][$i]["value"] * $dataConsumption[0]["values"][$i]["value"] / 1000;
+						if(($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]) >= 0)
+							$data[self::$sensor_energyCost_name] += $dataCost[0]["values"][$i]["value"] * ($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]/*/1000*/) / 1000;
+					} else {
+						if ($dataConsumption[0]["values"][$i]["value"] >= 0)
+							$data[self::$sensor_energyCost_name] += $dataCost[0]["values"][$i]["value"] * $dataConsumption[0]["values"][$i]["value"] / 1000;
+					}
 				}
-			}
-			
-			$data[self::$sensor_co2_name] = ($data[self::$sensor_energyConsumption_name] - $data[self::$sensor_energyProduction_name] ) * $this->CO2emissionsCoefficient;
+				
+				if(($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]) >= 0)
+					$data[self::$sensor_co2_name] += ($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]) * $this->CO2emissionsCoefficient;
+			}	
 		}
 				
 		return $data;
