@@ -231,10 +231,7 @@ class ServiceBuildingSensorsRTime
 			else
 				$aMapping[]=array("name"=>self::$sensor_energyProduction_name, "color"=>self::$sensor_energyProduction_color, "stack" => 1, "units"=>self::$sensor_energyProduction_units , "maxValue"=>$maxValueProd, "minValue"=>$minValueProd, "data"=>array());					
 		}
-		
-		
-		dump($aMapping);
-		
+
 		return $aMapping;
 	}
 	
