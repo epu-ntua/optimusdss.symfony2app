@@ -36,6 +36,8 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 			$this->savonaEnergyConsumptionsensor($output);
 		} else if(strcmp(strtolower($city), "zaanstad") == 0 ) {
 			$this->zaanstadEnergyConsumptionsensor($output);
+		} else if(strcmp(strtolower($city), "santcugat") == 0 ) {
+			$this->santcugatPVsensor($output);
 		}
 			
 
@@ -43,6 +45,51 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 		$output->writeln("------** END **--------");
 	}
 	
+	
+	/*
+	* This virtual sensor is to change units from wh to kwh of id1
+	*
+	*/
+	
+	protected function santcugatPVsensor($output) 
+	{
+		$output->writeln(" - santcugatPVsensor -");
+		
+		//the first one is the virual sensor
+		$arr_sensors = "1146_1";
+		
+		$entityManager = $this->getContainer()->get('doctrine')->getManager();
+        
+		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1146");
+        
+		$virturl = $nameSensor->getUrl();
+		
+				
+		$array_ret = $this->getValues($arr_sensors);
+		
+		for($i = 0; $i < count($array_ret); $i++) {
+			$value = 0;
+
+			//only if the virtyal sensor do not have data
+			//if($array_ret[$i][0] == -1) {
+                $novalue = 1;
+				for($j = 1; $j < count($array_ret[$i])-1; $j++) {
+					if($array_ret[$i][$j] >= 0) {
+						$value += $array_ret[$i][$j];
+                        $novalue = 0;
+					}
+				}
+					
+                if( $novalue == 0) {                    
+                    $date = $array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s');
+                    $date = str_replace(" ", "T", $date)."Z";
+				 
+                    $this->insertData($virturl, "sant_cugat", "http://optimus_santcugat", "energy_production", $value/1000, $date);
+                }
+			//}
+		}
+	}
+
 	/*
 	* This virtual sensor is the sum of id65 + id66 + id67
 	*

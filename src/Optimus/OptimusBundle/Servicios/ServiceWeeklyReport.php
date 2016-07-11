@@ -25,6 +25,7 @@ class ServiceWeeklyReport {
     protected $appv;	
     protected $apsource;	
     protected $apeconomizer;
+	protected $rtime;
 	
 	private $templating;
 	private $knpSnappyPdf;
@@ -43,6 +44,7 @@ class ServiceWeeklyReport {
 								ServiceAPPVPresenter $appv,
 								ServiceAPEnergySourcePresenter $apsource,
 								ServiceAPEconomizerPresenter $apeconomizer,
+								ServiceBuildingSensorsRTime $rtime, 
 								EngineInterface $templating,
 								LoggableGenerator $knpSnappyPdf,
 								\Swift_Mailer $mailer,
@@ -58,6 +60,7 @@ class ServiceWeeklyReport {
 		$this->appv=$appv;		
 		$this->apsource=$apsource;		
 		$this->apeconomizer=$apeconomizer;
+		$this->rtime = $rtime;
 		$this->templating   = $templating;
 		$this->knpSnappyPdf = $knpSnappyPdf;
 		$this->mailer = $mailer;
@@ -85,15 +88,32 @@ class ServiceWeeklyReport {
 			$lastWeeklyReportBuilding=$this->em->getRepository('OptimusOptimusBundle:WeeklyReport')->findBy(array("fk_Building"=>$building->getId()), array("datetime"=>'DESC'));
 			if(isset($lastWeeklyReportBuilding[0])) 
 			{
+				
 				echo "set status 0 last weekly report \n";
+				
+				$monday=$lastWeeklyReportBuilding[0]->getMonday();				
+				
+				$dFromThisWeek = \DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->format("Y-m-d")." 00:00:00";			
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("+7 days")->format("Y-m-d H:i:s");
+				//data: e.consumption & e.cost
+				$dataThisWeek=$this->rtime->getRTTime($dTo, $dFromThisWeek, '', $building->getId());
+					
+				//User actions
+				$userActionsWeek=$this->em->getRepository('OptimusOptimusBundle:Events')->getUserActionsAPS($building->getId(), $dFromThisWeek, $dTo);		
+				
+				$lastWeeklyReportBuilding[0]->setEnergyConsumption($dataThisWeek['Energy consumption']);
+				$lastWeeklyReportBuilding[0]->setEnergyCost($dataThisWeek['Energy cost']);
+				$lastWeeklyReportBuilding[0]->setUserActions($userActionsWeek[0][1]);
+				
 				$lastWeeklyReportBuilding[0]->setStatus(0);//$status
 				$this->em->persist($lastWeeklyReportBuilding[0]);
 				$this->em->flush();
-				
+				//dump($lastWeeklyReportBuilding[0]);
 				//create PDF
-				$this->getPDFWRAction($building, $lastWeeklyReportBuilding[0]->getId(), $period);
+				$this->getPDFWRAction($building, $lastWeeklyReportBuilding[0]->getId(), $lastWeeklyReportBuilding[0]->getPeriod());
 			}
 		
+			
 			//Insert a new weekly report
 			$weeklyReport = new WeeklyReport();
 			$weeklyReport->setPeriod($period);//$period
