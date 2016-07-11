@@ -400,6 +400,7 @@ class ServiceAPEnergySourcePresenter {
 		
 		return $aDays;
 	}
+
 	//Get Status week 
 	public function getStatusWeek($idActionPlan, $startDate, $endDate)
 	{
@@ -433,5 +434,6 @@ class ServiceAPEnergySourcePresenter {
 		
 		return $aStatusWeek;
 	}
+
 }
 ?>

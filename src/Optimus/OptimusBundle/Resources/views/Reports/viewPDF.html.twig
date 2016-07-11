@@ -1,53 +1,172 @@
-{% extends 'OptimusOptimusBundle:Layouts:layout.html.twig' %}
-
-{% block javascripts %}
-	<script type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-1.11.1.min.js') }}"></script>	
-	<script  type="text/javascript" src="{{ asset('bundles/optimus/js/jquery-ui-1.10.3.custom.min.js') }}"></script>
-{% endblock %}
-
+ <link href='https://fonts.googleapis.com/css?family=Exo:400,700' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic' rel='stylesheet' type='text/css'>
 {% block content %} 
+<style>
+#header {
+    background: #006ab8 none repeat scroll 0 0;
+    height: 80px;
+    overflow: hidden;
+    width: 100%;
+}
+#header img {
+    float: left;
+    margin-left: 30px;
+    margin-top: 15px;
+}
+#header h3 {
+    color: #fff;
+    float: right;
+    font-family: "Exo";
+    font-size: 38px;
+    font-weight: normal;
+	margin:15px 30px 0 0;
+    text-align: center;
+	font-weight:bold;   
+}
 
-	<div id="left">				
-		<ul type="none">
-			<li><a href="{{path('tracker')}}">Tracker</a></li>
-			<li><a href="{{path('cityDashboard')}}">City Dashboard</a></li>
-			<li style="background-color:#f6f6f6;"><a style="color:#0069b4;" href="{{path('init')}}">Buildings</a></li>
-		</ul>
-		<p>{{ "now"|date('l, F d, Y') }}</p>		
+
+#right {
+    background-color: #fff;
+    border: 0 none;
+    float: left;
+    width: 100%;
+}
+
+#right p {
+    color: #44546a;
+    font-size: 12px; 
+	font-family: "Open Sans";
+	margin: 10px;
+}
+#right p.date {
+    color: #0069b4;
+    float: right;
+    font-size: 18px;
+    padding-right: 30px;
+    padding-top: 6px;
+	margin: 0;	
+}
+
+#right #topRight {
+    background-color: #fff;    
+    float: left;
+    padding: 13px 30px;
+    width: 95%;
+}
+#right #topRight p {
+    color: #0069b4;
+    float: left;
+    font-family: "Exo",sans-serif;
+    font-size: 27px;
+    font-weight: bold;
+    line-height: 35px;
+    margin: 0;
+    text-transform: uppercase;
+}
+#right #topRight p.date {
+    color: #0069b4;
+    float: right;
+    font-size: 18px;
+	font-weight: 500;   
+    padding-top: 6px;
+	padding-right: 0;
+	margin: 0;
+	font-family: "Open Sans";
+	text-transform: none;
+	line-height: 18px;
+}
+
+#right #topRight ul {
+    float: right;
+    font-family: "Open Sans";
+    font-size: 14px;
+	margin: 0;
+}
+#right #topRight ul li {
+    border-radius: 15px;
+    float: left;
+    padding: 8px 20px;
+}
+#right #topRight ul li.active {
+    background-color: #e8f3f9;
+}
+#right #topRight ul li a {
+    color: #0069b4;
+    text-decoration: none;
+}
+
+#right #centerRight {
+	border-top: 1px solid #cbcbcb;
+    overflow: hidden;
+    padding: 30px;
+    position: relative;
+    width: 95%;
+}
+
+#right #centerRight .titleDiv {
+    color: #808080;
+    font-family: "Exo";
+    font-size: 16px;
+    font-weight: bold;
+}
+
+form > div {
+    display: block;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+table {
+    background-color: #fff;
+    border: 1px solid #efefef;
+    border-collapse: collapse;
+    cursor: pointer;
+    font-family: "Open Sans";
+    font-size: 12px;
+    width: 100%;
+}
+table tr.headerDays {
+    text-align: center;
+}
+table tr td {
+    border-right: 1px solid #efefef;
+    height: 40px;
+    padding-right: 3px;
+    text-align: right;
+    word-wrap: break-word;
+}
+table tr.headerDays td {
+    border: 1px solid #efefef;
+}
+
+
+</style>
+	
+	<div id="header">
+		<img src="{{ imgLogo }}" title="Logo Optimus" alt="Logo Optimus">
+		<h3 style="cursor:pointer;"> {{optimus_instance}} </h3>
 	</div>
 	
 	<div id="right">
-		<div id="topRight">
-			<!--<p><strong><span style="text-decoration:underline;" onclick="location.href='{{ path('init') }}';">{{ optimus_instance }}</span> > {{ nameBuilding }}</strong></p>	-->
-			
-			<p> {{ nameBuilding }}</p>	
-			
-			<ul type="none">
-				<li><a href="{{ path('buildingDashboard', {'idBuilding':idBuilding}) }}">Dashboard</a></li>
-				<li><a href="{{ path('listActionPlans', {'idBuilding':idBuilding}) }}">Action Plans</a></li>
-				<li><a href="{{ path('prediction', {'idBuilding':idBuilding}) }}">Historical Data</a></li>
-				<li class="active"><a href="{{ path('tableReports', {'idBuilding':idBuilding, 'insertDB':'ok'} )}}">Weekly Report</a></li>
-				<li><a href="{{ path('lastsEvents', {'idBuilding':idBuilding} )}}">User Activity</a></li>
-			</ul>
-			
+		<div id="topRight">			
+			<p> {{ nameBuilding }}</p>			
+			<p class="date">{{ "now"|date('l, F d, Y') }}</p>			
 		</div>
 		
-		<div id="centerRight">
-			
-			<div style=" margin-bottom:10px; overflow:hidden;">
-				
-				<p>
+		<div id="centerRight">			
+			<div style=" margin-bottom:10px; overflow:hidden; font-size:16px;">				
+				<p style="font-size:16px; color: #0069b4;">
 					<strong>Responsible person:</strong> 
 					{% for user in dataForm.usersInWR %}
 						<span>{{user.getFkUser().name}} {{user.getFkUser().lastname}},</span>
 					{% endfor %}
 				</p>
-				<p><strong>Week:</strong> {{dataForm.weeklyReport.period }}</p>
+				<p style="font-size:16px; color: #0069b4;"><strong>Week:</strong> {{dataForm.weeklyReport.period }}</p>
 			</div>
 			
-			<form class="nueva-entrevista-form" enctype="multipart/form-data" method="post" action="{{ path('saveDataFormReport', {'idBuilding':idBuilding, 'idWeeklyReport':dataForm.weeklyReport.id })}}">
+			<form class="nueva-entrevista-form" enctype="multipart/form-data" method="post" action="{{ path('saveDataFormReport', {'idBuilding':idBuilding, 'idWeeklyReport':dataForm.weeklyReport.id })}}" style="font-size:11px;">
 				<div id="page">
-					<ul style="width:100%;">
+					<!--<ul style="width:100%;">
 						<li><a href="#page_0">DSS implementation</a></li>
 						{% set i=1 %}
 						{% for actionPlan in dataForm.allActionsPlans %}
@@ -55,7 +174,7 @@
 							{% set i=i+1 %}
 						{% endfor %}
 						<li><a href="#page_{{i}}">Evaluation criteria</a></li>
-					</ul>
+					</ul>-->
 					<div id="page_0" class="section"> <!-- common all reports -->
 						
 						<p class="titleDiv"><strong>DSS implementation</strong></p>
@@ -75,9 +194,9 @@
 					{% set i=1 %}
 					{% set maxPag= dataForm.allActionsPlans|length %}
 					{% for actionPlan in dataForm.allActionsPlans %}
-						<div id="page_{{i}}" class="section">
+						<div id="page_{{i}}" class="section" style="padding-top:30px;">
 														
-							<p><strong>{{actionPlan.name |capitalize }}</strong></p>
+							<p class="titleDiv"><strong>AP.{{i}} - {{actionPlan.name |capitalize }}</strong></p>
 							<table border="0">
 								<tbody>
 									<tr class="headerDays">
@@ -105,11 +224,11 @@
 										
 											{% for statusDay in dataForm.statusWeekActionPlan[actionPlan.id] %} <!-- 0=Unknown, 1=Accepted, 2=Declined -->
 												{% if statusDay.status==0 %}
-													<td style="background-color:#fdbb4d;">Unknown</td>
+													<td>Unknown</td>
 												{% elseif statusDay.status==1 %}
-													<td style="background-color:#00da8a;">Accept</td>
+													<td>Accept</td>
 												{% else %}
-													<td style="background-color:#ff0101;">Decline</td>
+													<td>Decline</td>
 												{% endif %}											
 											{% endfor %}
 										{% endif %}	
@@ -127,7 +246,7 @@
 											{% elseif actionPlan.type== 5 %}
 												<a target="_blank" href="{{path('actionPlan_PVMaintenance', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>
 											{% elseif actionPlan.type== 6 %}													
-												<a target="_blank" href="{{path('actionPlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>
+												<a target="_blank" href="{{path('actionPlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>										
 											{% elseif actionPlan.type== 7 %}													
 												<a target="_blank" href="{{path('energySourcePlan', {'idBuilding':idBuilding, 'idAPType':actionPlan.type, 'from':dataForm.startDate, 'to':dataForm.sundayDate})}}">link</a>
 											{% endif %}
@@ -155,7 +274,7 @@
 					{% endfor %}
 				
 					<div id="page_{{i}}" class="section">
-						<p><strong>Evaluation criteria</strong></p>
+						<p class="titleDiv"><strong>Evaluation criteria</strong></p>
 						
 						<p style="margin-bottom:40px;">(please answer in relation to operation of this week)<br/> 1=very low <br/> 5=very high </p>
 						
@@ -232,25 +351,15 @@
 							<input type="radio" name="score7" value="3" {% if dataForm.evCriteria[0].score7==3 %} checked {% endif %} > 3
 							<input type="radio" name="score7" value="4" {% if dataForm.evCriteria[0].score7==4 %} checked {% endif %} > 4
 							<input type="radio" name="score7" value="5" {% if dataForm.evCriteria[0].score7==5 %} checked {% endif %} > 5
-							<textarea name="text7" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Comments...">{{ dataForm.evCriteria[0].text7 }}</textarea>
-							
-						</div>
-						<!--<p onclick="$('#page_{{i-1}}').show();$('#page_{{i}}').hide();">Previus step</p>-->
+							<textarea name="text7" style="height:100px; width:97%; margin:10px; background-color:#f6f6f6; border:1px solid #dfdede;" placeholder="Comments...">{{ dataForm.evCriteria[0].text7 }}</textarea>							
+						</div>						
 						
 					</div>
-					<input type="submit" value="SAVE" style="margin:0 0 30px 30px; color:#0077bb; border:1px solid #0077bb; border-radius:15px; padding:5px 15px; background-color:#fff; cursor:pointer; ">
+					
 				</div>
 			</form>	
 			
 		</div>
 	</div>
-<script type="text/javascript">
-	$(function () 
-	{
-		$( "#page" ).tabs();
-		//$(".section").hide();
-		//$("#page_0").show();
-		
-	});
-</script>	
+
 {% endblock %}

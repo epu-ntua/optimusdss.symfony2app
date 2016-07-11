@@ -29,7 +29,7 @@ class ServiceOntologia {
 		set_time_limit(0);
 		ini_set('memory_limit','64M');
 		
-		$arc = new \ARC_ARC ();
+		$arc = new \ARC2();
 		//$store = $arc->getRemoteStore($config_endpoint);	
         $store = $arc->getComponent('SPARQL11RemoteStore', $config_endpoint);        
 		$rows=array();
@@ -209,7 +209,7 @@ class ServiceOntologia {
 		set_time_limit(0);
 		ini_set('memory_limit','64M');
 		
-		$arc = new \ARC_ARC ();
+		$arc = new \ARC2 ();
 		//$store = $arc->getRemoteStore($config_endpoint);	
         $store = $arc->getComponent('SPARQL11RemoteStore', $config_endpoint);        
 		$rows=array();
@@ -282,7 +282,7 @@ class ServiceOntologia {
 		set_time_limit(0);
 		ini_set('memory_limit','64M');
 		
-		$arc = new \ARC_ARC ();
+		$arc = new \ARC2 ();
 		//$store = $arc->getRemoteStore($config_endpoint);	
         $store = $arc->getComponent('SPARQL11RemoteStore', $config_endpoint);        
 		$rows=array();
@@ -340,7 +340,7 @@ class ServiceOntologia {
 		set_time_limit(0);
 		ini_set('memory_limit','64M');
 		
-		$arc = new \ARC_ARC ();
+		$arc = new \ARC2 ();
 		$store = $arc->getRemoteStore($config_endpoint);		
 		$rows=array();
 
@@ -359,7 +359,7 @@ class ServiceOntologia {
 		set_time_limit(0);
 		ini_set('memory_limit','64M');
 		
-		$arc = new \ARC_ARC ();
+		$arc = new \ARC2 ();
 		$store = $arc->getRemoteStore($config_endpoint);		
 		$rows=array();
 
@@ -392,7 +392,7 @@ class ServiceOntologia {
 		set_time_limit(0);
 		ini_set('memory_limit','64M');
 		
-		$arc = new \ARC_ARC ();
+		$arc = new \ARC2 ();
 		$store = $arc->getRemoteStore($config_endpoint);		
 		$rows=array();
 

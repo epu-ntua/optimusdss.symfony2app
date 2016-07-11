@@ -239,7 +239,21 @@ class SetPointPlanController extends Controller
                     } else {
                         $data[$value]['proposed_temperature'][$i] = '--';
                     }
+					
+					for ($hour = 0; $hour < 24; $hour++) {
+						$data[$value]['feedback'][$i][$hour]['value'] = 0.0;
+						$data[$value]['feedback'][$i][$hour]['size'] = 0;
+					}
 					$Full_Days = $this->getHoursFromDate($Days[$i]);
+					$dayFeedbacks = $em->getRepository('OptimusOptimusBundle:FeedbackOutput')->findOutputByDay($Full_Days[0], $value);
+					
+					foreach($dayFeedbacks as $feedback){
+						$date=explode(" ", $feedback->getFullDate()->format('Y-m-d H:i:s'));
+						$hour = intval(substr($date[1], 0, 2));
+						$data[$value]['feedback'][$i][$hour]['value'] = $feedback->getFeedback();
+						$data[$value]['feedback'][$i][$hour]['size'] = $feedback->getFeedbackSize();
+					}
+					/*
 					for ($hour = 0; $hour < 24; $hour++) {
 						$feedback = $em->getRepository('OptimusOptimusBundle:FeedbackOutput')->findOutputByFullDate($Full_Days[$hour], $value);
 						if (!empty($feedback)) {
@@ -251,7 +265,7 @@ class SetPointPlanController extends Controller
 							$data[$value]['feedback'][$i][$hour]['size'] = 0;
 						}
 					}
-
+					*/
 
 
                 }

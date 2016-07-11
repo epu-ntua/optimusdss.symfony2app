@@ -30,6 +30,7 @@ class InitController extends Controller
 		{
 			//Data average RTime, User Activity & Chart Activity
 			//$dataBuildings[$building->getId()]['dataDashboard']=$this->getDataDashboard($building);
+			$aBuilding = array();
 			$aBuilding[]=$building;
 			$dataBuildings[$building->getId()]['globalRTime']=$this->globalValuesRTime($aBuilding);		
 		}
@@ -64,9 +65,27 @@ class InitController extends Controller
 		
 		//Values Chart Stack RTime -->Modify 
 		if($buildings)
-		{			
+		{		
 			$mappingVariable = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $thisMonday, $buildings[0]->getId());
-			//dump($mappingVariable);
+			
+			for($i = 1; $i < count($buildings); $i++)  {
+				$mappingVariableTmp = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $thisMonday, $buildings[$i]->getId());
+
+				//processing the four indicators
+				for($d = 0; $d < 4; $d++) {
+					$max = -1;
+					for($j = 0; $j < count($mappingVariableTmp[$d]["data"]); $j++)  {
+						
+						$mappingVariable[$d]["data"][$j]["value"] += $mappingVariableTmp[$d]["data"][$j]["value"];
+						
+						if($max < $mappingVariable[$d]["data"][$j]["value"]) {
+							$max = $mappingVariable[$d]["data"][$j]["value"];
+						}							
+					}
+					// updating the max value
+					$mappingVariable[$d]["maxValue"] = $max;
+				}
+			}
 		}else{ 
 			$mappingVariable = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $thisMonday, null);
 		}
@@ -119,24 +138,24 @@ class InitController extends Controller
 		
 		//Calculate Average this week and last week
 		if($buildings)
-		{
+		{		
 			foreach($buildings as $building)
 			{
-				$dataThisWeek=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFromThisWeek, $building->getId());
-				
+				$dataThisWeek=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFromThisWeek,'', $building->getId());
+
 				$energyCostTW+=$dataThisWeek['Energy cost'];
 				$co2TW+=$dataThisWeek['CO2'];
 				$energyConsumptionTW+=$dataThisWeek['Energy consumption'];
 				$pREnergyTW+=$dataThisWeek['Produced renewable energy'];
 				
-				$dataLastWeek=$this->get('service_sensorsRTime')->getRTTime($dFromThisWeek, $dFromLastWeek, $building->getId());
+				$dataLastWeek=$this->get('service_sensorsRTime')->getRTTime($dFromThisWeek, $dFromLastWeek,'', $building->getId());
 				
 				$energyCostLW+=$dataLastWeek['Energy cost'];
 				$co2LW+=$dataLastWeek['CO2'];
 				$energyConsumptionLW+=$dataLastWeek['Energy consumption'];
 				$pREnergyLW+=$dataLastWeek['Produced renewable energy'];
 			}
-			
+			/*
 			if($energyCostTW!=0) 			$energyCostTW=$energyCostTW/count($buildings);			
 			if($co2TW!=0) 					$co2TW=$co2TW/count($buildings);
 			if($energyConsumptionTW!=0)		$energyConsumptionTW=$energyConsumptionTW/count($buildings);
@@ -146,7 +165,7 @@ class InitController extends Controller
 			if($co2LW!=0) 					$co2LW=$co2LW/count($buildings);
 			if($energyConsumptionLW!=0)		$energyConsumptionLW=$energyConsumptionLW/count($buildings);
 			if($pREnergyLW!=0)				$pREnergyLW=$pREnergyLW/count($buildings);
-			
+			*/
 		}
 		
 		$globalRTime=array("Energy cost"=>array(0=>$energyCostTW, 1=>$energyCostLW, 2=>$energyCostLW-$energyCostTW), 
@@ -253,67 +272,6 @@ class InitController extends Controller
 			return $this->render('OptimusOptimusBundle:Admin:selectOptions.html.twig');
 		}
 	}
-	
-	// ---- Deprecated old view
-	public function selectGraphAction($idBuilding)
-    {
-		$dateActual=new \DateTime();			
-		$startDate=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 days");				
-		$startDateFunction=$startDate->format("Y-m-d H:i:s");
-		
-		//$sensors=$this->getIDsSensorsGraphStacks($idBuilding); //Mirar si ya no se utiliza
-		
-		//Get Building
-		$em = $this->getDoctrine()->getManager();
-		$building=$em->getRepository('OptimusOptimusBundle:Building')->findBy(array("id"=>$idBuilding));
-		
-		//Data average RTime, User Activity & Chart Activity
-		$data['dataDashboard']=$this->getDataDashboard($building);
-		$data['globalRTime']=$this->globalValuesRTime($building);
-		$data['unitsRTime']=$this->get('service_sensorsRTime')->getUnitsVariables();
-		
-		//Get data for the compound chart stack RTime
-		$lastWeek=$startDate->format("Y-m-d")." 00:00:00";
-		$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");		
-		$data['mappingVariable'] = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $lastWeek, $idBuilding);
-		
-		//Dates to View
-		$data['lastDay']=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d");		
-		$startDateView=$startDate->format("Y-m-d");
-		$endDate=\DateTime::createFromFormat('Y-m-d H:i:s', $startDateFunction)->modify("+7 day");
-		$endDateView=$endDate->format("Y-m-d");		
-		$data['startDate']=$startDateView;
-		$data['endDate']=$endDateView;
-		$actualDate=new \DateTime();
-		$data['actualDate']=$actualDate->format("Y-m-d");
-		$thisMonday=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("monday this week");
-		$thisMondayF=$thisMonday->format("Y-m-d H:i:s");
-		$endDateWeek=\DateTime::createFromFormat('Y-m-d H:i:s', $thisMondayF)->modify("+6 day");
-		
-		//Info Building
-		$data['idBuilding']=$idBuilding;
-		$data['nameBuilding']=$this->get('service_data_capturing')->getNameBuilding($idBuilding);
-		
-		//events
-		$this->get('service_event')->lastsEvent($idBuilding);	
-		
-		//pedir los ActionPlans del building	
-		$data['actionPlans']=$em->getRepository('OptimusOptimusBundle:ActionPlans')->findActionPlansWithSensors($idBuilding);		
-		//$data['actionPlans']=$em->getRepository('OptimusOptimusBundle:ActionPlans')->findBy(array("fk_Building"=>$idBuilding, "status"=>1));
-			
-		//status actions plans
-		$data["statusActionPlans"]=$this->getStatusActionsPlans($data['actionPlans'], $dateActual, $thisMonday, $endDateWeek);	
-		
-		//last activities in actions plans
-		$data['lastsDatesActionsPlans']=$this->lastsDatesActionsPlans($data['actionPlans']);
-		
-		//last date data forecasted
-		$data['lastDateForecasted']=$this->get('service_data_capturing')->lastForecastedDate($idBuilding);
-			
-				
-		//Obtener los ActionsPlans del edificio
-		return $this->render('OptimusOptimusBundle:Building:selectGraph.html.twig', $data);	
-    }
 	
 	// Dashboard of building with graph lasts indicators --- NEW 
 	public function buildingDashboardAction($idBuilding)

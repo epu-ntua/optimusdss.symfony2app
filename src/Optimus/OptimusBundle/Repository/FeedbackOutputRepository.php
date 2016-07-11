@@ -22,5 +22,29 @@ class FeedbackOutputRepository extends EntityRepository{
 
         return $query->getResult();
     }
+	
+	
+	public function getDQLOutputDay($dayStart, $dayEnd, $section)
+	{		
+		$dqlQuery = 'SELECT feedbackoutput ';
+        $dqlQuery .= ' FROM '.$this->_entityName.' feedbackoutput';
+        $dqlQuery .= " WHERE feedbackoutput.full_date >= '".$dayStart."' and  feedbackoutput.full_date<='".$dayEnd."' ";
+        $dqlQuery .= " and feedbackoutput.section = '".$section."' ";
+        $dqlQuery .= ' ORDER BY feedbackoutput.full_date ASC';
+        return $dqlQuery;	
+    }
+
+    public function findOutputByDay($day, $section){
+
+        $em = $this->getEntityManager();
+		$date=explode(" ", $day);
+		$dayStart=$day;
+		$dayEnd=$date[0]." 23:59:00";
+		
+        $dqlQuery = $this->getDQLOutputDay($dayStart, $dayEnd, $section);
+        $query = $em->createQuery($dqlQuery);
+		
+        return $query->getResult();
+    }
 
 }

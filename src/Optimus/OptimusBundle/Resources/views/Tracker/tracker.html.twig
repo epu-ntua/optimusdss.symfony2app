@@ -26,96 +26,143 @@
 			<div class="track top">
 				<p class="titleDiv left">Reduction of energy consumption</p>
 				
+				{% set EConsTargetPerc= dataTracker.targetEConsumption*100/maxValue %}
+				{% set EConsTargetWidth= dataTracker.targetEConsumption*630/maxValue %}
 				<div class="contentRow">
-					<p class="nameRow" style="color:#0095ff;">USER'S TARGET (20%)</p>
+					<p class="nameRow" style="color:#0095ff;">USER'S TARGET ( {{EConsTargetPerc}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#0095ff; width:630px;"></p>
+						<p class="bar" style="background-color:#0095ff; width:{{EConsTargetWidth}}px;"></p>
 					</div>
 				</div>
 				
+				{% set EConsPotentialPerc= dataTracker.potentialEConsumption*100/maxValue %}
+				{% set EConsPotentialWidth= dataTracker.potentialEConsumption*630/maxValue %}
 				<div class="contentRow">
-					<p class="nameRow" style="color:#0095ff;">POTENTIAL (10.7%)</p>
+					<p class="nameRow" style="color:#0095ff;">POTENTIAL ( {{EConsPotentialPerc}}% )</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#4cb5ff; width:337px;"></p>
+						<p class="bar" style="background-color:#4cb5ff; width:{{EConsPotentialWidth}}px;"></p>
 					</div>
 				</div>
 				
+				{% set EConsCStatusWidth= currentStatus[0].statusEConsumption*630/100 %}
+				{% if EConsCStatusWidth > 630 %}
+					{% set EConsCStatusWidth= 630 %}
+				{% endif %}
+				{% if (EConsCStatusWidth < 0) %}
+					{% set EConsCStatusWidth= 0 %}
+				{% endif %}
 				<div class="contentRow last">
-					<p class="nameRow" style="color:#0095ff;">CURRENT STATUS (6%)</p>
+					<p class="nameRow" style="color:#0095ff;">CURRENT STATUS ({{currentStatus[0].statusEConsumption|round(0)}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#99d5ff; width:189px;"></p>
+						<p class="bar" style="background-color:#99d5ff; width:{{EConsCStatusWidth}}px;"></p>
 					</div>
 				</div>				
 			</div>
 			
 			<div class="track">
 				<p class="titleDiv left">Reduction of CO2 emissions</p>
+				
+				{% set ECO2TargetPerc= dataTracker.targetCO2*100/maxValue %}
+				{% set ECO2TargetWidth= dataTracker.targetCO2*630/maxValue %}
 				<div class="contentRow">
-					<p class="nameRow" style="color:#9c9d9d;">USER'S TARGET (20%)</p>
+					<p class="nameRow" style="color:#9c9d9d;">USER'S TARGET ({{ECO2TargetPerc}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#9c9d9d; width:630px;"></p>
+						<p class="bar" style="background-color:#9c9d9d; width:{{ECO2TargetWidth}}px;"></p>
 					</div>
 				</div>
 				
+				{% set ECO2PotentialPerc= dataTracker.potentialCO2*100/maxValue %}
+				{% set ECO2PotentialWidth= dataTracker.potentialCO2*630/maxValue %}				
 				<div class="contentRow">
-					<p class="nameRow" style="color:#9c9d9d;">POTENTIAL (10.7%)</p>
+					<p class="nameRow" style="color:#9c9d9d;">POTENTIAL ({{ECO2PotentialPerc}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#bababa; width:337px;"></p>
+						<p class="bar" style="background-color:#bababa; width:{{ECO2PotentialWidth}}px;"></p>
 					</div>
 				</div>
 				
+				{% set ECO2CStatusWidth= currentStatus[0].statusCO2*630/100 %}
+				{% if ECO2CStatusWidth > 630 %}
+					{% set ECO2CStatusWidth= 630 %}
+				{% endif %}
+				{% if (ECO2CStatusWidth < 0) %}
+					{% set ECO2CStatusWidth= 0 %}
+				{% endif %}
 				<div class="contentRow last">
-					<p class="nameRow" style="color:#9c9d9d;">CURRENT STATUS (6%)</p>
+					<p class="nameRow" style="color:#9c9d9d;">CURRENT STATUS ({{currentStatus[0].statusCO2|round(0)}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar"  style="background-color:#cecece; width:189px; "></p>
+						<p class="bar"  style="background-color:#cecece; width:{{ECO2CStatusWidth}}px; "></p>
 					</div>
 				</div>				
 			</div>
 			
 			<div class="track">
 				<p class="titleDiv left">Reduction of energy cost</p>
+				
+				{% set ECostTargetPerc= dataTracker.targetECost*100/maxValue %}
+				{% set ECostTargetWidth= dataTracker.targetECost*630/maxValue %}
 				<div class="contentRow">
-					<p class="nameRow" style="color:#f39a00;">USER'S TARGET (20%)</p>
+					<p class="nameRow" style="color:#f39a00;">USER'S TARGET ({{ECostTargetPerc}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#f39a00; width:630px;"></p>
+						<p class="bar" style="background-color:#f39a00; width:{{ECostTargetWidth}}px;"></p>
 					</div>
 				</div>
 				
+				{% set ECostPotentialPerc= dataTracker.potentialECost*100/maxValue %}
+				{% set ECostPotentialWidth= dataTracker.potentialECost*630/maxValue %}		
 				<div class="contentRow">
-					<p class="nameRow" style="color:#f39a00;">POTENTIAL (15.2%)</p>
+					<p class="nameRow" style="color:#f39a00;">POTENTIAL ({{ECostPotentialPerc}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#f7b859; width:478.8px;"></p>
+						<p class="bar" style="background-color:#f7b859; width:{{ECostPotentialWidth}}px;"></p>
 					</div>
 				</div>
 				
+				{% set ECostCStatusWidth= currentStatus[0].statusECost*630/100 %}
+				{% if ECostCStatusWidth > 630 %}
+					{% set ECostCStatusWidth= 630 %}
+				{% endif %}
+				{% if (ECostCStatusWidth < 0) %}
+					{% set ECostCStatusWidth= 0 %}
+				{% endif %}
 				<div class="contentRow last">
-					<p class="nameRow" style="color:#f39a00;">CURRENT STATUS (6%)</p>
+					<p class="nameRow" style="color:#f39a00;">CURRENT STATUS ({{currentStatus[0].statusECost|round(0)}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#f1d6a4;  width:189px; "></p>
+						<p class="bar" style="background-color:#f1d6a4;  width:{{ECostCStatusWidth}}px; "></p>
 					</div>
 				</div>				
 			</div>
 			
 			<div class="track">
 				<p class="titleDiv" style="margin-left:0;">Increase of renewable energy use</p>
+				
+				{% set REUseTargetPerc= dataTracker.targetREUse*100/maxValue %}
+				{% set REUseTargetWidth= dataTracker.targetREUse*630/maxValue %}
 				<div class="contentRow">
-					<p class="nameRow" style="color:#42d890;">USER'S TARGET (20%)</p>
+					<p class="nameRow" style="color:#42d890;">USER'S TARGET ({{REUseTargetPerc}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#01d98e; width:630px;"></p>
+						<p class="bar" style="background-color:#01d98e; width:{{REUseTargetWidth}}px;"></p>
 					</div>
 				</div>
 				
+				{% set REUsePotentialPerc= dataTracker.potentialREUse*100/maxValue %}
+				{% set REUsePotentialWidth= dataTracker.potentialREUse*630/maxValue %}	
 				<div class="contentRow">
-					<p class="nameRow" style="color:#42d890;">POTENTIAL (8.2%)</p>
+					<p class="nameRow" style="color:#42d890;">POTENTIAL ({{REUsePotentialPerc}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#00e4af; width:258px;"></p>
+						<p class="bar" style="background-color:#00e4af; width:{{REUsePotentialWidth}}px;"></p>
 					</div>
 				</div>
 				
+				{% set REUseCStatusWidth= currentStatus[0].statusREUse*630/100 %}
+				{% if REUseCStatusWidth > 630 %}
+					{% set REUseCStatusWidth= 630 %}
+				{% endif %}
+				{% if (REUseCStatusWidth < 0) %}
+					{% set REUseCStatusWidth= 0 %}
+				{% endif %}
 				<div class="contentRow last">
-					<p class="nameRow" style="color:#42d890;">CURRENT STATUS (5%)</p>
+					<p class="nameRow" style="color:#42d890;">CURRENT STATUS ({{currentStatus[0].statusREUse|round(0)}}%)</p>
 					<div class="contentBarRow">
-						<p class="bar" style="background-color:#b3efd3; width:157px; "></p>
+						<p class="bar" style="background-color:#b3efd3; width:{{REUseCStatusWidth}}px; "></p>
 					</div>
 				</div>				
 			</div>
