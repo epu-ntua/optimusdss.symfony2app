@@ -1,9 +1,0 @@
-- Path: /name/add
-- Path Regex: #^/name/add$#s
-- Host: localhost
-- Host Regex: #^localhost$#s
-- Scheme: http|https
-- Method: PUT|POST
-- Class: Symfony\Component\Routing\Route
-- Defaults: NONE
-- Requirements: NONE
