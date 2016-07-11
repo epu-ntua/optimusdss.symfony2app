@@ -91,7 +91,7 @@ class ServiceWeeklyReport {
 				$this->em->flush();
 				
 				//create PDF
-				$this->getPDFWRAction($building, $lastWeeklyReportBuilding[0]->getId());
+				$this->getPDFWRAction($building, $lastWeeklyReportBuilding[0]->getId(), $period);
 			}
 		
 			//Insert a new weekly report
@@ -225,7 +225,7 @@ class ServiceWeeklyReport {
 		return $data;
 	}
 
-	public function getPDFWRAction($building, $idWeeklyReport)
+	public function getPDFWRAction($building, $idWeeklyReport, $period)
 	{		
 		$weeklyReport=$this->em->getRepository('OptimusOptimusBundle:WeeklyReport')->find($idWeeklyReport);
 		if($weeklyReport)
@@ -253,11 +253,11 @@ class ServiceWeeklyReport {
 					
 					//Send mail with pdf create
 					$message = \Swift_Message::newInstance()
-						->setSubject('OPTIMUSDSS - Weekly Report')
+						->setSubject('OPTIMUSDSS - '.$period.' - ['.$idWeeklyReport.'] Weekly Report for ' . $building->getName() . ', ' . $building->getCity())
 						->setFrom($this->mailer_from)
 						->setCc($toEmails)
 						->setContentType("text/html")
-						->setBody("Mail with pdf")
+						->setBody('OPTIMUSDSS - '.$period.' - ['.$idWeeklyReport.'] Weekly Report for ' . $building->getName() . ', ' . $building->getCity())
 						->attach(\Swift_Attachment::fromPath($nameFile));
 						
 					$this->mailer->send($message);
