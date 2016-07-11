@@ -71,19 +71,21 @@ class InitController extends Controller
 			for($i = 1; $i < count($buildings); $i++)  {
 				$mappingVariableTmp = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $thisMonday, $buildings[$i]->getId());
 
-				//processing the four indicators
-				for($d = 0; $d < 4; $d++) {
-					$max = -1;
-					for($j = 0; $j < count($mappingVariableTmp[$d]["data"]); $j++)  {
-						
-						$mappingVariable[$d]["data"][$j]["value"] += $mappingVariableTmp[$d]["data"][$j]["value"];
-						
-						if($max < $mappingVariable[$d]["data"][$j]["value"]) {
-							$max = $mappingVariable[$d]["data"][$j]["value"];
-						}							
+				if(count($mappingVariableTmp) > 0 ) {
+					 //processing the four indicators
+					for($d = 0; $d < 4; $d++) {
+						$max = -1;
+						for($j = 0; $j < count($mappingVariableTmp[$d]["data"]); $j++)  {
+							
+							$mappingVariable[$d]["data"][$j]["value"] += $mappingVariableTmp[$d]["data"][$j]["value"];
+							
+							if($max < $mappingVariable[$d]["data"][$j]["value"]) {
+								$max = $mappingVariable[$d]["data"][$j]["value"];
+							}							
+						}
+						// updating the max value
+						$mappingVariable[$d]["maxValue"] = $max;
 					}
-					// updating the max value
-					$mappingVariable[$d]["maxValue"] = $max;
 				}
 			}
 		}else{ 
