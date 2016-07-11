@@ -2,7 +2,8 @@ app/bootstrap.php.cache
 app/bootstrap_cache.php.cache
 app/cache/*
 app/config/parameters.ini
-
+app/config/parameters.yml
+app/config/config.yml
 app/logs/*
 !app/cache/.gitkeep
 !app/logs/.gitkeep
