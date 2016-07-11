@@ -11,6 +11,7 @@ app/logs/*
 /build/
 /vendor/*
 /bin/
+/web/bundles/optimus/pdf/*
 
 # -- Composer -----------------------------------------
 composer.phar

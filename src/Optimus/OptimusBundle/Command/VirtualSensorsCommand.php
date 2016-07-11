@@ -49,6 +49,8 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 	*/
 	protected function zaanstadEnergyConsumptionsensor($output)
 	{
+		$output->writeln(" - zaanstadEnergyConsumptionsensor -");
+		
 		//the first one is the virual sensor
         //id25 + id26 + id27) + (id60 + id61 + id62) - (id65 + id66 + id67),
 		$arr_sensors = "322_11_12_13";
@@ -105,6 +107,8 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 	*/
 	protected function savonaPVsensor($output)
 	{
+		$output->writeln(" - savonaPVsensor -");
+		
 		//the first one is the virual sensor
 		$arr_sensors = "1040_65_66_67";
 		
@@ -124,7 +128,7 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 			//if($array_ret[$i][0] == -1) {
                 $novalue = 1;
 				for($j = 1; $j < count($array_ret[$i])-1; $j++) {
-					if($array_ret[$i][$j] > -1) {
+					if($array_ret[$i][$j] >= 0) {
 						$value += $array_ret[$i][$j];
                         $novalue = 0;
 					}
@@ -133,8 +137,10 @@ class VirtualSensorsCommand extends ContainerAwareCommand
                 if( $novalue == 0) {                    
                     $date = $array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s');
                     $date = str_replace(" ", "T", $date)."Z";
-				
-                    $this->insertData($virturl, "savona", "http://optimus_savona", "energy_production", $value, $date);
+				 
+				 //fdsfsd
+                    $this->insertData($virturl, "savona", "http://optimus_savona", "energy_production", $value/1000, $date);
+					//$this->deleteData($virturl, "savona", "http://optimus_savona", "energy_consumption", $value, $date);
                 }
 			//}
 		}
@@ -146,6 +152,8 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 	*/
 	protected function savonaEnergyConsumptionsensor($output)
 	{
+		$output->writeln(" - savonaEnergyConsumptionsensor -");
+		
 		//the first one is the virual sensor
         //id25 + id26 + id27) + (id60 + id61 + id62) - (id65 + id66 + id67),
 		$arr_sensors = "1041_25_26_27_60_61_62_65_66_67";
@@ -163,13 +171,13 @@ class VirtualSensorsCommand extends ContainerAwareCommand
             
 			//only if the virtyal sensor do not have data
 			//if($array_ret[$i][0] == -1) {
-                $novalue = 1;
+                $novalue = 0;
 				for($j = 1; $j < count($array_ret[$i])-1; $j++) {
-					if($array_ret[$i][$j] > -1) {
-						if($j < 7)  $value += $array_ret[$i][$j];
-                        else        $value -= $array_ret[$i][$j];
+					if($j < 7)  $value += $array_ret[$i][$j];
+                    else if($array_ret[$i][$j] >= 0) {
+						$value += $array_ret[$i][$j];
 					
-                        $novalue = 0;
+//                        $novalue = 0;
                     }
 				}				
 				
@@ -177,7 +185,9 @@ class VirtualSensorsCommand extends ContainerAwareCommand
                     $date = $array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s');
                     $date = str_replace(" ", "T", $date)."Z";
 				
-                    $this->insertData($virturl, "savona", "http://optimus_savona", "energy_consumption", $value, $date);
+                    $this->insertData($virturl, "savona", "http://optimus_savona", "energy_consumption", $value/1000, $date);
+					
+					//$this->deleteData($virturl, "savona", "http://optimus_savona", "energy_consumption", $value, $date);
                 }
 			//}
 		}
@@ -212,6 +222,21 @@ class VirtualSensorsCommand extends ContainerAwareCommand
         $this->getContainer()->get('service_ontologia')->insertData($insert);
 	}
 	
+	protected function deleteData($virturl, $pilot, $graph, $name, $value, $datetime)
+	{		
+		$insert = 
+		'DELETE DATA FROM <'.$graph.'> {
+			?so <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?val.
+		
+		} WHERE {
+			?obs <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <'.$virturl.'> .
+			?obs <http://purl.oclc.org/NET/ssnx/ssn#observationResult> ?so.
+			?so <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?val.
+		}'; 
+		
+		var_dump($insert);
+       // $this->getContainer()->get('service_ontologia')->insertData($insert);
+	}
 	
 	protected function getValues($arr_sensors)
 	{

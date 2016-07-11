@@ -1,0 +1,8 @@
+
+	<form action="{{ path('valuesTracker') }}" method="post" {{ form_enctype(form) }}>
+		{{ form_errors(form) }}       
+		{{ form_rest(form) }}
+		<p>
+			<button type="submit" class="buttonBig" style="">{%trans%}SAVE{%endtrans%}</button>
+		</p>
+	</form>

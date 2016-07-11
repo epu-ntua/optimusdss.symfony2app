@@ -47,22 +47,22 @@
 								<td style="text-align:center;">{%trans%} Report {%endtrans%}</td>
 							</tr>
 						</thead>
-						<tbody>
-							
+						
+						<tbody>							
 							{% for report in lastReports %}
 							
-								<tr >
+								<tr>
 									<td >{{ report.datetime |date("W")}}</td>
 									<td >{{ report.period }}	</td>
 									
-									<td>{{ report.energyConsumption }}	</td>
-									<td>{{ report.energyCost }}	</td>
+									<td>{{ report.energyConsumption|round(2, 'floor') }}	</td>
+									<td>{{ report.energyCost|round(2, 'floor') }}	</td>
 									<td>{{ report.userActions }} </td>
 									<td>{{ report.datetime |date("Y-m-d") }}</td>
 									{% if report.status==1 %}
 										<td style="border-right:0px; padding: 3px;"><a href="{{ path('openFormReport', {'idBuilding':idBuilding, 'idWeeklyReport':report.id} ) }}">Edit</a></td>
 									{% else %}
-										<td style="border-right:0px; padding: 3px;">PDF</td>
+										<td style="border-right:0px; padding: 3px;"><a  href="{{ asset('bundles/optimus/pdf/report_'~report.id~'.pdf') }}" target="_blank" >PDF</a></td> <!--href="{{ path('pdfReport', {'idBuilding':idBuilding, 'idWeeklyReport':report.id} ) }}" -->
 									{% endif %}
 								</tr>
 								
@@ -75,8 +75,22 @@
 				</div>
 			</div>
 			
+			<div id="testPDF"></div>
+			
 		</div>
 		
 	</div>
-
+<script type="text/javascript">
+	function getPDF(reportID)
+	{
+		$.ajax({
+			type:'POST',
+			url: "{{ path('pdfReport', {'idBuilding':idBuilding, 'idWeeklyReport':1} ) }}", 
+			
+			success:function(result){				
+				$("#testPDF").html(result);
+			}			 
+		});
+	}
+</script>	
 {% endblock %}
