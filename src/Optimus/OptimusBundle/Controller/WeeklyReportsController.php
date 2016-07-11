@@ -35,17 +35,6 @@ class WeeklyReportsController extends Controller
 		
 		$em = $this->getDoctrine()->getManager();
 		$building=$em->getRepository('OptimusOptimusBundle:Building')->find($idBuilding);
-		
-		//Dates
-		$dateActual=new \DateTime();			
-		$dFromThisWeek = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";
-		$dFromLastWeek=\DateTime::createFromFormat('Y-m-d H:i:s', $dFromThisWeek)->modify("-7 days")->format("Y-m-d")." 00:00:00";
-		$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");
-		//data: e.consumption & e.cost
-		$dataThisWeek=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFromThisWeek, '', $idBuilding);
-			
-		//User actions
-		$userActionsWeek=$em->getRepository('OptimusOptimusBundle:Events')->getUserActionsAPS($idBuilding, $dFromThisWeek, $dTo);		
 						
 		$data['lastReports']=$em->getRepository('OptimusOptimusBundle:WeeklyReport')->findBy(array("fk_Building"=>$idBuilding), array('datetime'=>'DESC'));
 		
@@ -53,6 +42,19 @@ class WeeklyReportsController extends Controller
 		{		
 			if($report->getStatus()==1)			
 			{
+				//Dates 2016-07-18 / 2016-07-24
+				$dateActual=new \DateTime();
+
+				$monday=$report->getMonday();				
+				
+				$dFromThisWeek = \DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->format("Y-m-d")." 00:00:00";			
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("+7 days")->format("Y-m-d H:i:s");
+				//data: e.consumption & e.cost
+				$dataThisWeek=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFromThisWeek, '', $idBuilding);
+					
+				//User actions
+				$userActionsWeek=$em->getRepository('OptimusOptimusBundle:Events')->getUserActionsAPS($idBuilding, $dFromThisWeek, $dTo);		
+				
 				$report->setEnergyConsumption($dataThisWeek['Energy consumption']);
 				$report->setEnergyCost($dataThisWeek['Energy cost']);
 				$report->setUserActions($userActionsWeek[0][1]);
