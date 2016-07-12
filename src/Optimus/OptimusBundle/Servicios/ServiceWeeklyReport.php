@@ -101,6 +101,8 @@ class ServiceWeeklyReport {
 				
 				$this->em->persist($weeklyReportsBuilding[$i]);
 				$this->em->flush();
+				
+				$this->getPDFWRAction($building, $weeklyReportsBuilding[$i]->getId(), $weeklyReportsBuilding[$i]->getPeriod(), false);
 			}
 		}
 	}
@@ -117,10 +119,11 @@ class ServiceWeeklyReport {
 			$dateActual=new \DateTime();			
 			$monday =\DateTime::createFromFormat('Y-m-d', $dateActual->format("Y-m-d"))->modify("Monday next week");
 			
-			$nextMonday = \DateTime::createFromFormat('Y-m-d', $dateActual->format("Y-m-d"))->modify("Monday next week")->format("Y-m-d");
-			$nextSunday = \DateTime::createFromFormat('Y-m-d', $nextMonday)->modify("Sunday this week")->format("Y-m-d");
+			//$nextMonday = \DateTime::createFromFormat('Y-m-d', $dateActual->format("Y-m-d"))->modify("Monday next week")->format("Y-m-d");
+            $nextMonday = \DateTime::createFromFormat('Y-m-d', $dateActual->format("Y-m-d"))->modify("Monday next week");
+			$nextSunday = \DateTime::createFromFormat('Y-m-d', $nextMonday->format("Y-m-d"))->modify("Sunday this week")->format("Y-m-d");
 			
-			$period=$nextMonday." / ".$nextSunday;
+			$period=$nextMonday->format("Y-m-d")." / ".$nextSunday;
 			
 			//Get last weeklyReport building and set Status=0;			
 			$lastWeeklyReportBuilding=$this->em->getRepository('OptimusOptimusBundle:WeeklyReport')->findBy(array("fk_Building"=>$building->getId()), array("datetime"=>'DESC'));
@@ -148,7 +151,7 @@ class ServiceWeeklyReport {
 				$this->em->flush();
 				//dump($lastWeeklyReportBuilding[0]);
 				//create PDF
-				$this->getPDFWRAction($building, $lastWeeklyReportBuilding[0]->getId(), $lastWeeklyReportBuilding[0]->getPeriod());
+				$this->getPDFWRAction($building, $lastWeeklyReportBuilding[0]->getId(), $lastWeeklyReportBuilding[0]->getPeriod(), true);
 			}
 		
 			
@@ -158,7 +161,7 @@ class ServiceWeeklyReport {
 			$weeklyReport->setEnergyConsumption(0);//$energyConsumption
 			$weeklyReport->setEnergyCost(0);//$energyCost
 			$weeklyReport->setUserActions(0);//$userActions
-			$weeklyReport->setMonday($monday);//$datetime
+			$weeklyReport->setMonday($nextMonday);//$datetime
 			$weeklyReport->setDatetime($dateActual);//$datetime
 			$weeklyReport->setStatus(1);//$status
 			$weeklyReport->setExperienceDifficulties('');//$experienceDifficulties
@@ -283,7 +286,7 @@ class ServiceWeeklyReport {
 		return $data;
 	}
 
-	public function getPDFWRAction($building, $idWeeklyReport, $period)
+	public function getPDFWRAction($building, $idWeeklyReport, $period, $email)
 	{		
 		$weeklyReport=$this->em->getRepository('OptimusOptimusBundle:WeeklyReport')->find($idWeeklyReport);
 		if($weeklyReport)
@@ -307,19 +310,20 @@ class ServiceWeeklyReport {
 							'OptimusOptimusBundle:Reports:viewPDF.html.twig',	$data),
 						$nameFile);
 					
-					$toEmails=explode(",", $this->mailer_to);
-					
-					//Send mail with pdf create
-					$message = \Swift_Message::newInstance()
-						->setSubject('OPTIMUSDSS - '.$period.' - ['.$idWeeklyReport.'] Weekly Report for ' . $building->getName() . ', ' . $building->getCity())
-						->setFrom($this->mailer_from)
-						->setCc($toEmails)
-						->setContentType("text/html")
-						->setBody('OPTIMUSDSS - '.$period.' - ['.$idWeeklyReport.'] Weekly Report for ' . $building->getName() . ', ' . $building->getCity())
-						->attach(\Swift_Attachment::fromPath($nameFile));
+					if($email) {
+						$toEmails=explode(",", $this->mailer_to);
 						
-					$this->mailer->send($message);
-										
+						//Send mail with pdf create
+						$message = \Swift_Message::newInstance()
+							->setSubject('OPTIMUSDSS - '.$period.' - ['.$idWeeklyReport.'] Weekly Report for ' . $building->getName() . ', ' . $building->getCity())
+							->setFrom($this->mailer_from)
+							->setCc($toEmails)
+							->setContentType("text/html")
+							->setBody('OPTIMUSDSS - '.$period.' - ['.$idWeeklyReport.'] Weekly Report for ' . $building->getName() . ', ' . $building->getCity())
+							->attach(\Swift_Attachment::fromPath($nameFile));
+									
+						$this->mailer->send($message);
+					}					
 				}
 			}
 		}
