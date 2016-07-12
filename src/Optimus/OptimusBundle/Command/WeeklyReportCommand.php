@@ -16,15 +16,27 @@ class WeeklyReportCommand extends ContainerAwareCommand
 	{
 		$this
             ->setName('Weekly report')
-            ->setDescription('Creation of the weekly report')            
+            ->setDescription('Creation of the weekly report')  
+			->addArgument(
+                'option',
+                InputArgument::OPTIONAL,
+                'do you want to update the figures of all weekly reports?'
+            )			
         ;
 	}	
 	
 	protected function execute (InputInterface $input, OutputInterface $output)
 	{
-		$output->writeln("------** Weekly Report **--------");
+		$option = $input->getArgument('option');
 		
-		$aEvents=$this->getContainer()->get('service_weeklyReport')->createWeeklyReport();
+		$output->writeln("------** Weekly Report  ".$option." **--------");
+		
+		if(strcmp(strtolower($option), "update") == 0 ) {
+			$aEvents=$this->getContainer()->get('service_weeklyReport')->updateWeeklyReports();
+		}
+		else  {
+			$aEvents=$this->getContainer()->get('service_weeklyReport')->createWeeklyReport();
+		}
 		
 		
 		
