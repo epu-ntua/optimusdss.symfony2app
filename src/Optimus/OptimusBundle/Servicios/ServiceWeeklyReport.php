@@ -68,6 +68,44 @@ class ServiceWeeklyReport {
 		$this->mailer_to = $mailer_to;
     }
 	
+	//this method updates the figures of all weekly reports
+	public function updateWeeklyReports() 
+	{
+		$buildings=$this->em->getRepository('OptimusOptimusBundle:Building')->findAll();
+		
+		foreach($buildings as $building)
+		{
+			echo " -- Updating building: ".$building->getName()." -- \n";
+			
+			$weeklyReportsBuilding=$this->em->getRepository('OptimusOptimusBundle:WeeklyReport')->findBy(array("fk_Building"=>$building->getId()), array("datetime"=>'DESC'));
+			
+			for($i=0; $i < count($weeklyReportsBuilding); $i++) {
+				$monday=$weeklyReportsBuilding[$i]->getMonday();				
+				
+				$dFromThisWeek = \DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->format("Y-m-d")." 00:00:00";			
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $monday->format("Y-m-d H:i:s"))->modify("+7 days")->format("Y-m-d H:i:s");
+				
+				echo " -- report from: ".$dFromThisWeek." to: ".$dTo." -- \n";
+				
+				//data: e.consumption & e.cost
+				$dataThisWeek=$this->rtime->getRTTime($dTo, $dFromThisWeek, '', $building->getId());
+					
+				//User actions
+				$userActionsWeek=$this->em->getRepository('OptimusOptimusBundle:Events')->getUserActionsAPS($building->getId(), $dFromThisWeek, $dTo);		
+				
+				$weeklyReportsBuilding[$i]->setEnergyConsumption($dataThisWeek['Energy consumption']);
+				$weeklyReportsBuilding[$i]->setEnergyCost($dataThisWeek['Energy cost']);
+				$weeklyReportsBuilding[$i]->setUserActions($userActionsWeek[0][1]);
+				
+				dump($weeklyReportsBuilding[$i]);
+				
+				$this->em->persist($weeklyReportsBuilding[$i]);
+				$this->em->flush();
+			}
+		}
+	}
+	
+	//this method creates a new weekly report and closes the previous one
 	public function createWeeklyReport()
 	{
 		$buildings=$this->em->getRepository('OptimusOptimusBundle:Building')->findAll();
