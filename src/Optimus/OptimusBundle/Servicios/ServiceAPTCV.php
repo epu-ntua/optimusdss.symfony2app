@@ -16,6 +16,9 @@ use Optimus\OptimusBundle\Servicios\Util\TCV\LinearParameters;
 use Optimus\OptimusBundle\Servicios\Util\TCV\ThermalSensation;
 use Optimus\OptimusBundle\Servicios\ServiceOntologia;
 
+use RecursiveArrayIterator;
+use RecursiveIteratorIterator;
+
 class ServiceAPTCV {
 
     protected $em;
@@ -203,6 +206,7 @@ class ServiceAPTCV {
         $feedback = array();
         //foreach date
         foreach ($dates as $date) {
+			
             //initialize feedback array
             $feedback[$date] = array();
             $datetime = $date[0] . $date[1] . $date[2] . $date[3] . '-' . $date[4] . $date[5] . '-' . $date[6] . $date[7] . 'T';
@@ -210,9 +214,13 @@ class ServiceAPTCV {
             $sensation = new ThermalSensation();
             for ($hour = 0; $hour <= 23; $hour++) {
                 if (!array_key_exists($hour, $feedback[$date])) {
-                    $feedback[$date][$hour] = ['size' => 0, 'value' => 0];
+					$feedback[$date][$hour] = ['size' => 0, 'value' => 0];
                 }
-                $datetime_str = $datetime . $hour;
+				
+				$hourString = $hour;
+				if($hour < 10)  
+					$hourString = "0".$hourString;
+                $datetime_str = $datetime . $hourString;
                 foreach ($this_records as $record) {
                     if (strpos($record->{'time'}->{'value'}, $datetime_str) !== FALSE) {
                         $v = $sensation->from_string($record->{'v'}->{'value'})->get_sensation();
@@ -229,13 +237,11 @@ class ServiceAPTCV {
 							$v += $this->triangular_step;
 						}
                         while ($v != 0) {
-                            
                             $prev = $hour - $step;
                             if (($prev >= 7) && ($prev <= 21)) {
                                 $feedback[$date][$prev]['value'] += $v;
                                 $feedback[$date][$prev]['size']++;
                             }
-
                             $next = $hour + $step;
                             if (($next >= 7) && ($next <= 21)) {
                                 if (!array_key_exists($next, $feedback[$date])) {
@@ -267,12 +273,7 @@ class ServiceAPTCV {
         return $date ;
     }
 
-    private function saveData($actual_temperature, $actual_humidity, $average_humidity, $tcv_records_prev, $tcv_records_curr, $prev_dates, $curr_dates, $sections, $pmv_calc, $idBuilding, $calculation) {
-		foreach ($sections as $key=>$value) {
-            if (is_array($value)) {
-                $this->saveData($actual_temperature, $actual_humidity, $average_humidity, $tcv_records_prev, $tcv_records_curr, $prev_dates, $curr_dates, $value, $pmv_calc, $idBuilding, $calculation);
-            }
-            else {
+    private function saveData($actual_temperature, $actual_humidity, $average_humidity, $tcv_records_prev, $tcv_records_curr, $prev_dates, $curr_dates, $value, $pmv_calc, $idBuilding, $calculation) {
                 $prev_feedback = $this->get_feedback($tcv_records_prev, $prev_dates, $value);
                 $current_feedback = $this->get_feedback($tcv_records_curr, $curr_dates, $value);
                 //create a PMV calculator
@@ -291,7 +292,6 @@ class ServiceAPTCV {
                         }
                     }
                 }
-
                 if (count($points) > 0) { //if there's any input
                     //calculate slope and intercept of these points
                     $lp = new LinearParameters($points);
@@ -318,13 +318,15 @@ class ServiceAPTCV {
                 } else {
                     $proposed_temperature = 0.0;
                 }
-
+				
+				
+				
                 foreach ($curr_dates as $date) {
+					
                     $date_obj = $this->create_date_format($date, 0);
                     //$actionPlan = $this->em->getRepository('OptimusOptimusBundle:ActionPlans')->findOneBy(array("fk_Building" => $idBuilding, "type" => $calculation));
                     $idCalculation = $calculation->getId();
                     $output = $this->em->getRepository('OptimusOptimusBundle:APTCVOutput')->findOutputByDate($date_obj->format('Y-m-d H:i:s'), $idCalculation, $value);
-
                     if ((!$output) && ($proposed_temperature != 0.0)) {
                         $output = new APTCVOutput();
                         $output->setDate($date_obj);
@@ -336,10 +338,20 @@ class ServiceAPTCV {
                     }
                     //$output = $this->em->getRepository('OptimusOptimusBundle:APTCVOutput')->findOutputByDate($date_obj->format('Y-m-d H:i:s'), $idCalculation, $value);
                     //$outputId = $output[0]->getId();
+					
+					$day = $this->create_date_format($date, 0)->format("Y-m-d H:i:s");
+					$dayFeedbacks = $this->em->getRepository('OptimusOptimusBundle:FeedbackOutput')->findOutputByDay($day, $value);
+					$hoursWithFeedback = array();
+					foreach($dayFeedbacks as $feedback){
+						$feedbackDate=explode(" ", $feedback->getFullDate()->format('Y-m-d H:i:s'));
+						$hour = intval(substr($feedbackDate[1], 0, 2));
+						array_push($hoursWithFeedback, $hour);
+					}
                     for ($hour = 0; $hour < 24; $hour++) {
                         $dates[$hour] = $this->create_date_format($date, $hour);
-                        $feedback = $this->em->getRepository('OptimusOptimusBundle:FeedbackOutput')->findOutputByFullDate($dates[$hour]->format('Y-m-d H:i:s'), $value);
-                        if ((!$feedback) && ($date == $curr_dates[0]) && ($current_feedback[$date][$hour]['size'] != 0) ) {
+                        //$feedback = $this->em->getRepository('OptimusOptimusBundle:FeedbackOutput')->findOutputByFullDate($dates[$hour]->format('Y-m-d H:i:s'), $value);
+                        
+						if ((!in_array($hour, $hoursWithFeedback)) && ($date == $curr_dates[0]) && ($current_feedback[$date][$hour]['size'] != 0) ) {
                             $feedback = new FeedbackOutput();
                             $feedback->setFullDate($dates[$hour]);
 							$feedback->setSection($value);
@@ -349,26 +361,37 @@ class ServiceAPTCV {
                             $this->em->persist($feedback);
                             $this->em->flush();
                         }
+						
                     }
                 }
+				
 				foreach ($prev_dates as $date) {
+					$day = $this->create_date_format($date, 0)->format("Y-m-d H:i:s");
+					$dayFeedbacks = $this->em->getRepository('OptimusOptimusBundle:FeedbackOutput')->findOutputByDay($day, $value);
+					
+					$hoursWithFeedback = array();
+					foreach($dayFeedbacks as $feedback){
+						$feedbackDate=explode(" ", $feedback->getFullDate()->format('Y-m-d H:i:s'));
+						$hour = intval(substr($feedbackDate[1], 0, 2));
+						array_push($hoursWithFeedback, $hour);
+					}
+					
                     for ($hour = 0; $hour < 24; $hour++) {
                         $dates[$hour] = $this->create_date_format($date, $hour);
-                        $feedback = $this->em->getRepository('OptimusOptimusBundle:FeedbackOutput')->findOutputByFullDate($dates[$hour]->format('Y-m-d H:i:s'), $value);
-                        if ((!$feedback) && ($prev_feedback[$date][$hour]['size'] != 0) ) {
-                            $feedback = new FeedbackOutput();
-                            $feedback->setFullDate($dates[$hour]);
+                        //$feedback = $this->em->getRepository('OptimusOptimusBundle:FeedbackOutput')->findOutputByFullDate($dates[$hour]->format('Y-m-d H:i:s'), $value);
+                        if ((!in_array($hour, $hoursWithFeedback)) && ($prev_feedback[$date][$hour]['size'] != 0) ) {
+							$feedback = new FeedbackOutput();
+							$feedback->setFullDate($dates[$hour]);
 							$feedback->setSection($value);
 							$feedback->setFkApCalculation($calculation);
-                            $feedback->setFeedback($prev_feedback[$date][$hour]['value']);
-                            $feedback->setFeedbackSize($prev_feedback[$date][$hour]['size']);
-                            $this->em->persist($feedback);
-                            $this->em->flush();
+							$feedback->setFeedback($prev_feedback[intval($date)][$hour]['value']);
+							$feedback->setFeedbackSize($prev_feedback[intval($date)][$hour]['size']);
+							$this->em->persist($feedback);
+							$this->em->flush();
                         }
                     }
                 }
-            }
-        }
+	
     }
 
     /*
@@ -433,11 +456,21 @@ class ServiceAPTCV {
 			}
 		}
 		
+		
 		$sensor_humidity = $this->em->getRepository('OptimusOptimusBundle:APSensors')->findOneBy(array("fk_actionplan"=>$idActionPlan, "name"=>self::$sensor_humidity_name));
 		$idSensor = $sensor_humidity->getFkSensor()->getId();
 
 		$array_ret = $this->ontologia->getDataFromSensorList($start, $end, 168, $idSensor);
-		
+		/*
+		for($i = 0; $i < count($array_ret); $i++) {
+            $row = $array_ret[$i][0];
+            for($j = 1; $j < count($array_ret[$i])-1; $j++) {
+                $row .= " ".$array_ret[$i][$j];
+            }
+
+            echo $row." ".$array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s')."<br>";
+        }
+		*/
 		
 		for($i=0; $i<7; $i++){
 			$allzeroHum= true;
@@ -480,12 +513,32 @@ class ServiceAPTCV {
         $query = "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX optimus: <http://www.optimus-smartcity.eu/ontology/>\nPREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>\nSELECT ?r ?time ?r_building_type ?v\nWHERE {?r a optimus:tcv_record.\n FILTER ((regex(str(?r), '$name_key', 'i')))\n?r optimus:building_type ?r_building_type.\n?r optimus:thermal_sensation ?v.\n?r sem:hasTimeStamp ?time. $feedback_filter\n}";
         $tcv_records_prev = $this->execute_sparql_query($query);		
 		
+		
         $feedback_filter = $this->time_filter($curr_dates);
         $query = "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX optimus: <http://www.optimus-smartcity.eu/ontology/>\nPREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>\nSELECT ?r ?time ?r_building_type ?v\nWHERE {?r a optimus:tcv_record.\n FILTER ((regex(str(?r), '$name_key', 'i')))\n?r optimus:building_type ?r_building_type.\n?r optimus:thermal_sensation ?v.\n?r sem:hasTimeStamp ?time. $feedback_filter\n}";
         $tcv_records_curr = $this->execute_sparql_query($query);
 		
-		
-		$this->saveData($actual_temperature, $actual_humidity, $average_humidity, $tcv_records_prev, $tcv_records_curr, $prev_dates, $curr_dates, $sections, $pmv_calc, $idBuilding, $calculation);
+		/*
+		dump($sections);
+		$allFlat = false;
+		while(!$allFlat){
+			$allFlat = true;
+			foreach ($sections as $key=>$value) {
+				if (is_array($value)) {
+					$allFlat = false;
+					foreach($value as $tempValue){
+						array_push($sections, $value);
+					}
+					//unset($sections[$key]);
+				}
+			}
+		}
+		*/
+		$it = new RecursiveIteratorIterator(new RecursiveArrayIterator($sections));
+		foreach($it as $v) {
+		  	$this->saveData($actual_temperature, $actual_humidity, $average_humidity, $tcv_records_prev, $tcv_records_curr, $prev_dates, $curr_dates, $v, $pmv_calc, $idBuilding, $calculation);
+		}
+				
 	}
 }
 ?>
