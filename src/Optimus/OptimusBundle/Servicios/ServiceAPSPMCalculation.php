@@ -59,7 +59,7 @@ class ServiceAPSPMCalculation {
 			echo "invoke service of the TCV inference rule based on last week data\n";
 			// invoke service of the TCV inference rule based on last week data
 			$this->aptcv->invoke_service($idBuilding, $start_date->format('Y-m-d 00:00:00'), $idAPType, $calculation, $sections);
-
+			
 			for($iDay=0; $iDay<$nDays; $iDay++)
 			{
 				$sCurrentDate = $this->getDateString($from, $iDay);
@@ -93,6 +93,8 @@ class ServiceAPSPMCalculation {
 			$apcalculation = $this->em->getRepository('OptimusOptimusBundle:APCalculation')->find($calculation);
 			$this->em->remove($apcalculation);
 			$this->em->flush();
+			echo "\nSomething went wrong\n";
+			echo $e->getMessage();
 			throw $e;
 		}
 		

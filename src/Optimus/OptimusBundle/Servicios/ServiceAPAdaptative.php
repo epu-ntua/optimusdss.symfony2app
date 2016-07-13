@@ -96,7 +96,7 @@ class ServiceAPAdaptative {
 
 		
 		$array_ret = $this->ontologia->getDataFromSensorList($start_date, $end_date, 2*$this->window, $idSensor);
-		
+
         /*
         for($i = 0; $i < count($array_ret); $i++) {
             $row = $array_ret[$i][0];
