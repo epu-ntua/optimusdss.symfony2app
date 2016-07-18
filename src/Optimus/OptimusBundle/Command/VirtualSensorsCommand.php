@@ -32,11 +32,21 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 		$output->writeln("");
 				
 		if(strcmp(strtolower($city), "savona") == 0 ) {
-			$this->savonaPVsensor($output);
-			$this->savonaEnergyConsumptionsensor($output);
+			$this->savonaSchoolPVsensor($output);
+			$this->savonaSchoolEnergyConsumptionsensor($output);
+			$this->savonaSchoolCO2sensor($output);
+			$this->savonaSchoolEnergyPricesensor($output);
+			
+			
+			$this->savonaCampusPVsensor($output);
+			$this->savonaCampusEnergyConsumptionsensor($output);
+			$this->savonaCampusCO2sensor($output);
+			$this->savonaCampusEnergyPrice($output);
+			
 		} else if(strcmp(strtolower($city), "zaanstad") == 0 ) {
 			$this->zaanstadEnergyConsumptionsensor($output);
 		} else if(strcmp(strtolower($city), "santcugat") == 0 ) {
+			$this->santcugatCO2Pricesensors($output);
 			$this->santcugatPVsensor($output);
 		}
 			
@@ -47,10 +57,45 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 	
 	
 	/*
-	* This virtual sensor is to change units from wh to kwh of id1
+	/********************************************************************
+	* SANT CUGAT
 	*
 	*/
 	
+	protected function santcugatCO2Pricesensors($output) 
+	{
+		$output->writeln(" - Santcugat CO2 & Price sensors -");
+		
+		// http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/townhall_co2emissions 1147
+		// http://www.optimus-smartcity.eu/resource/sant_cugat/sensingdevice/townhall_energyprice 1148
+		//the first one is the virual sensor
+		$arr_sensors = "4_1146_58";
+		
+		$entityManager = $this->getContainer()->get('doctrine')->getManager();
+        
+		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1147");
+		$virturlCO2 = $nameSensor->getUrl();
+		
+		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1148");
+		$virturlPrice = $nameSensor->getUrl();
+		
+				
+		$array_ret = $this->getValues($arr_sensors);
+		
+		for($i = 0; $i < count($array_ret); $i++) {
+	
+			$value = $array_ret[$i][0];
+            $prod = $array_ret[$i][1];
+			$price = $array_ret[$i][2];
+			
+			$date = $array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s');
+			$date = str_replace(" ", "T", $date)."Z";
+		 
+			$this->insertData($virturlCO2, "sant_cugat", "http://optimus_santcugat", "townhall_co2emissions", $value * 0.399, $date);
+			$this->insertData($virturlPrice, "sant_cugat", "http://optimus_santcugat", "townhall_energyprice", ($value-$prod)*$price, $date);
+		}
+	}
+
 	protected function santcugatPVsensor($output) 
 	{
 		$output->writeln(" - santcugatPVsensor -");
@@ -90,8 +135,11 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 		}
 	}
 
+		
 	/*
-	* This virtual sensor is the sum of id65 + id66 + id67
+	/*
+	/********************************************************************
+	* SAVONA ZAANSTAD
 	*
 	*/
 	protected function zaanstadEnergyConsumptionsensor($output)
@@ -108,7 +156,10 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 		
 		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("323");
 		$costsensor = $nameSensor->getUrl();
-				
+			
+		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("324");
+		$co2sensor = $nameSensor->getUrl();
+		
 		$array_ret = $this->getValues($arr_sensors);
 		$prevalue = 0;
 		for($i = 1; $i < count($array_ret); $i++) {
@@ -141,6 +192,7 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 					var_dump($value." at ".$date);
                     $this->insertData($virturl, "zaanstad", "http://optimus_zaanstad", "energy_consumption", $value, $date);
 					$this->insertData($costsensor, "zaanstad", "http://optimus_zaanstad", "energycost", 56.0, $date);//56€/MWh
+					$this->insertData($co2sensor, "zaanstad", "http://optimus_zaanstad", "co2emissions", $value*0.399, $date);//56€/MWh
                 
 					$prevalue = $value;
 				}
@@ -148,13 +200,164 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 		}
 	}
 	
+	
 	/*
-	* This virtual sensor is the sum of id65 + id66 + id67
+	/********************************************************************
+	* SAVONA CAMPUS
 	*
 	*/
-	protected function savonaPVsensor($output)
+	protected function savonaCampusPVsensor($output)
 	{
-		$output->writeln(" - savonaPVsensor -");
+		
+		//http://www.optimus-smartcity.eu/resource/savona/sensingdevice/campus_energy_production
+		$output->writeln(" - Savona Campus PVsensor -");
+		
+		//the first one is the virual sensor
+		$arr_sensors = "1044_1021_1001_1003";
+		
+		$entityManager = $this->getContainer()->get('doctrine')->getManager();
+        
+		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1044");
+        
+		$virturl = $nameSensor->getUrl();
+		
+		$this->deleteData($virturl, "savona", "http://optimus_savona", "campus_energy_production", "", "");
+			
+		$array_ret = $this->getValues($arr_sensors);
+		
+		for($i = 0; $i < count($array_ret); $i++) {
+			$value = 0;
+
+			$value = $array_ret[$i][1];								//1021
+			if($array_ret[$i][2] < 0) $value -= $array_ret[$i][2];	//1001
+			if($array_ret[$i][3] < 0) $value -= $array_ret[$i][3];	//1003
+			         
+			$date = $array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s');
+			$date = str_replace(" ", "T", $date)."Z";
+			 
+			//dump($date." Vale: ".$value." | ".$array_ret[$i][1].", ".$array_ret[$i][2].", ".$array_ret[$i][3]);
+	 
+			$this->insertData($virturl, "savona", "http://optimus_savona", "campus_energy_production", $value, $date);
+		}
+	}
+	
+	
+	/*
+	* This virtual sensor is the sum of id65 + id66 + id67
+	*/
+	protected function savonaCampusEnergyConsumptionsensor($output)
+	{
+		//http://www.optimus-smartcity.eu/resource/savona/sensingdevice/campus_energy_consumption
+		$output->writeln(" - Savona Campus EnergyConsumption -");
+		
+		//the first one is the virual sensor
+		$arr_sensors = "1045_1005_1006_1044";
+		
+		$entityManager = $this->getContainer()->get('doctrine')->getManager();
+        
+		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1045");
+        
+		$virturl = $nameSensor->getUrl();
+		
+				
+		$array_ret = $this->getValues($arr_sensors);
+		
+		for($i = 0; $i < count($array_ret); $i++) {
+			$value = 0;
+
+			for($j = 1; $j < count($array_ret[$i])-1; $j++) {
+				$value += $array_ret[$i][$j];
+			}
+				
+			$date = $array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s');
+			$date = str_replace(" ", "T", $date)."Z";
+			 
+			$this->insertData($virturl, "savona", "http://optimus_savona", "campus_energy_consumption", $value, $date);
+		}
+	}
+	/*
+	* This virtual sensor is the sum of id65 + id66 + id67
+	*/
+	protected function savonaCampusCO2sensor($output)
+	{
+		//http://www.optimus-smartcity.eu/resource/savona/sensingdevice/campus_co2_emissions
+		$output->writeln(" - Savona Campus CO2 -");
+		
+		//the first one is the virual sensor
+		$arr_sensors = "1046_1005_1006";
+		
+		$entityManager = $this->getContainer()->get('doctrine')->getManager();
+        
+		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1046");
+        
+		$virturl = $nameSensor->getUrl();
+		
+				
+		$array_ret = $this->getValues($arr_sensors);
+		
+		for($i = 0; $i < count($array_ret); $i++) {
+			$value = 0;
+
+			for($j = 1; $j < count($array_ret[$i])-1; $j++) {
+				$value += $array_ret[$i][$j];
+			}
+			
+			$value *= 0.483;
+			
+			if($value < 0) $value = 0;
+			
+			$date = $array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s');
+			$date = str_replace(" ", "T", $date)."Z";
+			 
+			$this->insertData($virturl, "savona", "http://optimus_savona", "campus_co2_emissions", $value, $date);
+		}
+	}
+		
+	/*
+	* This virtual sensor is the sum of id65 + id66 + id67
+	*/
+	protected function savonaCampusEnergyPrice($output)
+	{
+		//http://www.optimus-smartcity.eu/resource/savona/sensingdevice/campus_energy_price
+		$output->writeln(" - Savona Campus Energy Price -");
+		
+		//the first one is the virual sensor
+		$arr_sensors = "1047_1005_1006_1042";
+		
+		$entityManager = $this->getContainer()->get('doctrine')->getManager();
+        
+		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1047");
+        
+		$virturl = $nameSensor->getUrl();
+		
+				
+		$array_ret = $this->getValues($arr_sensors);
+		
+		for($i = 0; $i < count($array_ret); $i++) {
+			$value = 0;
+
+			$value += $array_ret[$i][1];			//1005
+			$value += $array_ret[$i][2];			//1006
+			
+			$value *=  ($array_ret[$i][3] / 1000);	//1042
+			
+			if($value < 0) $value = 0;
+			
+			$date = $array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s');
+			$date = str_replace(" ", "T", $date)."Z";
+			 
+			$this->insertData($virturl, "savona", "http://optimus_savona", "campus_energy_price", $value, $date);
+		}
+	}
+	
+	/*
+	/********************************************************************
+	* SAVONA SCHOOOL 
+	*
+	*/
+	protected function savonaSchoolPVsensor($output)
+	{
+		$output->writeln(" - Savona School PVsensor -");
 		
 		//the first one is the virual sensor
 		$arr_sensors = "1040_65_66_67";
@@ -197,9 +400,9 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 	* This virtual sensor is the sum of id65 + id66 + id67
 	*
 	*/
-	protected function savonaEnergyConsumptionsensor($output)
+	protected function savonaSchoolEnergyConsumptionsensor($output)
 	{
-		$output->writeln(" - savonaEnergyConsumptionsensor -");
+		$output->writeln(" - Savona School EnergyConsumptionsensor -");
 		
 		//the first one is the virual sensor
         //id25 + id26 + id27) + (id60 + id61 + id62) - (id65 + id66 + id67),
@@ -239,6 +442,98 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 			//}
 		}
 	}
+			
+	/*
+	* This virtual sensor is the sum of id65 + id66 + id67
+	*
+	*/
+	protected function savonaSchoolCO2sensor($output)
+	{
+		$output->writeln(" - Savona School CO2 emissions -");
+		
+		//the first one is the virual sensor
+        //id25 + id26 + id27) + (id60 + id61 + id62) - (id65 + id66 + id67),
+		$arr_sensors = "1048_25_26_27_60_61_62";
+		
+		$entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1048");
+		$virturl = $nameSensor->getUrl();
+		
+				
+		$array_ret = $this->getValues($arr_sensors);
+		
+		for($i = 0; $i < count($array_ret); $i++) {
+			$value = 0;
+           
+			$novalue = 0;
+			for($j = 1; $j < count($array_ret[$i])-1; $j++) {
+				$value += $array_ret[$i][$j];
+			}				
+			
+			$value *= 0.483/1000;
+			
+			if($value < 0) $value = 0;				
+			
+			if( $novalue == 0) {
+				$date = $array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s');
+				$date = str_replace(" ", "T", $date)."Z";
+			
+				$this->insertData($virturl, "savona", "http://optimus_savona", "school_co2_emissions", $value, $date);
+				
+			}
+		}
+	}
+	
+	
+	/*
+	* This virtual sensor is the sum of id65 + id66 + id67
+	*
+	*/
+	protected function savonaSchoolEnergyPricesensor($output)
+	{
+		$output->writeln(" - Savona School Energy Price emissions -");
+		
+		//the first one is the virual sensor
+        
+		$arr_sensors = "1049_25_26_27_60_61_62_1042";
+		
+		$entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+		$nameSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1049");
+		$virturl = $nameSensor->getUrl();
+		
+				
+		$array_ret = $this->getValues($arr_sensors);
+		
+		for($i = 0; $i < count($array_ret); $i++) {
+			$value = 0;
+           
+			$novalue = 0;
+			for($j = 1; $j < count($array_ret[$i])-2; $j++) {
+				$value += $array_ret[$i][$j];
+			}				
+			
+			$value /= 1000;
+			$value *= ($array_ret[$i][count($array_ret[$i])-2] / 1000);	//1042
+			
+			if($value < 0) $value = 0;				
+			
+			if( $novalue == 0) {
+				$date = $array_ret[$i][count($array_ret[$i])-1]->format('Y-m-d H:i:s');
+				$date = str_replace(" ", "T", $date)."Z";
+			
+				$this->insertData($virturl, "savona", "http://optimus_savona", "school_energy_price", $value, $date);
+				
+			}
+		}
+	}
+	
+	
+	
+	/********************************************************************
+	* GENERAL METHODS
+	*
+	*
+	*/
 	
 	protected function insertData($virturl, $pilot, $graph, $name, $value, $datetime)
 	{		
@@ -287,7 +582,7 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 	
 	protected function getValues($arr_sensors)
 	{
-		$window = 168;
+		$window = 368;
 		
 		$date = date("Y-m-d", mktime(0, 0, 0, date("m")  , date("d"), date("Y")));  
 		$to=\DateTime::createFromFormat('Y-m-d H:i:s', $date." 00:00:00");
