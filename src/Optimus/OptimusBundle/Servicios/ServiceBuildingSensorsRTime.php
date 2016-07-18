@@ -323,9 +323,14 @@ class ServiceBuildingSensorsRTime
 							$data[self::$sensor_energyCost_name] += $dataCost[0]["values"][$i]["value"] * $dataConsumption[0]["values"][$i]["value"] / 1000;
 					}
 				}
-				
-				if(($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]) >= 0)
-					$data[self::$sensor_co2_name] += ($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]) * $this->CO2emissionsCoefficient;
+								
+                if(count($dataProduction) > 0) {
+                    if(($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]) >= 0)
+                        $data[self::$sensor_co2_name] += ($dataConsumption[0]["values"][$i]["value"] - $dataProduction[0]["values"][$i]["value"]) * $this->CO2emissionsCoefficient;
+                } else  {
+                    if($dataConsumption[0]["values"][$i]["value"] )
+                        $data[self::$sensor_co2_name] += ($dataConsumption[0]["values"][$i]["value"] ) * $this->CO2emissionsCoefficient;
+                }
 			}	
 		}
 				
