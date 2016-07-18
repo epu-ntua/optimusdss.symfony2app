@@ -92,7 +92,7 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 			$date = str_replace(" ", "T", $date)."Z";
 		 
 			$this->insertData($virturlCO2, "sant_cugat", "http://optimus_santcugat", "townhall_co2emissions", $value * 0.399, $date);
-			$this->insertData($virturlPrice, "sant_cugat", "http://optimus_santcugat", "townhall_energyprice", ($value-$prod)*$price, $date);
+			$this->insertData($virturlPrice, "sant_cugat", "http://optimus_santcugat", "townhall_energyprice", ($value-$prod)*$price/1000, $date);
 		}
 	}
 
