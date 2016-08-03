@@ -625,7 +625,8 @@ class ServiceOntologia {
 		return $array_ret;
 	}
 	
-	
+
+
 	private function search_in_array($array_ret, $inputdate, $lastIndex) {
 		$inx = $lastIndex;
 		

@@ -176,12 +176,15 @@ class ServiceBuildingSensorsRTime
 					if($minValueProd > $dataProduction[0]["values"][$i]["value"]) 	$minValueProd = $dataProduction[0]["values"][$i]["value"];
 				}
 
-				if($maxValueCo2 < $dataCo2[0]["values"][$i]["value"]) 	$maxValueCo2 = $dataCo2[0]["values"][$i]["value"];
-				if($minValueCo2 > $dataCo2[0]["values"][$i]["value"]) 	$minValueCo2 = $dataCo2[0]["values"][$i]["value"];
-				
+				if(count($dataCo2) > 0) {
+					if($maxValueCo2 < $dataCo2[0]["values"][$i]["value"]) 	$maxValueCo2 = $dataCo2[0]["values"][$i]["value"];
+					if($minValueCo2 > $dataCo2[0]["values"][$i]["value"]) 	$minValueCo2 = $dataCo2[0]["values"][$i]["value"];
+				}
 		
-				if($maxValueCost < $dataCost[0]["values"][$i]["value"]) 	$maxValueCost = $dataCost[0]["values"][$i]["value"];
-				if($minValueCost > $dataCost[0]["values"][$i]["value"]) 	$minValueCost = $dataCost[0]["values"][$i]["value"];
+				if(count($dataCost) > 0) {
+					if($maxValueCost < $dataCost[0]["values"][$i]["value"]) 	$maxValueCost = $dataCost[0]["values"][$i]["value"];
+					if($minValueCost > $dataCost[0]["values"][$i]["value"]) 	$minValueCost = $dataCost[0]["values"][$i]["value"];
+				}
 			}
 		
 			if($maxValueProd > $maxValue)
@@ -193,9 +196,11 @@ class ServiceBuildingSensorsRTime
 			
 			$aMapping[]=array("name"=>self::$sensor_energyConsumption_name, "color"=>self::$sensor_energyConsumption_color, "stack" => 0, "units"=>self::$sensor_energyConsumption_units,  "maxValue"=>$maxValue, "minValue"=>$minValue, "data"=>$dataConsumption[0]["values"]);
 			
-            $aMapping[]=array("name"=>self::$sensor_co2_name, "color"=>self::$sensor_co2_color, "stack" => 0, "units"=>self::$sensor_co2_units, "maxValue"=>$maxValueCo2, "minValue"=>$minValueCo2, "data"=>$dataCo2[0]["values"]);
-					
-			
+			if(count($dataCo2) > 0) 
+				$aMapping[]=array("name"=>self::$sensor_co2_name, "color"=>self::$sensor_co2_color, "stack" => 0, "units"=>self::$sensor_co2_units, "maxValue"=>$maxValueCo2, "minValue"=>$minValueCo2, "data"=>$dataCo2[0]["values"]);
+			else
+				$aMapping[]=array("name"=>self::$sensor_co2_name, "color"=>self::$sensor_co2_color, "stack" => 0, "units"=>self::$sensor_co2_units, "maxValue"=>$maxValueCo2, "minValue"=>$minValueCo2, "data"=>array());
+
 			if(count($dataCost) > 0) 
 				$aMapping[]=array("name"=>self::$sensor_energyCost_name, "color"=>self::$sensor_energyCost_color, "stack" => 0, "units"=>self::$sensor_energyCost_units, "maxValue"=>$maxValueCost, "minValue"=>$minValueCost, "data"=>$dataCost[0]["values"]);
 			else
