@@ -23,13 +23,13 @@
         "symfony/monolog-bundle": "~2.4",
         "sensio/distribution-bundle": "~3.0",
         "sensio/framework-extra-bundle": "~3.0",
+		"sensio/generator-bundle": "~2.5",
         "incenteev/composer-parameter-handler": "~2.0",
 		"knplabs/knp-snappy-bundle": "dev-master",
         "semsol/arc2": "dev-master",
         "wemersonjanuario/wkhtmltopdf-windows": "*"
     },
     "require-dev": {
-        "sensio/generator-bundle": "~2.3"
     },
     "scripts": {
         "post-root-package-install": [
@@ -61,6 +61,9 @@
         "symfony-assets-install": "relative",
         "branch-alias": {
             "dev-master": "2.6-dev"
-        }
+        },
+		"incenteev-parameters":  {
+		    "file": "app/config/parameters.yml"
+		}
     }
 }

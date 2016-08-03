@@ -48,12 +48,55 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 		} else if(strcmp(strtolower($city), "santcugat") == 0 ) {
 			$this->santcugatCO2Pricesensors($output);
 			$this->santcugatPVsensor($output);
-		}
-			
+		} else if(strcmp(strtolower($city), "epu") == 0 ) {
+            $this->epuEnergyConsumptionsensor($output);
+        }
 
 		$output->writeln("");
 		$output->writeln("------** END **--------");
 	}
+
+    /*
+    /********************************************************************
+    * EPU
+    *
+    */
+    protected function epuEnergyConsumptionsensor($output)
+    {
+        $output->writeln(" - epuEnergyConsumptionsensor -");
+
+        //the first one is the virual sensor (47)
+        //id47 = id11 + d12 + d13 + d14
+        $arr_sensors = "47_11_12_13_14";
+
+        $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+        $vconsumptionSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("47");
+        $virturl = $vconsumptionSensor->getUrl();
+
+        $array_ret = $this->getValues($arr_sensors);
+
+        //For each hour
+        for($i = 0; $i < count($array_ret); $i++) {
+            $value = 0;
+            $allWithValue = 1;
+            //For each sensor, after the first and before the last(date)
+            for($j = 1; $j < count($array_ret[$i])-1; $j++) {
+                if($array_ret[$i][$j] > -1) {
+                    $value += $array_ret[$i][$j];
+                }
+                else{
+                    $allWithValue = 0;
+                    break;
+                }
+            }
+            if($allWithValue == 1) {
+                $date = $array_ret[$i][count($array_ret[$i]) - 1]->format('Y-m-d H:i:s');
+                $date = str_replace(" ", "T", $date) . "Z";
+
+                $this->insertData($virturl, "epu", "http://optimus_epu", "total_energy_consumption_47", $value, $date);
+            }
+        }
+    }
 	
 	
 	/*
@@ -582,16 +625,17 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 	
 	protected function getValues($arr_sensors)
 	{
-		$window = 368;
+		$window = 48;
 		
 		$date = date("Y-m-d", mktime(0, 0, 0, date("m")  , date("d"), date("Y")));  
 		$to=\DateTime::createFromFormat('Y-m-d H:i:s', $date." 00:00:00");
 		$from=\DateTime::createFromFormat('Y-m-d H:i:s', $date." 00:00:00");
-		
+        $from = $from->add(date_interval_create_from_date_string('-'.$window.' hours'));
+
 		var_dump($date);
 		var_dump($to);
 		var_dump($from);
-		$from = $from->add(date_interval_create_from_date_string('-'.$window.' hours'));
+
 		
 		$data = $this->getContainer()->get('service_ontologia')->lastNRecordsListOfSensors($from, $to, $window, $arr_sensors); // <--- !!!!!!! TEMP
 		
