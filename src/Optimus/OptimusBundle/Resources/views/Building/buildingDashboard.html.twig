@@ -39,7 +39,7 @@
 		aHeight["Produced renewable energy"] = 260;
 			
 		{% for z in mappingVariable %}
-			{% set lp_z=loop.index0 %}				
+			{% set lp_z=loop.index0 %}
 
 			var dataVariable=[];			
 			
@@ -132,7 +132,7 @@
 							$("#tooltip").remove();
 							var x = item.datapoint[0],
 								y = item.datapoint[1];
-								z = item.series.data[item.dataIndex+1][2];
+								z = item.series.data[item.dataIndex][2];
 							showTooltip(item.pageX, item.pageY, z);
 						}
 					}else{

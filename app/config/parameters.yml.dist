@@ -1,5 +1,13 @@
 #Add parameters Mail to file parameters.yml
-parameters:    
+parameters:
+    database_driver:     pdo_mysql
+    database_host:       127.0.0.1
+    database_port:       ~
+    database_name:       symfony
+    database_user:       root
+    database_password:   ~
+
+
 #mailer_transport--> Ex: smtp, gmail, ...
     mailer_transport: ~
 
@@ -8,7 +16,6 @@ parameters:
 
 #mailer_user --> Ex: info@optimus.org
     mailer_user: ~
-
     mailer_password: ~
 
 #mailer_port --> Ex: 587, 485
@@ -25,5 +32,5 @@ parameters:
 
     locale:            en
 
-    # A secret key that's used to generate certain security-related tokens
+# A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
