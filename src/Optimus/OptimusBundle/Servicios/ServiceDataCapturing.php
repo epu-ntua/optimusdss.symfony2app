@@ -111,16 +111,13 @@ class ServiceDataCapturing
 	{		
 		if($finalDay=='') $dayFinal=\DateTime::createFromFormat('Y-m-d H:i:s', $daySelected)->modify(" +7 day")->format("Y-m-d H:i:s");
 		else $dayFinal=$finalDay;
-
 		
 		if($dayFinal < $actualDate)
 		{	
-
 			//Only historic data
 			$aDataHistoric=$this->getDataVariableHistorical($variablesActivas, $daySelected, $dayFinal);
 			$aDataHistoricFinal=$this->getArrayFinalHistoricalVariables($aDataHistoric);
 			$aFinal=$aDataHistoricFinal;
-			//dump($aFinal);
 		}
 		elseif($daySelected <= $actualDate)
 		{	
@@ -156,7 +153,8 @@ class ServiceDataCapturing
 		$aDataVariable=array();
 		foreach($variablesActivas as $variable)
 		{			
-			$aDataHistoric=$this->ontologia->getDataParameterFromOntology($from, $to, $variable->getUrl(), $variable->getAggregation());
+			//$aDataHistoric=$this->ontologia->getDataParameterFromOntology($from, $to, $variable->getUrl(), $variable->getAggregation());
+			$aDataHistoric=$this->ontologia->getDataParameterFromVirtuoso($from, $to, $variable->getUrl(), $variable->getAggregation());
 			
 			$aDataVariable[]=array(	"name"=>$variable->getName(), 
 									"values"=>$aDataHistoric, 
