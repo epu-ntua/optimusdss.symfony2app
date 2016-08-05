@@ -46,7 +46,7 @@ class PredictionController extends Controller
 		set_time_limit(0);
 		$data['dataFinal']=$this->get('service_data_capturing')->getDataFromDate($dTo, $dFrom,'','','variable',$idBuilding);	
 		//$data['dataFinal'] = array();
-		
+		//dump($data['dataFinal'][0]['values']);
 		
 		$data['dataRT']=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFrom, '', $idBuilding);
 		//dump($data['dataRT']);
