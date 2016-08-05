@@ -625,7 +625,7 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 	
 	protected function getValues($arr_sensors)
 	{
-		$window = 48;
+		$window = 368;
 		
 		$date = date("Y-m-d", mktime(0, 0, 0, date("m")  , date("d"), date("Y")));  
 		$to=\DateTime::createFromFormat('Y-m-d H:i:s', $date." 00:00:00");

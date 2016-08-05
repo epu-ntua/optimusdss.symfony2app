@@ -166,7 +166,7 @@
 				mode: "x"
 			},				
 			xaxis:{					
-					mode: "time", min: new Date("{{ startDate | date('F j, Y') }}"), max: new Date("{{ endDate | date('F j, Y') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					mode: "time", min: new Date("{{ startDate | date('F j, Y') }}"), max: new Date("{{ endDate | date('F j, Y') }}"), tickLength: 0, font:{size: 11, family: "sans-serif", color:"#626262"}, 
 					show:true,
 					timeformat: "%a <br /> %d.%m",
 					labelWidth: 50,
@@ -247,7 +247,7 @@
 						
 								[new Date("{{ date }}"), {{ dataFinal[lp_i].values[lp_j].value }} ],
 							{% endfor %}
-							
+									
 							{% if dataFinal[lp_i].type =='prediction' %}
 								], color:'#000000', dashes: { show: true, dashLength:[4, 2], lineWidth:1},				
 								//dashes: { show: true }, shadowSize: 0,	
@@ -310,7 +310,7 @@
 					},
 							
 					xaxis:{					
-						mode: "time", min: new Date("{{ startDate | date('F j, Y H:i:s') }}"), max: new Date("{{ endDate | date('F j, Y H:i:s') }}"), tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+						mode: "time", min: new Date("{{ startDate | date('F j, Y H:i:s') }}"), max: new Date("{{ endDate | date('F j, Y H:i:s') }}"), tickLength: 0, font:{size: 11, family: "sans-serif", color:"#626262"}, 
 						{% if lp_i==0 %}  
 							//position:'top',
 							show:true,							
@@ -323,6 +323,10 @@
 							//labelWidth: 50,
 							//minTickSize: [1, "hour"], reserveSpace:true				
 						{% endif %} 
+						show:true,
+						timeformat: "%a <br /> %d.%m",
+						labelWidth: 50,
+						minTickSize: [1, "day"], reserveSpace:true		
 					},
 					yaxis:{min:{{ minY }}, max:{{ maxY }}, tickDecimals: 2,  panRange:[{{ panYmin}},{{ panYmax}}], labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, {{ maxY }}], font:{size: 9, family: "sans-serif", color:"#626262"}},
 					pan:{interactive:true, cursor: "move", frameRate: 20}
@@ -338,7 +342,7 @@
 							$("#tooltip").remove();
 							var x = item.datapoint[0],
 								y = item.datapoint[1];
-							showTooltip(item.pageX, item.pageY,Math.round(y*100)/100);
+							showTooltip(item.pageX, item.pageY,Math.round(y*1000)/1000);
 						}
 					}else{
 						document.body.style.cursor = 'default';
