@@ -172,18 +172,24 @@ class ServiceBuildingSensorsRTime
 				
 				//Data production correction and Max/Min
 				if(count($dataProduction) > 0) {
-					if($maxValueProd < $dataProduction[0]["values"][$i]["value"]) 	$maxValueProd = $dataProduction[0]["values"][$i]["value"];
-					if($minValueProd > $dataProduction[0]["values"][$i]["value"]) 	$minValueProd = $dataProduction[0]["values"][$i]["value"];
+					if(count($dataProduction[0]["values"]) > $i) {
+						if($maxValueProd < $dataProduction[0]["values"][$i]["value"]) 	$maxValueProd = $dataProduction[0]["values"][$i]["value"];
+						if($minValueProd > $dataProduction[0]["values"][$i]["value"]) 	$minValueProd = $dataProduction[0]["values"][$i]["value"];
+					}
 				}
 
 				if(count($dataCo2) > 0) {
-					if($maxValueCo2 < $dataCo2[0]["values"][$i]["value"]) 	$maxValueCo2 = $dataCo2[0]["values"][$i]["value"];
-					if($minValueCo2 > $dataCo2[0]["values"][$i]["value"]) 	$minValueCo2 = $dataCo2[0]["values"][$i]["value"];
+					if(count($dataCo2[0]["values"]) > $i) {
+						if($maxValueCo2 < $dataCo2[0]["values"][$i]["value"]) 	$maxValueCo2 = $dataCo2[0]["values"][$i]["value"];
+						if($minValueCo2 > $dataCo2[0]["values"][$i]["value"]) 	$minValueCo2 = $dataCo2[0]["values"][$i]["value"];
+					}
 				}
 		
 				if(count($dataCost) > 0) {
-					if($maxValueCost < $dataCost[0]["values"][$i]["value"]) 	$maxValueCost = $dataCost[0]["values"][$i]["value"];
-					if($minValueCost > $dataCost[0]["values"][$i]["value"]) 	$minValueCost = $dataCost[0]["values"][$i]["value"];
+					if(count($dataCost[0]["values"]) > $i) {
+						if($maxValueCost < $dataCost[0]["values"][$i]["value"]) 	$maxValueCost = $dataCost[0]["values"][$i]["value"];
+						if($minValueCost > $dataCost[0]["values"][$i]["value"]) 	$minValueCost = $dataCost[0]["values"][$i]["value"];
+					}
 				}
 			}
 		
@@ -294,16 +300,20 @@ class ServiceBuildingSensorsRTime
 				$data[self::$sensor_energyConsumption_name] += $dataConsumption[0]["values"][$i]["value"];
 				
 				if(count($dataProduction) > 0) {
-					$data[self::$sensor_energyProduction_name] += $dataProduction[0]["values"][$i]["value"] /*/1000*/;
+                    if(count($dataProduction[0]["values"]) > $i) {
+                        $data[self::$sensor_energyProduction_name] += $dataProduction[0]["values"][$i]["value"] /*/1000*/;
+                    }
 				}	
 
 				if(count($dataCost) > 0) {
-                    $data[self::$sensor_energyCost_name] += $dataCost[0]["values"][$i]["value"] /*/1000*/;
-					
+                    if(count($dataCost[0]["values"]) > $i) {
+                        $data[self::$sensor_energyCost_name] += $dataCost[0]["values"][$i]["value"] /*/1000*/;
+					}
 				}
 				if(count($dataCo2) > 0) {
-                    $data[self::$sensor_co2_name] += $dataCo2[0]["values"][$i]["value"] /*/1000*/;
-					
+                    if(count($dataCo2[0]["values"]) > $i) {
+                        $data[self::$sensor_co2_name] += $dataCo2[0]["values"][$i]["value"] /*/1000*/;
+					}
 				}
 			}	
 		}
