@@ -91,18 +91,23 @@ class ServiceWeeklyReport {
 				$dataThisWeek=$this->rtime->getRTTime($dTo, $dFromThisWeek, '', $building->getId());
 					
 				//User actions
-				$userActionsWeek=$this->em->getRepository('OptimusOptimusBundle:Events')->getUserActionsAPS($building->getId(), $dFromThisWeek, $dTo);		
+				$dataFormWeeklyReport = $this->getDataFormWeeklyReport($building->getId(), $weeklyReportsBuilding[$i]->getId());	
+				
+				$userActionsWeek = $this->getNumberOfActions($dataFormWeeklyReport);
+				
+				//$userActionsWeek=$this->em->getRepository('OptimusOptimusBundle:Events')->getUserActionsAPS($building->getId(), $dFromThisWeek, $dTo);		
 				
 				$weeklyReportsBuilding[$i]->setEnergyConsumption($dataThisWeek['Energy consumption']);
 				$weeklyReportsBuilding[$i]->setEnergyCost($dataThisWeek['Energy cost']);
-				$weeklyReportsBuilding[$i]->setUserActions($userActionsWeek[0][1]);
+				//$weeklyReportsBuilding[$i]->setUserActions($userActionsWeek[0][1]);
+				$weeklyReportsBuilding[$i]->setUserActions($userActionsWeek);
 				
 				dump($weeklyReportsBuilding[$i]);
 				
 				$this->em->persist($weeklyReportsBuilding[$i]);
 				$this->em->flush();
 				
-				$this->getPDFWRAction($building, $weeklyReportsBuilding[$i]->getId(), $weeklyReportsBuilding[$i]->getPeriod(), false);
+				$this->getPDFWRAction($building, $weeklyReportsBuilding[$i]->getId(), $weeklyReportsBuilding[$i]->getPeriod(), $dataFormWeeklyReport, false);
 			}
 		}
 	}
@@ -140,18 +145,22 @@ class ServiceWeeklyReport {
 				$dataThisWeek=$this->rtime->getRTTime($dTo, $dFromThisWeek, '', $building->getId());
 					
 				//User actions
-				$userActionsWeek=$this->em->getRepository('OptimusOptimusBundle:Events')->getUserActionsAPS($building->getId(), $dFromThisWeek, $dTo);		
+				$dataFormWeeklyReport = $this->getDataFormWeeklyReport($building->getId(), $lastWeeklyReportBuilding[0]->getId());	
+
+				$userActionsWeek = $this->getNumberOfActions($dataFormWeeklyReport);
+				//$userActionsWeek=$this->em->getRepository('OptimusOptimusBundle:Events')->getUserActionsAPS($building->getId(), $dFromThisWeek, $dTo);		
 				
 				$lastWeeklyReportBuilding[0]->setEnergyConsumption($dataThisWeek['Energy consumption']);
 				$lastWeeklyReportBuilding[0]->setEnergyCost($dataThisWeek['Energy cost']);
-				$lastWeeklyReportBuilding[0]->setUserActions($userActionsWeek[0][1]);
+				//$lastWeeklyReportBuilding[0]->setUserActions($userActionsWeek[0][1]);
+				$lastWeeklyReportBuilding[0]->setUserActions($userActionsWeek);
 				
 				$lastWeeklyReportBuilding[0]->setStatus(0);//$status
 				$this->em->persist($lastWeeklyReportBuilding[0]);
 				$this->em->flush();
 				//dump($lastWeeklyReportBuilding[0]);
 				//create PDF
-				$this->getPDFWRAction($building, $lastWeeklyReportBuilding[0]->getId(), $lastWeeklyReportBuilding[0]->getPeriod(), true);
+				$this->getPDFWRAction($building, $lastWeeklyReportBuilding[0]->getId(), $lastWeeklyReportBuilding[0]->getPeriod(), $dataFormWeeklyReport, true);
 			}
 		
 			
@@ -217,6 +226,22 @@ class ServiceWeeklyReport {
 		}
 	}
 
+	public function getNumberOfActions ($data) {
+		$actions = 0;
+		
+		foreach($data['statusWeekActionPlan'] as $actionPlan) {
+			
+			foreach($actionPlan as $actionPlanDay) {
+				if($actionPlanDay["status"] > 0)
+					$actions++;
+				//echo " - getNumberOfActions: " . $actionPlanDay["status"];
+			}
+		}
+		
+		return $actions;
+	}
+	
+	
 	public function getDataFormWeeklyReport($idBuilding, $idWeeklyReport)
 	{		
 		//get all weekly report
@@ -286,7 +311,7 @@ class ServiceWeeklyReport {
 		return $data;
 	}
 
-	public function getPDFWRAction($building, $idWeeklyReport, $period, $email)
+	public function getPDFWRAction($building, $idWeeklyReport, $period, $dataFormWeeklyReport, $email)
 	{		
 		$weeklyReport=$this->em->getRepository('OptimusOptimusBundle:WeeklyReport')->find($idWeeklyReport);
 		if($weeklyReport)
@@ -302,7 +327,7 @@ class ServiceWeeklyReport {
 					//Create PDF					
 					$data['idBuilding']=$building->getId();
 					$data['nameBuilding']=$building->getName();
-					$data['dataForm']=$this->getDataFormWeeklyReport($building->getId(), $idWeeklyReport);	
+					$data['dataForm']=$dataFormWeeklyReport;
 					$data['imgLogo']=realpath($this->dir)."/img/Logo-Optimus.png";
 					
 					$this->knpSnappyPdf->generateFromHtml(
