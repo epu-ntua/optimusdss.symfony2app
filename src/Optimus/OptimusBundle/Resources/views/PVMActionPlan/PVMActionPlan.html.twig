@@ -271,14 +271,14 @@
 								</tr>
 								<!-- Top values --> 
 								<tr>
-									<td colspan="2" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">{%trans%} Historical electricity produced through PV system {%endtrans%}(kWh) </td>
+									<td colspan="2" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; ">{%trans%} Historical electricity produced through PV system {%endtrans%}(kWh) </td>
 									{% for i in 0..6 %}									
 										<td style="background-color: #d9e1f2; {%if( dataActionPlan[i].day<='now'|date('Y-m-d H:i:s'))%} 
 										background-color: #f2f2f2; {% endif %}">{{ dataActionPlan[i].production_historical_total|round(1, 'common') }}</td>				
 									{% endfor %}
 								</tr>	
 								<tr>
-									<td colspan="2" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">{%trans%} Predicted electricity produced through PV system {%endtrans%}(kWh)</td>
+									<td colspan="2" style="border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; ">{%trans%} Predicted electricity produced through PV system {%endtrans%}(kWh)</td>
 									{% for i in 0..6 %}									
 										<td style="background-color: #d9e1f2; {%if( dataActionPlan[i].day<='now'|date('Y-m-d H:i:s'))%} 
 										background-color: #f2f2f2; {% endif %}">{{ dataActionPlan[i].production_predicted_total|round(1, 'common') }}</td>				
