@@ -27,7 +27,7 @@ class SetPointPlanController extends Controller
         //The start date can either be the current date
         if ($start_date == '') {
             //create the start of the displayed week (starting from curr_date) in the appropriate format
-            $result['startDate'] = $curr_date->format("Y-m-d");
+            $result['startDate'] = $curr_date->modify('-2 days')->format("Y-m-d");
             //create the end of the current week (starting from the current date) as object DateTime
             $result['currDate'] = \DateTime::createFromFormat('Y-m-d', $result['startDate'])->modify("+6 day")->format("Y-m-d");
         } //or it can be given via the URL
