@@ -19,28 +19,51 @@ class PredictionController extends Controller
 		//Dates			
 		if($from=='')
 		{			
-			$dateActual=new \DateTime();			
+			$dateActual=new \DateTime();
 			
-			$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";
-			$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");
+			if($to==''){
+				$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";
+				//$dTo = $dateActual;
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");
+				
+				$startDateView = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d");		
+				//$endDate = $dateActual->format("Y-m-d");
+				$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d");
+				//dump($startDateView);dump($endDate);
+			}else{
+				$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 23:59:59")->format("Y-m-d")." 23:59:59";
+				//$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 00:00:00")->format("Y-m-d H:i:s");
+				
+				$startDateView = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d");		
+				$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 23:59:59")->format("Y-m-d");
+				//$endDate=$to;
+			}
 			
-			$startDateView = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d");		
-			$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d");
+		}else
+		{	
+			$dateActual=new \DateTime();
 			
+			if($to==''){
+				$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $from." 00:00:00")->format("Y-m-d H:i:s");
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d")." 23:59:59";
+				//$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");
+				
+				$startDateView=$from;	
+				$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d");
+				//$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d");
+			}else{  
+				$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $from." 00:00:00")->format("Y-m-d H:i:s");
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 23:59:59")->modify("+1 day")->format("Y-m-d")." 00:00:00";
+				//$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 00:00:00")->format("Y-m-d H:i:s");
+				
+				$startDateView=$from;	
+				$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 00:00:00")->modify("+1 day")->format("Y-m-d");
+				//$endDate=$to;
+			}
 			
-		}else{
-			$startDateFunction=$from." 00:00:00";
-			$startDateView=$from;
-			$dateActual=new \DateTime();			
-			
-			$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $from." 00:00:00")->format("Y-m-d H:i:s");
-			$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 00:00:00")->format("Y-m-d H:i:s");
 		}
 		
-		if($to!='')
-		{
-			$endDate=$to;
-		}
 		
 		//Get data
 		set_time_limit(0);
