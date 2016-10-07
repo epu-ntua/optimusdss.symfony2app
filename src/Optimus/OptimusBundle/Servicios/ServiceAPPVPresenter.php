@@ -795,9 +795,12 @@ array(0.04417,0.05,48.919,0)  // 23
 	// Returns an array of every day between two dates:
 	private function getDaysFromDate($from, $to)
 	{
+		$dias	= (strtotime($from)-strtotime($to))/86400;
+		$dias 	= abs($dias); $dias = floor($dias);
+
 		$aDays=array();
 		$aDays[0]=$from;
-		for($i=1; $i<7; $i++)
+		for($i=1; $i<$dias; $i++)
 		{
 			$actDay=\DateTime::createFromFormat('Y-m-d H:i:s', $from);
 			$act=$actDay->modify(" +".$i." day")->format("Y-m-d H:i:s");
