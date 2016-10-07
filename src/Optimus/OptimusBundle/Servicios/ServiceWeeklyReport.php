@@ -69,6 +69,62 @@ class ServiceWeeklyReport {
     }
 	
 	//this method updates the figures of all weekly reports
+	public function statisticsReports() 
+	{
+		$buildings=$this->em->getRepository('OptimusOptimusBundle:Building')->findAll();
+		$startDate = "2016-01-01";
+		$endDate = "2016-10-07";
+		echo " -- Collecting statistics for buildings from ".$startDate." to ".$endDate."\n";
+		
+		foreach($buildings as $building)
+		{			
+			
+			//actionsPlans
+			$data['allActionsPlans']=$this->em->getRepository('OptimusOptimusBundle:ActionPlans')->findBy(array("fk_Building"=>$building->getId()));
+			if($data['allActionsPlans'])
+			{	
+				$data['weeklyReportActionPlan']=array();
+				$data['statusWeekActionPlan']=array();		
+				
+				foreach($data['allActionsPlans'] as $actionPlan)
+				{
+					$ap = array();
+					//Get fk_calculation según dates
+					switch ($actionPlan->getType())
+					{
+						case 1:	$ap = $this->apo->getStatusWeek($actionPlan->getId(), $startDate, $endDate); break;
+						case 2: $ap = $this->apspm->getStatusWeek($actionPlan->getId(), $startDate, $endDate); break;
+						case 3:	break;
+						case 4: $ap = $this->aph->getStatusWeek($actionPlan->getId(), $startDate, $endDate); break;
+						case 5: $ap = $this->appvm->getStatusWeek($actionPlan->getId(), $startDate, $endDate); break;
+						case 6: $ap = $this->appv->getStatusWeek($actionPlan->getId(), $startDate, $endDate); break;
+						case 7: $ap = $this->apsource->getStatusWeek($actionPlan->getId(), $startDate, $endDate); break;
+						case 8: $ap = $this->apeconomizer->getStatusWeek($actionPlan->getId(), $startDate, $endDate); break;
+					}
+
+					//echo "sadas: ".$actionPlan->getType(). "\n";
+					//var_dump($ap);
+					
+					$accept = 0;
+					$decline = 0;
+					foreach($ap as $actionPlanDay) {
+						if($actionPlanDay["status"] == 1) {  		// accept
+							$accept ++;
+						} else if($actionPlanDay["status"] == 2) {	// decline
+							$decline ++;
+						} 
+					}
+					
+					echo $building->getName() . ";" . $actionPlan->getName() . ";" . $accept . ";" .$decline."\n";
+				}	
+		
+			}
+			
+		}
+	}
+	
+	
+	//this method updates the figures of all weekly reports
 	public function updateWeeklyReports() 
 	{
 		$buildings=$this->em->getRepository('OptimusOptimusBundle:Building')->findAll();

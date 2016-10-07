@@ -105,12 +105,12 @@ class ServicePricePredictor {
 				$dayActual=\DateTime::createFromFormat("Y-m-d H:i:s", $date." ".$hour);
 				
 				//dump($dayActual);
-                
+				
 				for($i=0; $i<count($monthData[0]['values']); $i++)
 				{
                     //if($h < 1 && $i < 2) {
                     
-                    $dateValue = \DateTime::createFromFormat("Y-m-d H:i:s", $monthData[0]['values'][$i]['date']->format("Y-m-d H:i:s"));
+                    $dateValue = \DateTime::createFromFormat("Y-m-d H:i:s", $monthData[0]['values'][$i]['date']);
                     //dump($monthData[0]['values'][$i]['date']);
                     // dump($dateValue);
                     //}
