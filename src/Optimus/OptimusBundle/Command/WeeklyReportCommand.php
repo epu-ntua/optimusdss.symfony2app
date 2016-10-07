@@ -34,7 +34,10 @@ class WeeklyReportCommand extends ContainerAwareCommand
 		if(strcmp(strtolower($option), "update") == 0 ) {
 			$aEvents=$this->getContainer()->get('service_weeklyReport')->updateWeeklyReports();
 		}
-		else  {
+		else if(strcmp(strtolower($option), "statistics") == 0 ) {
+			$aEvents=$this->getContainer()->get('service_weeklyReport')->statisticsReports();
+		}
+		else {
 			$aEvents=$this->getContainer()->get('service_weeklyReport')->createWeeklyReport();
 		}
 		
