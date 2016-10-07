@@ -102,6 +102,9 @@ class ServiceWeeklyReport {
 						case 8: $ap = $this->apeconomizer->getStatusWeek($actionPlan->getId(), $startDate, $endDate); break;
 					}
 
+					//echo "sadas: ".$actionPlan->getType(). "\n";
+					//var_dump($ap);
+					
 					$accept = 0;
 					$decline = 0;
 					foreach($ap as $actionPlanDay) {
