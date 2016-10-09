@@ -58,18 +58,18 @@ class InitController extends Controller
 		
 		//Dates
 		$dateActual=new \DateTime();
-		$thisMonday=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";
-		$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");
-		$startDate=$thisMonday;
-		$endDate=$dateActual;
+		$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->modify("midnight")->format("Y-m-d H:i:s");
+		$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d")." 23:59:59")->format("Y-m-d H:i:s");	
+		$startDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->modify("midnight")->format("Y-m-d");	
+		$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d")." 23:59:59")->format("Y-m-d H:i:s");	
 		
 		//Values Chart Stack RTime -->Modify 
 		if($buildings)
 		{		
-			$mappingVariable = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $thisMonday, $buildings[0]->getId());
+			$mappingVariable = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $dFrom, $buildings[0]->getId());
 			
 			for($i = 1; $i < count($buildings); $i++)  {
-				$mappingVariableTmp = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $thisMonday, $buildings[$i]->getId());
+				$mappingVariableTmp = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $dFrom, $buildings[$i]->getId());
 
 				if(count($mappingVariableTmp) > 0 ) {
 					 //processing the four indicators
@@ -89,7 +89,7 @@ class InitController extends Controller
 				}
 			}
 		}else{ 
-			$mappingVariable = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $thisMonday, null);
+			$mappingVariable = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $dFrom, null);
 		}
 		
 		return $this->render('OptimusOptimusBundle:Dashboard:cityDashboard.html.twig', array('buildings'=>$buildings, "datesBuildings"=>$datesBuildings, "globalRTime"=>$globalRTime, "dataDashboard"=>$dataDashboard, "mappingVariable"=>$mappingVariable, "startDate"=>$startDate, "endDate"=>$endDate, "unitsRTime"=>$unitsRTime));
@@ -283,8 +283,9 @@ class InitController extends Controller
 		$data['nameBuilding']=$this->get('service_data_capturing')->getNameBuilding($idBuilding);
 		
 		$dateActual=new \DateTime();			
-		$startDate=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 days");				
-		$startDateFunction=$startDate->format("Y-m-d H:i:s");
+		//$startDate=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 days");		
+		$startDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->modify("midnight")->format("Y-m-d");			
+		//$startDateFunction=$startDate->format("Y-m-d H:i:s");
 		
 		//Get Building
 		$em = $this->getDoctrine()->getManager();
@@ -296,22 +297,29 @@ class InitController extends Controller
 		$data['unitsRTime']=$this->get('service_sensorsRTime')->getUnitsVariables();
 		
 		//Get data for the compound chart stack RTime
-		$lastWeek=$startDate->format("Y-m-d")." 00:00:00";
-		$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");		
-		$data['mappingVariable'] = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $lastWeek, $idBuilding);
+		//$lastWeek=$startDate->format("Y-m-d")." 00:00:00";
+		//$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");		
+		$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->modify("midnight")->format("Y-m-d H:i:s");
+		$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d")." 23:59:59")->format("Y-m-d H:i:s");	
+		$data['mappingVariable'] = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $dFrom, $idBuilding);
 		
 		//Dates to View
 		$data['lastDay']=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d");		
-		$startDateView=$startDate->format("Y-m-d");
-		$endDate=\DateTime::createFromFormat('Y-m-d H:i:s', $startDateFunction)->modify("+7 day");
-		$endDateView=$endDate->format("Y-m-d");		
-		$data['startDate']=$startDateView;
-		$data['endDate']=$endDateView;
+		//$startDateView=$startDate->format("Y-m-d");
+		//$endDate=\DateTime::createFromFormat('Y-m-d H:i:s', $startDateFunction)->modify("+7 day");
+		$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d")." 23:59:59")->format("Y-m-d H:i:s");	
+		//$endDateView=$endDate->format("Y-m-d");		
+		//$data['startDate']=$startDateView;
+		$data['startDate']=$startDate;
+		//$data['endDate']=$endDateView;
+		$data['endDate']=$endDate;
 		$actualDate=new \DateTime();
 		$data['actualDate']=$actualDate->format("Y-m-d");
 		$thisMonday=\DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("monday this week");
 		$thisMondayF=$thisMonday->format("Y-m-d H:i:s");
 		$endDateWeek=\DateTime::createFromFormat('Y-m-d H:i:s', $thisMondayF)->modify("+6 day");
+		
+		
 		
 		//Obtener los ActionsPlans del edificio
 		return $this->render('OptimusOptimusBundle:Building:buildingDashboard.html.twig', $data);	
