@@ -17,51 +17,85 @@ class PredictionController extends Controller
     public function indexAction($idBuilding, $from='', $to='')
     {		
 		//Dates			
+		$dateActual=new \DateTime();
 		if($from=='')
-		{			
-			$dateActual=new \DateTime();			
+		{		
+			if($to==''){
+				$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->modify("midnight")->format("Y-m-d H:i:s");
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d")." 23:59:59")->modify("-1 day")->format("Y-m-d H:i:s");	
+				
+				$startDateView = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->modify("midnight")->format("Y-m-d");	
+				$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d")." 23:59:59")->modify("-1 day")->format("Y-m-d H:i:s");	
+			}else{
+				$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 23:59:59")->format("Y-m-d")." 23:59:59";
+				
+				$startDateView = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";	
+				$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 23:59:59")->format("Y-m-d");
+			}
 			
-			$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d")." 00:00:00";
-			$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d H:i:s");
+		}else
+		{	
+			if($to==''){
+				$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $from." 00:00:00")->modify("-7 day")->modify("midnight")->format("Y-m-d H:i:s");
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("midnight")->format("Y-m-d H:i:s");	
+				
+				$startDateView=$from;	
+				$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d");
+			}else{  
+				$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $from." 00:00:00")->format("Y-m-d H:i:s");
+				$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 23:59:59")->format("Y-m-d H:i:s");
+				
+				$startDateView=$from;	
+				$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 23:59:59")->format("Y-m-d H:i:s");	
+			}
 			
-			$startDateView = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->modify("-7 day")->format("Y-m-d");		
-			$endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dateActual->format("Y-m-d H:i:s"))->format("Y-m-d");
-			
-			
-		}else{
-			$startDateFunction=$from." 00:00:00";
-			$startDateView=$from;
-			$dateActual=new \DateTime();			
-			
-			$dFrom = \DateTime::createFromFormat('Y-m-d H:i:s', $from." 00:00:00")->format("Y-m-d H:i:s");
-			$dTo = \DateTime::createFromFormat('Y-m-d H:i:s', $to." 00:00:00")->format("Y-m-d H:i:s");
 		}
 		
-		if($to!='')
-		{
-			$endDate=$to;
-		}
-		
+
 		//Get data
 		set_time_limit(0);
 		$data['dataFinal']=$this->get('service_data_capturing')->getDataFromDate($dTo, $dFrom,'','','variable',$idBuilding);	
-		//$data['dataFinal'] = array();
-		//dump($data['dataFinal'][0]['values']);
 		
-		$data['dataRT']=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFrom, '', $idBuilding);
-		//dump($data['dataRT']);
+		for ($i = 0; $i < count($data['dataFinal']); $i++){
+			$lastIndex = count($data['dataFinal'][$i]['values']) - 1;
+			if($lastIndex != -1){
+				$lastDate = \DateTime::createFromFormat('Y-m-d H:i:s', $data['dataFinal'][$i]['values'][$lastIndex]['date']);
+				$toDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dTo);
+				$diff = $toDate->diff($lastDate);
+				$hours = $diff->h;
+				$hours = $hours + ($diff->days*24);
+				for ($nextHour = 1; $nextHour < $hours+1; $nextHour++){
+					$data['dataFinal'][$i]['values'][] = ["date"=> $lastDate->modify("+1 hours")->format('Y-m-d H:i:s'), "value" => '0'];
+				}
+			}
+		}
 		
+		
+		$data['dataRT']=$this->get('service_sensorsRTime')->getRTTime($dTo, $dFrom, '', $idBuilding);		
 		
 		//Get data for the compound chart
 		$data['mappingVariable'] = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $dFrom, $idBuilding);
-		//$data['mappingVariable'] = array();
-		
 		//dump($data['mappingVariable']);
+		for ($i = 0; $i < count($data['mappingVariable']); $i++){
+			$lastIndex = count($data['mappingVariable'][$i]['data']) - 1;
+			if($lastIndex != -1){
+				$lastDate = \DateTime::createFromFormat('Y-m-d H:i:s', $data['mappingVariable'][$i]['data'][$lastIndex]['date']);
+				$toDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dTo);
+				$diff = $toDate->diff($lastDate);
+				$hours = $diff->h;
+				$hours = $hours + ($diff->days*24);
+				for ($nextHour = 1; $nextHour < $hours; $nextHour++){
+					$data['mappingVariable'][$i]['data'][] = ["date"=> $lastDate->modify("+1 hours")->format('Y-m-d H:i:s'), "value" => '0'];
+				}
+			}
+		}
+		
 		//dates to view
 		$data['startDate']=$startDateView;
 		$data['endDate']=$endDate;
 		$actualDate=new \DateTime();
-		$data['actualDate']=$actualDate->format("Y-m-d");
+		$data['actualDate']=$actualDate->format("Y-m-d H:i:s");
 		
 		//id building
 		$data['idBuilding']=$idBuilding;
@@ -71,8 +105,6 @@ class PredictionController extends Controller
 				
 		//$price = $this->get('service_pricePredictor')->getPricePredictor('2015-09-13 00:00:00', '2015-10-13 00:00:00', 'electricity_hourly_prices', 'variable', $idBuilding);
 			
-		//dump($price);
-
 		return $this->render('OptimusOptimusBundle:Prediction:graphPredictions.html.twig', $data);
     }
 	

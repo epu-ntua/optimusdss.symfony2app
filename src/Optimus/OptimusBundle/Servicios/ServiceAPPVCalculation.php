@@ -153,7 +153,8 @@ class ServiceAPPVCalculation
 				$output->setHour(new \DateTime($datetime));
 				
 				// Specific for this action plan:
-				$output->setEnergyProduction($outvalue[self::$sensor_energyProduction_name] * 16.51 / 1000); //From watts to kilowatts
+				//$output->setEnergyProduction($outvalue[self::$sensor_energyProduction_name] * 16.51 / 1000); //From watts to kilowatts
+				$output->setEnergyProduction($outvalue[self::$sensor_energyProduction_name]); //From watts to kilowatts
 				$output->setEnergyConsumption($outvalue[self::$sensor_energyConsumption_name]);
 				$output->setEnergyPrice($outvalue[self::$sensor_energyPricePurchase_name]/1000);	//From €/wats to €/kilowatt
 				$output->setEnergyPriceSelling($outvalue[self::$sensor_energyPriceSelling_name]/1000);
