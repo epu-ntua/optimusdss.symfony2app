@@ -590,71 +590,26 @@ array(0.04417,0.05,48.919,0)  // 23
 																												}
 																								}
 																								
-																								if(!$newValueEule2)
-																								{
-																								    // if there is no new value in inference in rule 2, then check new values for rule 1:
-																												
-																								    if(	$message_hour == $options[$this::$miCoverSurplus])
-																												{
-																															$suggestion = $this->checkNewInterval($suggestion, $this::$miCoverSurplus, $hour); 
-																															$color_suggestion = "FF9999";
-																												}
-																												else if(	$message_hour == $options[$this::$miSellSurplus])
-																												{
-																												    $suggestion = $this->checkNewInterval($suggestion, $this::$miSellSurplus, $hour); 	
-																																$color_suggestion = "99FF99";
-																												}
-																												else if(	$message_hour == $options[$this::$miNone])
-																												{
-																													   $suggestion = $this->checkNewInterval($suggestion, $this::$miNone, $hour); 	
-																																$color_suggestion = "999999";
-																												}
-																								}
-																								
-																								/*
-																								
-																								// The aim of this strategy is to analyse the opportunity to sell energy considering the self-using 
-																								// of energy produced by PV system in order to cumulate a daily profit set in advance by the user.
-																								
-																								// Parameters fixed by the user:						
-																								// 1. Dpenalty: It represent a target income to be reached by selling energy from PV.
-																								//    Ex: 100.000 KW (deben consumirse estos KW o el cliente sale perdiendo)
-																								
-																								// 2. Residual energy: It is defined for each hour as the difference between the energy produced by PV and 
-																								//    a % threshold (fixed by the user) of electrical energy demand. 
-																								//    Ex: if threshold is 5%, and the energy provided by PV represents the 6% of energy demand, the residual energy is 1%. 
-																								//        Edem = 9400 KW
-																								//        Egen =  564 KW (=> 6% of Edem)
-																								//        threshold = 5% (configuration)
-																								//        $percentage_of_Edem = (9400 KW / 100) * 5% = 470 KW (=> 1% (94 KW) To sell)
-																								
-																								// 1. Calaculate % of Edem:	
-																								$percentage_of_Edem = (($demand / 100)* $this->energy_demand_threshold_percentage); // ex: (9400 KW / 100) * 5% = 470 KW
-																								
-																								$Dpenalty = $this->daily_penalty_energy_threshold;
-																								$hourlyCumulativeIncomePV = $hourlyCumulativeIncomePV + $demand;
-																								
-																								if(	$production > $percentage_of_Edem)	// KW
-																								{
-																									if($selling_price > $purchase_price)			// Price (per hour)
-																									{
-																										if($hourlyCumulativeIncomePV < $Dpenalty) {
-																											$suggestion = $this->checkNewInterval($suggestion, $this::$miSellSurplus, $hour); 		// <-- "sell energy surplus" (GREEN)
-																										} 
-																										else  {
-																											$suggestion = $this->checkNewInterval($suggestion, $this::$miAutoConsumption, $hour); 	// <-- "consume all the energy produced" (RED)
-																										}						
-																									}
-																									else {
-																										$suggestion = $this->checkNewInterval($suggestion, $this::$miAutoConsumption, $hour); 		// <-- "consume all the energy produced" (RED)
-																									}
-																								} 
-																								else {
-																									$suggestion = $this->checkNewInterval($suggestion, $this::$miAutoConsumption, $hour); 			// <-- "consume all the energy produced" (RED)
-																								}		
-																							}
-																				*/
-																				
+																					if(!$newValueEule2)
+																					{
+																						// if there is no new value in inference in rule 2, then check new values for rule 1:
+																									
+																						if(	$message_hour == $options[$this::$miCoverSurplus])
+																						{
+																							$suggestion = $this->checkNewInterval($suggestion, $this::$miCoverSurplus, $hour); 
+																							$color_suggestion = "FF9999";
+																						}
+																						else if(	$message_hour == $options[$this::$miSellSurplus])
+																						{
+																							$suggestion = $this->checkNewInterval($suggestion, $this::$miSellSurplus, $hour); 	
+																							$color_suggestion = "99FF99";
+																						}
+																						else if(	$message_hour == $options[$this::$miNone])
+																						{
+																						   $suggestion = $this->checkNewInterval($suggestion, $this::$miNone, $hour); 	
+																							$color_suggestion = "999999";
+																						}
+																					}
 																				}
 																							
 																				// HOUR values:
@@ -670,12 +625,12 @@ array(0.04417,0.05,48.919,0)  // 23
 																				);					
 																				
 																				// DAY values:					
-																				$day_production = $day_production + $production/1000;					
-																				$day_consumption = $day_consumption + $demand/1000;
-																				$day_difference = $day_difference + ($production/1000 - $demand/1000);
+																				$day_production = $day_production + $production;					
+																				$day_consumption = $day_consumption + $demand;
+																				$day_difference = $day_difference + ($production - $demand);
 																				
 																				if($day_difference > 0) {
-																					   $day_production_sold = $day_difference * $selling_price;
+																					$day_production_sold = $day_difference * $selling_price;
 																				}
 																				
 																				//dump("ww ".$day_difference." * ".$selling_price." ".$day_production_sold);
