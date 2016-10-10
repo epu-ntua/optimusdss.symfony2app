@@ -625,9 +625,9 @@ array(0.04417,0.05,48.919,0)  // 23
 																				);					
 																				
 																				// DAY values:					
-																				$day_production = $day_production + $production;					
-																				$day_consumption = $day_consumption + $demand;
-																				$day_difference = $day_difference + ($production - $demand);
+																				$day_production = $day_production + $production/1000;					
+																				$day_consumption = $day_consumption + $demand/1000;
+																				$day_difference = $day_difference + ($production/1000 - $demand/1000);
 																				
 																				if($day_difference > 0) {
 																					$day_production_sold = $day_difference * $selling_price;
