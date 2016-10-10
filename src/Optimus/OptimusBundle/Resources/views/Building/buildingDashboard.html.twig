@@ -107,20 +107,35 @@
 				mode: "x"
 			},				
 			xaxis:{					
-					mode: "time", min: new Date("{{ startDate | date('F j, Y') }}"), max: new Date("{{ lastDay | date('F j, Y') }}"), tickLength: 1, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					{% set loopend = mappingVariable[0].data|length  %}
+					ticks: [{% for i in range(1, loopend, 12) %} 
+								[dataset[0]['data'][{{i-1}}][0], formatDate(dataset[0]['data'][{{i-1}}][0])] {% if loop.last != true %} , {% endif %} 
+						    {% endfor %}	],
+					tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
 					show:true,
-					timeformat: "%a <br/> %d.%m", ticks:8,
-					//labelWidth: 50,
-					minTickSize: [1, "day"],	
-					autoscaleMargin: 3
-					//reserveSpace:true						
-				},
+					labelWidth: 60
+			},
 			yaxis:{min:{{ minY }}, max: 400, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: false,  ticks:[{{ minY }}, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false},
 			//pan:{interactive:true, cursor: "move", frameRate: 20},
 			/*selection: {
 				mode: "x"
 			}*/
 		});	
+		
+		function formatDate(datetime)
+		{
+			var d_names = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+			var day = d_names[datetime.getDay()];
+			var date = datetime.getDate();
+			if(date < 10) date = "0" + date;
+			var month = datetime.getMonth() + 1;
+			if(month < 10) month = "0" + month;
+			var hours = datetime.getHours();
+			if(hours < 10) hours = "0" + hours;
+			var minutes = datetime.getMinutes();
+			if(minutes < 10) minutes = "0" + minutes;
+			return day + " " + date + "/" + month + "<br/>" + hours + ":" + minutes;
+		}
 		
 		$("#placeholder_stack").bind("plothover", function (event, pos, item) {
 					if (item) {					
@@ -308,7 +323,7 @@
 		<div id="centerRight">			
 			<div>
 				
-				<p class="textSection">The building dashboard displays the DSS indicators values in the last 7 days and the average of the last month.</p>
+				<p class="textSection">The building dashboard displays the DSS indicators values in the last 7 days</p>
 				
 					
 				<!-- Graph Stack -->
