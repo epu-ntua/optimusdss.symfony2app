@@ -108,18 +108,16 @@
 				{% for j in mappingVariable[lp_z].data %}
 					{% set lp_j=loop.index0 %}							
 					
-					
-					{% set date = mappingVariable[lp_z].data[lp_j].date | date("F j, Y H:i:s") %}
+					{% set date = mappingVariable[lp_z].data[lp_j].date %}
 					
 					var value = 0;
 					{% if mappingVariable[lp_z].maxValue != 0 %}
 						value = {{mappingVariable[lp_z].data[lp_j].value}} * aHeight["{{mappingVariable[lp_z].name}}"] / {{mappingVariable[lp_z].maxValue}}
-					{% endif %}					 
-					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(2)+" {{mappingVariable[lp_z].units}}"]);	
-					//dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  {{mappingVariable[lp_z].data[lp_j].value}} {{mappingVariable[lp_z].units}}"]);		
+					{% endif %}	
+																	
+					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(3)+" {{mappingVariable[lp_z].units}}"]);	
 				
 				{% endfor %}	
-			
 			{% endif %}		
 			
 			dataset.push({data:dataVariable, label: "{{mappingVariable[lp_z].name}}", color:"{{mappingVariable[lp_z].color}}", dashes: { show: false, dashLength:[3, 3], lineWidth: 1, color:"{{mappingVariable[lp_z].color}}"}, shadowSize: 0, stack: {{mappingVariable[lp_z].stack}}});
@@ -127,7 +125,6 @@
 		{% endfor %}		
 			
 		console.log(dataset);
-			
 		var plot2 = $.plot("#placeholder_stack", dataset,{
 			series: {
 				stack: stack,
@@ -156,7 +153,7 @@
 					left: 1
 				},
 				markings: [
-					{ color: "#ddd", fillColor:0.1, lineWidth: 1, xaxis: { from:  new Date("{{ actualDate | date('F j, Y') }}"), to: new Date("{{ endDate | date('F j, Y') }}") } }
+					{ color: "#ddd", fillColor:0.1, lineWidth: 1, xaxis: { from:  new Date("{{ actualDate  }}"), to: new Date("{{ endDate | date('F j, Y H:i:s') }}") } }
 				]
 			},
 			legend: {
@@ -166,18 +163,36 @@
 				mode: "x"
 			},				
 			xaxis:{					
-					mode: "time", min: new Date("{{ startDate | date('F j, Y') }}"), max: new Date("{{ endDate | date('F j, Y') }}"), tickLength: 0, font:{size: 11, family: "sans-serif", color:"#626262"}, 
+					{% set loopend = mappingVariable[0].data|length  %}
+					ticks: [{% for i in range(1, loopend, 12) %} 
+								[dataset[0]['data'][{{i-1}}][0], formatDate(dataset[0]['data'][{{i-1}}][0])] {% if loop.last != true %} , {% endif %} 
+						    {% endfor %}	],
+					tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
 					show:true,
-					timeformat: "%a <br /> %d.%m",
-					labelWidth: 50,
-					minTickSize: [1, "day"], reserveSpace:true						
+					labelWidth: 60
 				},
-			yaxis:{min:0, max: 400, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false}, //{{ minY }}
+			yaxis:{min:0, max: 400, tickDecimals: 2, labelWidth: 50, labelHeight: 50, reserveSpace: false,  ticks:[{{ minY }}, 400], font:{size: 9, family: "sans-serif", color:"#626262"}, show:false}, //{{ minY }}
 			//pan:{interactive:true, cursor: "move", frameRate: 20},
 			/*selection: {
 				mode: "x"
 			}*/
-		});	
+		});
+
+		function formatDate(datetime)
+		{
+			var d_names = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+			var day = d_names[datetime.getDay()];
+			var date = datetime.getDate();
+			if(date < 10) date = "0" + date;
+			var month = datetime.getMonth() + 1;
+			if(month < 10) month = "0" + month;
+			var hours = datetime.getHours();
+			if(hours < 10) hours = "0" + hours;
+			var minutes = datetime.getMinutes();
+			if(minutes < 10) minutes = "0" + minutes;
+			return day + " " + date + "/" + month + "<br/>" + hours + ":" + minutes;
+		}
+		
 		
 		$("#placeholder_stack").bind("plothover", function (event, pos, item) {
 					if (item) {					
@@ -225,12 +240,10 @@
 				var plot= $.plot($("#placeHistoricPredictor_{{ lp_i }}"), [ 		
 					{% set maxY=0 %}
 					{% set minY=0 %}				
-				
 					{						
 						data: [
 							{% for j in dataFinal[lp_i].values %}
 								{% set lp_j=loop.index0 %}							
-								
 							
 								{% if lp_j==0 %} 
 									{% set minY= dataFinal[lp_i].values[lp_j].value  %}
@@ -250,7 +263,6 @@
 									
 							{% if dataFinal[lp_i].type =='prediction' %}
 								], color:'#000000', dashes: { show: true, dashLength:[4, 2], lineWidth:1},				
-								//dashes: { show: true }, shadowSize: 0,	
 							{% else %}
 								], color:'{{ dataFinal[lp_i].color}}', lines:{show:true, lineWidth:1, fillColor:'#000000'},						
 							{% endif %}					
@@ -266,7 +278,6 @@
 									{% for k in dataFinal[lp_z].values %}
 										{% set lp_k=loop.index0 %}							
 										
-									
 										{% if lp_k==0 %} 
 											{% set minY= dataFinal[lp_z].values[lp_k].value  %}
 										{% elseif minY > dataFinal[lp_z].values[lp_k].value %} 
@@ -277,14 +288,13 @@
 											{% set maxY=dataFinal[lp_z].values[lp_k].value %}
 										{% endif %}			
 									
-										{% set date = dataFinal[lp_z].values[lp_k].date | date("F j, Y H:i:s") %}
+										{% set date = dataFinal[lp_z].values[lp_k].date %}
 						
 								
 										[new Date("{{ date }}"), {{ dataFinal[lp_z].values[lp_k].value }} ],
 									{% endfor %}
 								{% if dataFinal[lp_z].type =='prediction' %}
 									], color:'#000000', dashes: { show: true, dashLength:[4, 2], lineWidth:1},					
-									//dashes: { show: true },shadowSize: 0,
 								{% else %}
 									], color:'{{ dataFinal[lp_z].color}}', lines:{show:true, lineWidth:1, fillColor:'#000000'},
 								{% endif %}					
@@ -296,7 +306,7 @@
 				{% set panYmax = maxY+(maxY/100)*20 %}		
 				
 				],
-				
+
 				{
 					grid: {
 						canvasText:{show:true},
@@ -306,27 +316,20 @@
 						borderColor:"#cacaca",
 						minBorderMargin: 0.5,
 						axisMargin: 1,
-						backgroundColor:'#ffffff'
+						backgroundColor:'#ffffff',
+						markings: [
+							{ color: "#ddd", fillColor:0.1, lineWidth: 1, xaxis: { from:  new Date("{{ actualDate  }}"), to: new Date("{{ endDate | date('F j, Y H:i:s') }}") } }
+						]
 					},
 							
 					xaxis:{					
-						mode: "time", min: new Date("{{ startDate | date('F j, Y H:i:s') }}"), max: new Date("{{ endDate | date('F j, Y H:i:s') }}"), tickLength: 0, font:{size: 11, family: "sans-serif", color:"#626262"}, 
-						{% if lp_i==0 %}  
-							//position:'top',
-							show:true,							
-						{% endif %}					
-						{% if lp_i < ((dataFinal | length)-1) and lp_i!=0 %} 					
-							show:true, 
-						{% else %}
-							show:true,
-							//timeformat: "%a \n %d.%m",
-							//labelWidth: 50,
-							//minTickSize: [1, "hour"], reserveSpace:true				
-						{% endif %} 
+						{% set loopend = mappingVariable[0].data|length  %}
+						ticks: [{% for i in range(1, loopend, 12) %} 
+									[dataset[0]['data'][{{i-1}}][0], formatDate(dataset[0]['data'][{{i-1}}][0])] {% if loop.last != true %} , {% endif %} 
+								{% endfor %}	],
+						tickLength: 5, font:{size: 11, family: "sans-serif", color:"#626262"}, 
 						show:true,
-						timeformat: "%a <br /> %d.%m",
-						labelWidth: 50,
-						minTickSize: [1, "day"], reserveSpace:true		
+						labelWidth: 60
 					},
 					yaxis:{min:{{ minY }}, max:{{ maxY }}, tickDecimals: 2,  panRange:[{{ panYmin}},{{ panYmax}}], labelWidth: 50, labelHeight: 50, reserveSpace: true,  ticks:[{{ minY }}, {{ maxY }}], font:{size: 9, family: "sans-serif", color:"#626262"}},
 					pan:{interactive:true, cursor: "move", frameRate: 20}
@@ -379,27 +382,7 @@
 	{
 		$("#datepicker").slideToggle();
 	}
-	
-	//Cambia el formato del tiempo: dia / semana / mes
-	/*function changeTo(time)
-	{
-		if(time=='day'){
-			$("#selectDay").css({'background-color':'#2e75b6', 'color':'#fff' });
-			$("#selectWeek").css({'background-color':'#e8eef8', 'color':'#44546a' });
-			$("#selectMonth").css({'background-color':'#e8eef8', 'color':'#44546a' });
-			timeSelected='day';
-		}else if(time=='week'){ 
-			$("#selectDay").css({'background-color':'#e8eef8', 'color':'#44546a' });
-			$("#selectWeek").css({'background-color':'#2e75b6', 'color':'#fff' });
-			$("#selectMonth").css({'background-color':'#e8eef8', 'color':'#44546a' });
-			timeSelected='week';
-		}else if(time=='month'){
-			$("#selectDay").css({'background-color':'#e8eef8', 'color':'#44546a' });
-			$("#selectWeek").css({'background-color':'#e8eef8', 'color':'#44546a' });
-			$("#selectMonth").css({'background-color':'#2e75b6', 'color':'#fff' });
-			timeSelected='month';
-		}
-	}*/
+
 	
 	function createURLView()
 	{
@@ -474,8 +457,8 @@
 					</p>
 					
 					<p class="dates boxContent borderRight">
-						<span id="startDate">{{ startDate }}</span> / 
-						<span id="endDate">{{ endDate }}</span>
+						<span id="startDate">{{ startDate | date(("Y-m-d")) }}</span> / 
+						<span id="endDate">{{ endDate | date(("Y-m-d")) }}</span>
 					</p>
 					
 					<p class="boxContent borderRight" style=" cursor:pointer;" onclick="displayCalendar();"><img src="{{asset('bundles/optimus/img/Plus.png')}}" /></p>
