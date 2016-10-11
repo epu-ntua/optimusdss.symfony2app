@@ -55,8 +55,8 @@ class PredictionController extends Controller
 
 		//Get data
 		set_time_limit(0);
-		$data['dataFinal']=$this->get('service_data_capturing')->getDataFromDate($dTo, $dFrom,'','','variable',$idBuilding);	
-		
+		$data['dataFinal']=$this->get('service_data_capturing')->getDataFromDate($dateActual->format("Y-m-d H:i:s"), $dFrom, $dTo,'','variable',$idBuilding);	
+		//dump($data['dataFinal'][59]);
 		for ($i = 0; $i < count($data['dataFinal']); $i++){
 			$lastIndex = count($data['dataFinal'][$i]['values']) - 1;
 			if($lastIndex != -1){
