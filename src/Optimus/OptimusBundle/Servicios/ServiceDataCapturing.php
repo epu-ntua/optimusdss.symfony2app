@@ -101,7 +101,7 @@ class ServiceDataCapturing
 				break;
 			}
 		}		
-		$aDays[$i]=$to;		
+		//$aDays[$i]=$to;		
 		
 		return $aDays;
 	}
@@ -118,6 +118,7 @@ class ServiceDataCapturing
 			$aDataHistoric=$this->getDataVariableHistorical($variablesActivas, $daySelected, $dayFinal);
 			$aDataHistoricFinal=$this->getArrayFinalHistoricalVariables($aDataHistoric);
 			$aFinal=$aDataHistoricFinal;
+			
 		}
 		elseif($daySelected <= $actualDate)
 		{	
@@ -128,11 +129,12 @@ class ServiceDataCapturing
 			if($type!='variable') {
 				$aDataHistoricFinal=$this->getArrayFinalHistoricalDate($aDataHistoricFinal, $daySelected, $actualDate);
 			}
-						
+
 			//data prediction
 			$aDataPrediction=$this->getDataVariablePrediction($variablesActivas, $actualDate, $dayFinal, $idBuilding);
+			//$aDataPrediction=$this->getDataVariablePrediction($variablesActivas, \DateTime::createFromFormat('Y-m-d H:i:s', $actualDate)->modify("midnight")->format("Y-m-d H:i:s"), $dayFinal, $idBuilding);
+			//dump($aDataPrediction);
 			$aDataPredictionFinal=$this->getArrayFinalPredictionVariables($aDataPrediction);
-			
 			
 			$aFinal=array_merge_recursive($aDataHistoricFinal, $aDataPredictionFinal);			
 		}
@@ -142,6 +144,7 @@ class ServiceDataCapturing
 			//only prediction
 			$aDataPrediction=$this->getDataVariablePrediction($variablesActivas, $daySelected, $dayFinal, $idBuilding);
 			$aDataPredictionFinal=$this->getArrayFinalPredictionVariables($aDataPrediction);
+			
 			$aFinal=$aDataPredictionFinal;
 		}
 		return $aFinal;
