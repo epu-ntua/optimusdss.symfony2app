@@ -223,55 +223,119 @@ class ServiceOntologia {
 		$to .= "Z";
 		
 		$aggr = $aggregation;
-		
-		if($aggr == 'BOOLEAN')
-			$aggr = 'AVG';
-		
-		if($aggr == '' || !isset($aggr))
-			$aggr = "SUM";
-		
-		
 		$sensorActual = $sensor;
-		/*
-		$query = "	select ?value ?datetime
-					from <".$this->graph.">
-					where {
+		
+		if($aggr == 'BOOLEAN'){
+			$query = "SELECT AVG(?v) AS ?value CONCAT(?y, '-', ?m, '-', ?d, ' ', ?h, ':', ?min, ':', ?sec) AS ?datetime
+					  FROM <".$this->graph.">
+					  WHERE {
 
-					?obs25 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <".$sensor.">;
-					 <http://purl.oclc.org/NET/ssnx/ssn#observationResult> [<http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?value];
-						 <http://purl.oclc.org/NET/ssnx/ssn#observationResultTime> [<http://www.w3.org/2006/time#inXSDDateTime> ?datetime].
+					   ?obs25 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <".$sensor.">;
+					   <http://purl.oclc.org/NET/ssnx/ssn#observationResult> [<http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?v];
+					   <http://purl.oclc.org/NET/ssnx/ssn#observationResultTime> [<http://www.w3.org/2006/time#inXSDDateTime> ?dt].
 
-					FILTER (?datetime >= '".$from."'^^xsd:dateTime && ?datetime <= '".$to."'^^xsd:dateTime)
-					} order by ?datetime
+					   FILTER (?dt >= '".$from."'^^xsd:dateTime && ?dt <= '".$to."'^^xsd:dateTime)
+					  } 
+					  GROUP BY (year(?dt) AS ?y) (month(?dt) AS ?m) (day(?dt) AS ?d) (hours(?dt) AS ?h) (minutes(?dt) AS ?min) (seconds(?dt) AS ?sec)
+					  ORDER BY ?y ?m ?d ?h ?min ?sec
 
 				";
-                */
-        //2015-10-13: New query to obtain aggregated data by hour
-   		$query = "	    select ".$aggr."(?v) AS ?value CONCAT(?y, '-', ?m, '-', ?d, ' ', ?h, ':00:00') as ?datetime
-                        from <".$this->graph.">
-                        where {
+        }
+		else{
+			if($aggr == '' || !isset($aggr))
+				$aggr = "SUM";
+			
+			
+			//2015-10-13: New query to obtain aggregated data by hour
+			$query = "	    select ".$aggr."(?v) AS ?value CONCAT(?y, '-', ?m, '-', ?d, ' ', ?h, ':00:00') as ?datetime
+							from <".$this->graph.">
+							where {
 
-                        ?obs25 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <".$sensor.">;
-                         <http://purl.oclc.org/NET/ssnx/ssn#observationResult> [<http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?v];
-                             <http://purl.oclc.org/NET/ssnx/ssn#observationResultTime> [<http://www.w3.org/2006/time#inXSDDateTime> ?dt].
+							?obs25 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <".$sensor.">;
+							<http://purl.oclc.org/NET/ssnx/ssn#observationResult> [<http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?v];
+							<http://purl.oclc.org/NET/ssnx/ssn#observationResultTime> [<http://www.w3.org/2006/time#inXSDDateTime> ?dt].
 
-                        FILTER (?dt >= '".$from."'^^xsd:dateTime && ?dt <= '".$to."'^^xsd:dateTime)
+							FILTER (?dt >= '".$from."'^^xsd:dateTime && ?dt <= '".$to."'^^xsd:dateTime)
 
-                         
-                        } GROUP BY (year(?dt) AS ?y) (month(?dt) AS ?m) (day(?dt) AS ?d) (hours(?dt) AS ?h)
+							 
+							} GROUP BY (year(?dt) AS ?y) (month(?dt) AS ?m) (day(?dt) AS ?d) (hours(?dt) AS ?h)
 
-                        order by ?y ?m ?d ?h
+							order by ?y ?m ?d ?h
 
-                    
+						
 
-				";       
+					";       
+		}
 
 		//var_dump($query);
         set_time_limit(0);			
         
 		$rows = $store->query($query, 'rows');
-
-		return $rows;
+		if($aggr == 'BOOLEAN'){
+			//dump($rows);
+			$found = true;
+			while($found){
+				$found = false;
+				$i=0;
+				foreach ($rows as $temprow) {
+					if($temprow['value'] < 0.5){
+						$temprow['value'] = 0;
+					}
+					else if ($temprow['value'] > 0.5){
+						$temprow['value'] = 1;
+					}
+					else{
+						unset($rows[$i]);
+						$rows = array_values($rows); // 'reindex' array
+						$found = true;
+						break;
+					}
+					$i++;					
+				}
+			}
+			//dump($rows);
+			
+			
+			$temp = $rows;
+			$temp2 = array();
+			foreach ($temp as $temprow) {
+				$temprow['datetime'] = str_replace("T", " ", $temprow['datetime']);
+				$temprow['datetime'] = str_replace("Z", "", $temprow['datetime']);
+				$set = explode(" ", $temprow['datetime']);
+				$set1 = explode(":", $set[1]);
+				if(intval($set1[0]) < 10) {$set1[0] = '0'.$set1[0];}
+				if(intval($set1[1]) < 10) {$set1[1] = '0'.$set1[1];}
+				if(intval($set1[2]) < 10) {$set1[2] = '0'.$set1[2];}
+				$datetime = $set[0]." ".$set1[0].":".$set1[1].":".$set1[2];
+				$set = explode(" ", $datetime);
+				$set1 = explode("-", $set[0]);
+				if(intval($set1[1]) < 10) {$set1[1] = '0'.$set1[1];}
+				if(intval($set1[2]) < 10) {$set1[2] = '0'.$set1[2];}
+				$datetime = $set1[0]."-".$set1[1]."-".$set1[2]." ".$set[1];
+				//dump($datetime);
+				$temprow['datetime'] = \DateTime::createFromFormat('Y-m-d H:i:s', $datetime)->modify("-1 seconds")->format("Y-m-d H:i:s");
+				$temprow['datetime'] = str_replace(" ", "T", $temprow['datetime']);
+				$temprow['datetime'] = $temprow['datetime']."Z";
+				if($temprow['value'] == "0") 
+					$temprow['value'] = "1";
+				else 
+					$temprow['value'] = "0";
+				
+				$temp2[] = $temprow;
+			}
+			//dump($rows);
+			//dump($temp2);
+			$finalrows = array();
+			for($i=0; $i<count($rows); $i++){
+				$finalrows[] = $temp2[$i];
+				$finalrows[] = $rows[$i];
+			}
+			//dump($finalrows);
+			return $finalrows;
+		}
+		else{
+			return $rows;
+		}
 	} 	
 	
 	
