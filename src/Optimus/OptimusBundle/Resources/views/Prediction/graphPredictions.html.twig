@@ -115,7 +115,7 @@
 						value = {{mappingVariable[lp_z].data[lp_j].value}} * aHeight["{{mappingVariable[lp_z].name}}"] / {{mappingVariable[lp_z].maxValue}}
 					{% endif %}	
 																	
-					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(3)+" {{mappingVariable[lp_z].units}}"]);	
+					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(3)+" {{mappingVariable[lp_z].units}}" + " <br/> {{date | date('F j, Y H:i:s')}}"]);	
 				
 				{% endfor %}	
 			{% endif %}		
@@ -258,10 +258,10 @@
 								{% set date = dataFinal[lp_i].values[lp_j].date | date("F j, Y H:i:s") %}
 				
 						
-								[new Date("{{ date }}"), {{ dataFinal[lp_i].values[lp_j].value }} ],
+								[new Date("{{ date }}"), {{ dataFinal[lp_i].values[lp_j].value }} , {{dataFinal[lp_i].values[lp_j].value}} +" {{dataFinal[lp_i].units}}" + " <br/> {{date | date('F j, Y H:i:s')}}"],
 							{% endfor %}
 									
-							{% if dataFinal[lp_i].type =='prediction' %}
+							{% if dataFinal[lp_i].type =='prediction' %} 
 								], color:'#000000', dashes: { show: true, dashLength:[4, 2], lineWidth:1},				
 							{% else %}
 								], color:'{{ dataFinal[lp_i].color}}', lines:{show:true, lineWidth:1, fillColor:'#000000'},						
@@ -291,7 +291,7 @@
 										{% set date = dataFinal[lp_z].values[lp_k].date %}
 						
 								
-										[new Date("{{ date }}"), {{ dataFinal[lp_z].values[lp_k].value }} ],
+										[new Date("{{ date }}"), {{ dataFinal[lp_z].values[lp_k].value }}, ({{dataFinal[lp_z].values[lp_k].value}}).toFixed(3) +" {{dataFinal[lp_z].units}}" + " <br/> {{date | date('F j, Y H:i:s')}}"],
 									{% endfor %}
 								{% if dataFinal[lp_z].type =='prediction' %}
 									], color:'#000000', dashes: { show: true, dashLength:[4, 2], lineWidth:1},					
@@ -345,7 +345,9 @@
 							$("#tooltip").remove();
 							var x = item.datapoint[0],
 								y = item.datapoint[1];
-							showTooltip(item.pageX, item.pageY,Math.round(y*1000)/1000);
+								z = item.series.data[item.dataIndex][2];
+							//showTooltip(item.pageX, item.pageY,Math.round(y*1000)/1000);
+							showTooltip(item.pageX, item.pageY, z);
 						}
 					}else{
 						document.body.style.cursor = 'default';

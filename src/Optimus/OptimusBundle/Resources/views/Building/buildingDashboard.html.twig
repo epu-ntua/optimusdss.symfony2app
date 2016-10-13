@@ -56,7 +56,7 @@
 
 					{% endif %}					 
 					
-					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(2)+" {{mappingVariable[lp_z].units}}"]);	
+					dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  "+({{mappingVariable[lp_z].data[lp_j].value}}).toFixed(3)+" {{mappingVariable[lp_z].units}}" + " <br/> {{date | date('F j, Y H:i:s')}}"]);	
 
 					//dataVariable.push([new Date("{{ date }}"), value, "{{mappingVariable[lp_z].name}}  {{mappingVariable[lp_z].data[lp_j].value}} {{mappingVariable[lp_z].units}}"]);			
 					
