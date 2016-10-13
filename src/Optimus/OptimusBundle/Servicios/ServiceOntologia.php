@@ -276,46 +276,69 @@ class ServiceOntologia {
 			$found = true;
 			while($found){
 				$found = false;
-				$i=0;
-				foreach ($rows as $temprow) {
-					if($temprow['value'] < 0.5){
-						$temprow['value'] = 0;
+				for($i = 0; $i<count($rows); $i++) {
+					if(floatval($rows[$i]['value']) < 0.5){
+						$rows[$i]['value'] = "0";
 					}
-					else if ($temprow['value'] > 0.5){
-						$temprow['value'] = 1;
+					else if (floatval($rows[$i]['value']) > 0.5){
+						$rows[$i]['value'] = "1";
 					}
 					else{
+						//dump("FOUND 0.5");
 						unset($rows[$i]);
+						//dump($rows);
 						$rows = array_values($rows); // 'reindex' array
 						$found = true;
 						break;
-					}
-					$i++;					
+					}				
 				}
 			}
 			//dump($rows);
-			
-			
+			for($i = 0; $i<count($rows); $i++) {
+				$rows[$i]['datetime'] = str_replace("T", " ", $rows[$i]['datetime']);
+				$rows[$i]['datetime'] = str_replace("Z", "", $rows[$i]['datetime']);
+				$set = explode(" ", $rows[$i]['datetime']);
+				$set1 = explode(":", $set[1]);
+				if(((intval($set1[0]) < 10) && ($set1[0][0] != "0")) || (strcmp($set1[0],"0")==0)){$set1[0] = '0'.$set1[0];}
+				if(((intval($set1[1]) < 10) && ($set1[1][0] != "0")) || (strcmp($set1[1],"0")==0)) {$set1[1] = '0'.$set1[1];}
+				if(((intval($set1[2]) < 10) && ($set1[2][0] != "0")) || (strcmp($set1[2],"0")==0)) {$set1[2] = '0'.$set1[2];}
+				$datetime = $set[0]." ".$set1[0].":".$set1[1].":".$set1[2];
+				
+				$set = explode(" ", $datetime);
+				$set1 = explode("-", $set[0]);
+				if(((intval($set1[1]) < 10) && ($set1[1][0] != "0")) || (strcmp($set1[1],"0")==0)) {$set1[1] = '0'.$set1[1];}
+				if(((intval($set1[2]) < 10) && ($set1[2][0] != "0")) || (strcmp($set1[2],"0")==0)) {$set1[2] = '0'.$set1[2];}
+				//if(intval($set1[1]) < 10) {$set1[1] = '0'.$set1[1];}
+				//if(intval($set1[2]) < 10) {$set1[2] = '0'.$set1[2];}
+				$datetime = $set1[0]."-".$set1[1]."-".$set1[2]." ".$set[1];
+				//dump($datetime);
+				$rows[$i]['datetime'] = \DateTime::createFromFormat('Y-m-d H:i:s', $datetime)->format("Y-m-d H:i:s");
+				//$rows[$i]['datetime'] = str_replace(" ", "T", $rows[$i]['datetime']);
+				//$rows[$i]['datetime'] = $rows[$i]['datetime']."Z";
+			}
+				
 			$temp = $rows;
 			$temp2 = array();
 			foreach ($temp as $temprow) {
 				$temprow['datetime'] = str_replace("T", " ", $temprow['datetime']);
 				$temprow['datetime'] = str_replace("Z", "", $temprow['datetime']);
+				
 				$set = explode(" ", $temprow['datetime']);
 				$set1 = explode(":", $set[1]);
-				if(intval($set1[0]) < 10) {$set1[0] = '0'.$set1[0];}
-				if(intval($set1[1]) < 10) {$set1[1] = '0'.$set1[1];}
-				if(intval($set1[2]) < 10) {$set1[2] = '0'.$set1[2];}
+				if(((intval($set1[0]) < 10) && ($set1[0][0] != "0")) || (strcmp($set1[0],"0")==0)){$set1[0] = '0'.$set1[0];}
+				if(((intval($set1[1]) < 10) && ($set1[1][0] != "0")) || (strcmp($set1[1],"0")==0)) {$set1[1] = '0'.$set1[1];}
+				if(((intval($set1[2]) < 10) && ($set1[2][0] != "0")) || (strcmp($set1[2],"0")==0)) {$set1[2] = '0'.$set1[2];}
 				$datetime = $set[0]." ".$set1[0].":".$set1[1].":".$set1[2];
+				
 				$set = explode(" ", $datetime);
 				$set1 = explode("-", $set[0]);
-				if(intval($set1[1]) < 10) {$set1[1] = '0'.$set1[1];}
-				if(intval($set1[2]) < 10) {$set1[2] = '0'.$set1[2];}
+				if(((intval($set1[1]) < 10) && ($set1[1][0] != "0")) || (strcmp($set1[1],"0")==0)) {$set1[1] = '0'.$set1[1];}
+				if(((intval($set1[2]) < 10) && ($set1[2][0] != "0")) || (strcmp($set1[2],"0")==0)) {$set1[2] = '0'.$set1[2];}
 				$datetime = $set1[0]."-".$set1[1]."-".$set1[2]." ".$set[1];
 				//dump($datetime);
 				$temprow['datetime'] = \DateTime::createFromFormat('Y-m-d H:i:s', $datetime)->modify("-1 seconds")->format("Y-m-d H:i:s");
-				$temprow['datetime'] = str_replace(" ", "T", $temprow['datetime']);
-				$temprow['datetime'] = $temprow['datetime']."Z";
+				//$temprow['datetime'] = str_replace(" ", "T", $temprow['datetime']);
+				//$temprow['datetime'] = $temprow['datetime']."Z";
 				if($temprow['value'] == "0") 
 					$temprow['value'] = "1";
 				else 
