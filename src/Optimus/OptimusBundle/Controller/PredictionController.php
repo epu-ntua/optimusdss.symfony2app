@@ -56,7 +56,7 @@ class PredictionController extends Controller
 		//Get data
 		set_time_limit(0);
 		$data['dataFinal']=$this->get('service_data_capturing')->getDataFromDate($dateActual->format("Y-m-d H:i:s"), $dFrom, $dTo,'','variable',$idBuilding);	
-		//dump($data['dataFinal'][59]);
+		//dump($data['dataFinal'][3]);
 		for ($i = 0; $i < count($data['dataFinal']); $i++){
 			$lastIndex = count($data['dataFinal'][$i]['values']) - 1;
 			if($lastIndex != -1){
@@ -67,6 +67,27 @@ class PredictionController extends Controller
 				$hours = $hours + ($diff->days*24);
 				for ($nextHour = 1; $nextHour < $hours+1; $nextHour++){
 					$data['dataFinal'][$i]['values'][] = ["date"=> $lastDate->modify("+1 hours")->format('Y-m-d H:i:s'), "value" => '0'];
+					//$data['dataFinal'][$i]['values'][] = ["date"=> $lastDate->modify("+1 hours")->format('Y-m-d H:i:s'), "value" => $data['dataFinal'][$i]['values'][$lastIndex]['value']];
+				}
+				//$lastDate = \DateTime::createFromFormat('Y-m-d H:i:s', $data['dataFinal'][$i]['values'][0]['date']);
+				//if(strcmp($lastDate->format('Y-m-d H:i:s'), $toDate->format('Y-m-d H:i:s')) != 0) { 
+				//	$data['dataFinal'][$i]['values'][] = ["date"=> $toDate->modify("-1 hours")->format('Y-m-d	'), "value" => '0'];
+				//}
+			}
+		}
+		for ($i = 0; $i < count($data['dataFinal']); $i++){
+			if(count($data['dataFinal'][$i]['values']) > 0){
+				$firstDate = \DateTime::createFromFormat('Y-m-d H:i:s', $data['dataFinal'][$i]['values'][0]['date']);
+				$fromDate = \DateTime::createFromFormat('Y-m-d H:i:s', $dFrom);
+				$diff = $firstDate->diff($fromDate);
+				$hours = $diff->h;
+				$hours = $hours + ($diff->days*24);
+				for ($nextHour = 1; $nextHour < $hours+1; $nextHour++){
+					array_unshift($data['dataFinal'][$i]['values'], ["date"=> $firstDate->modify("-1 hours")->format('Y-m-d H:i:s'), "value" => $data['dataFinal'][$i]['values'][0]['value']]);
+				}
+				$firstDate = \DateTime::createFromFormat('Y-m-d H:i:s', $data['dataFinal'][$i]['values'][0]['date']);
+				if(strcmp($firstDate->format('Y-m-d H:i:s'), $fromDate->format('Y-m-d H:i:s')) != 0) { 
+					array_unshift($data['dataFinal'][$i]['values'], ["date"=> $fromDate->format('Y-m-d H:i:s'), "value" => $data['dataFinal'][$i]['values'][0]['value']]); 
 				}
 			}
 		}
