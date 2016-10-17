@@ -50,6 +50,8 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 			$this->santcugatPVsensor($output);
 		} else if(strcmp(strtolower($city), "epu") == 0 ) {
             $this->epuEnergyConsumptionsensor($output);
+			$this->epuCO2sensor($output);
+			$this->epuEnergyCostsensor($output);
         }
 
 		$output->writeln("");
@@ -65,7 +67,7 @@ class VirtualSensorsCommand extends ContainerAwareCommand
     {
         $output->writeln(" - epuEnergyConsumptionsensor -");
 
-        //the first one is the virual sensor (47)
+        //the first one is the virtual sensor (47)
         //id47 = id11 + d12 + d13 + d14
         $arr_sensors = "47_11_12_13_14";
 
@@ -98,6 +100,81 @@ class VirtualSensorsCommand extends ContainerAwareCommand
         }
     }
 	
+	protected function epuCO2sensor($output)
+    {
+        $output->writeln(" - epuCO2sensor -");
+
+		$emission_factor = 1.1236;
+        //the first one is the virtual sensor (47)
+        //id48 = (id11 + d12 + d13 + d14) * emission_factor
+        $arr_sensors = "48_11_12_13_14";
+
+        $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+        $vconsumptionSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("48");
+        $virturl = $vconsumptionSensor->getUrl();
+
+        $array_ret = $this->getValues($arr_sensors);
+
+        //For each hour
+        for($i = 0; $i < count($array_ret); $i++) {
+            $value = 0;
+            $allWithValue = 1;
+            //For each sensor, after the first and before the last(date)
+            for($j = 1; $j < count($array_ret[$i])-1; $j++) {
+                if($array_ret[$i][$j] > -1) {
+                    $value += $array_ret[$i][$j] * $emission_factor;
+                }
+                else{
+                    $allWithValue = 0;
+                    break;
+                }
+            }
+            if($allWithValue == 1) {
+                $date = $array_ret[$i][count($array_ret[$i]) - 1]->format('Y-m-d H:i:s');
+                $date = str_replace(" ", "T", $date) . "Z";
+
+                $this->insertData($virturl, "epu", "http://optimus_epu", "co2_emissions_48", $value, $date);
+            }
+        }
+    }
+	
+	protected function epuEnergyCostsensor($output)
+    {
+        $output->writeln(" - epuEnergyCostsensor -");
+
+		$price = 0.03886;
+        //the first one is the virtual sensor (47)
+        //id48 = (id11 + d12 + d13 + d14) * emission_factor
+        $arr_sensors = "49_11_12_13_14";
+
+        $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+        $vconsumptionSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("49");
+        $virturl = $vconsumptionSensor->getUrl();
+
+        $array_ret = $this->getValues($arr_sensors);
+
+        //For each hour
+        for($i = 0; $i < count($array_ret); $i++) {
+            $value = 0;
+            $allWithValue = 1;
+            //For each sensor, after the first and before the last(date)
+            for($j = 1; $j < count($array_ret[$i])-1; $j++) {
+                if($array_ret[$i][$j] > -1) {
+                    $value += $array_ret[$i][$j] * $price;
+                }
+                else{
+                    $allWithValue = 0;
+                    break;
+                }
+            }
+            if($allWithValue == 1) {
+                $date = $array_ret[$i][count($array_ret[$i]) - 1]->format('Y-m-d H:i:s');
+                $date = str_replace(" ", "T", $date) . "Z";
+
+                $this->insertData($virturl, "epu", "http://optimus_epu", "energy_cost_49", $value, $date);
+            }
+        }
+    }
 	
 	/*
 	/********************************************************************
