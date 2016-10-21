@@ -14,6 +14,7 @@ use Optimus\OptimusBundle\Servicios\ServiceAPPreheating;
 use Optimus\OptimusBundle\Servicios\ServiceAPAdaptative;
 use Optimus\OptimusBundle\Servicios\ServiceEvents;
 use Optimus\OptimusBundle\Servicios\ServicePricePredictor;
+use Optimus\OptimusBundle\Servicios\ServicePolynomialEvaluator;
 
 use Optimus\OptimusBundle\Entity\APCalculation;
 use Optimus\OptimusBundle\Entity\Prediction;
@@ -39,6 +40,7 @@ class ServiceCalculos {
 	protected $pvm_a_coefficient;
 	protected $pvm_ta_coefficient;
 	protected $pricePredictor;
+	protected $pricePredictorSavona;
  
     public function __construct(ServiceOntologia $ontologia,
 								ServiceCalculationDataInvoke $invokeCalculationData,
@@ -52,6 +54,7 @@ class ServiceCalculos {
 								ServiceAPOCalculation $apoc,	
 								ServiceEvents $event,
 								ServicePricePredictor $pricePredictor,
+								ServicePolynomialEvaluator $pricePredictorSavona,
 								$pvm_num_panels,
 								$pvm_panels_surface_area,
 								$pvm_a_coefficient,
@@ -73,6 +76,7 @@ class ServiceCalculos {
 		$this->apoc=$apoc;
 		$this->event=$event;		
 		$this->pricePredictor=$pricePredictor;		
+		$this->pricePredictorSavona=$pricePredictorSavona;		
 		$this->pvm_num_panels=$pvm_num_panels;
 		$this->pvm_panels_surface_area=$pvm_panels_surface_area;
 		$this->pvm_a_coefficient=$pvm_a_coefficient;
@@ -178,7 +182,7 @@ class ServiceCalculos {
 					
 					$aPricePredictor=$this->pricePredictor->getPricePredictor($dInit, $to,  $sensor->getName(), 'variable', $idBuilding); //'2015-09-13 00:00:00',  '2015-10-13 00:00:00'
 					
-  					echo "Predict data for: ".$sensor->getName()." | ".$sensor->getId()." (price)\n";
+  					echo "Predict price for: ".$sensor->getName()." | ".$sensor->getId()." (price)\n";
 
 					//dump($aPricePredictor);
 					
@@ -204,6 +208,44 @@ class ServiceCalculos {
 					//dump($aSensors);
 					//dump("-------------------------");
 					
+				}
+				else if($urlService == 'pricepredictor-savona') {
+					$to=$from." 00:00:00";
+					//$dInit=\DateTime::createFromFormat('Y-m-d H:i:s', $to)->modify('-1 month')->format('Y-m-d H:i:s');
+
+					$timestamp = time();
+
+					if(date('D', $timestamp) === 'Sun' /*|| true*/) {
+						
+						$aPricePredictor=$this->pricePredictorSavona->evalWeekPrices($sensor->getName(), $idBuilding);
+											
+						echo "Predict price (Savona) for: ".$sensor->getName()." | ".$sensor->getId()." (price)\n";
+						
+						$aValues=array();
+											
+						$i=0;
+						foreach($aPricePredictor as $dayPrediction) 
+						{
+							$day=\DateTime::createFromFormat('Y-m-d H:i:s', $to)->modify('+'.$i.' day');
+							
+							$j=0;
+							foreach($dayPrediction as $hourPrediction)
+							{
+								$timeActual=\DateTime::createFromFormat('Y-m-d H:i:s', $day->format('Y-m-d H:i:s'))->modify('+'.$j.' hour');
+								$aValues[]=array("value"=>(float)$hourPrediction, "dateElement"=>$timeActual);
+								 $j++;
+							}
+							$i++;						
+						}
+						
+						$aSensors[]=array("sensor"=>$sensor, "values"=>$aValues);
+						
+						//dump("------ Predictor --------");
+						//dump($aSensors);
+						//dump("-------------------------");
+					} else {
+						echo "Predict price (Savona) not carried out: Today is not sunday\n";
+					}
 				}
 				else if($urlService != '' && $predictionmodelparameters != '' && $predictionmodelparameters != '-')
 				{
