@@ -94,11 +94,12 @@ class ServicePolynomialEvaluator {
 		{
 			//we get the last value of todays' monitored data
 			$n = count($dataHistoric[0]['values']);
-			$data = $dataHistoric[0]['values'][$n-1]['value'];
-			
-			
-			//dump($dataHistoric);
-			echo " DAta:   ".$data;
+
+            if($n > 0 ) {
+                $data = $dataHistoric[0]['values'][$n-1]['value'];
+            } else {
+                $data = 48;//default value if there is not data
+            }
 			
 			for ($day = 1; $day < 8; $day++){
 				if ($day >= 1 && $day <=5)
