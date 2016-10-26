@@ -48,6 +48,8 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 		} else if(strcmp(strtolower($city), "santcugat") == 0 ) {
 			$this->santcugatCO2Pricesensors($output);
 			$this->santcugatPVsensor($output);
+			
+			$this->santcugatTheatreVirtualsensors($output);
 		} else if(strcmp(strtolower($city), "epu") == 0 ) {
             $this->epuEnergyConsumptionsensor($output);
 			$this->epuCO2sensor($output);
@@ -254,6 +256,54 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 			//}
 		}
 	}
+	
+	
+	protected function santcugatTheatreVirtualsensors($output)
+    {
+        $output->writeln(" - santcugatTheatreEnergyConsumptionsensors -");
+
+        //the first one is the virtual sensor (1152)
+        //id1152 = id1149
+        $arr_sensors = "1149_58";
+
+        $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+        $vSensor1 = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1152");
+        $virturl1 = $vSensor1->getUrl();
+		$vSensor2 = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1154");
+        $virturl2 = $vSensor2->getUrl();
+		$vSensor3 = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("1155");
+        $virturl3 = $vSensor3->getUrl();
+
+        $array_ret = $this->getValues($arr_sensors);
+
+        //For each hour
+        for($i = 0; $i < count($array_ret); $i++) {
+            $consumption = 0;
+            $allWithValue = 1;
+            //For each sensor, after the first and before the last(date)
+            for($j = 1; $j < count($array_ret[$i])-1; $j++) {
+                if($array_ret[$i][$j] < 0) {
+                    $allWithValue = 0;
+                    break;
+                }
+            }
+            if($allWithValue == 1) {
+				
+                $consumption = $array_ret[$i][0];
+				$emissions = $consumption * 0.399;
+				$cost = $consumption * $array_ret[$i][1] /1000;
+                
+				
+                $date = $array_ret[$i][count($array_ret[$i]) - 1]->format('Y-m-d H:i:s');
+                $date = str_replace(" ", "T", $date) . "Z";
+
+                $this->insertData($virturl1, "sant_cugat", "http://optimus_santcugat", "theatre_energy_consumption_vs", $consumption, $date);
+				$this->insertData($virturl2, "sant_cugat", "http://optimus_santcugat", "theatre_co2_emissions_vs", $emissions, $date);
+				$this->insertData($virturl3, "sant_cugat", "http://optimus_santcugat", "theatre_energy_cost_vs", $cost, $date);
+            }
+						
+        }
+    }
 
 		
 	/*
