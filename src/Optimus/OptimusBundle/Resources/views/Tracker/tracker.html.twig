@@ -44,10 +44,17 @@
 					</div>
 				</div>
 				
-				{% set EConsCStatusWidth= currentStatus[0].statusEConsumption / maxValue %}
+				{% if currentStatus | length > 0 %}
+					{% set EConsCStatusPerc= currentStatus[0].statusEConsumption %}
+					{% set EConsCStatusWidth= currentStatus[0].statusEConsumption / maxValue %}
+				{% else %}
+					{% set EConsCStatusPerc= 0 %}
+					{% set EConsCStatusWidth= 0 %}
+				{% endif %}
+				
 				
 				<div class="contentRow last">
-					<p class="nameRow" style="color:#0095ff;">CURRENT STATUS ({{currentStatus[0].statusEConsumption|round(0)}}%)</p>
+					<p class="nameRow" style="color:#0095ff;">CURRENT STATUS ({{EConsCStatusPerc|round(0)}}%)</p>
 					<div class="contentBarRow">
 						<p class="bar" style="background-color:#99d5ff; width:{{EConsCStatusWidth}}%;"></p>
 					</div>
@@ -75,10 +82,17 @@
 					</div>
 				</div>
 				
-				{% set ECO2CStatusWidth= currentStatus[0].statusCO2 / maxValue %}
+				{% if currentStatus | length > 0 %}
+					{% set ECO2CStatusPerc= currentStatus[0].statusCO2 %}
+					{% set ECO2CStatusWidth= currentStatus[0].statusCO2 / maxValue %}
+				{% else %}
+					{% set ECO2CStatusPerc= 0 %}
+					{% set ECO2CStatusWidth= 0 %}
+				{% endif %}
+				
 				
 				<div class="contentRow last">
-					<p class="nameRow" style="color:#9c9d9d;">CURRENT STATUS ({{currentStatus[0].statusCO2|round(0)}}%)</p>
+					<p class="nameRow" style="color:#9c9d9d;">CURRENT STATUS ({{ECO2CStatusPerc|round(0)}}%)</p>
 					<div class="contentBarRow">
 						<p class="bar"  style="background-color:#cecece; width:{{ECO2CStatusWidth}}%; "></p>
 					</div>
@@ -106,10 +120,16 @@
 					</div>
 				</div>
 				
-				{% set ECostCStatusWidth= currentStatus[0].statusECost / maxValue %}
+				{% if currentStatus | length > 0 %}
+					{% set ECostCStatusPerc= currentStatus[0].statusECost %}
+					{% set ECostCStatusWidth= currentStatus[0].statusECost / maxValue %}
+				{% else %}
+					{% set ECostCStatusPerc= 0 %}
+					{% set ECostCStatusWidth= 0 %}
+				{% endif %}
 				
 				<div class="contentRow last">
-					<p class="nameRow" style="color:#f39a00;">CURRENT STATUS ({{currentStatus[0].statusECost|round(0)}}%)</p>
+					<p class="nameRow" style="color:#f39a00;">CURRENT STATUS ({{ECostCStatusPerc|round(0)}}%)</p>
 					<div class="contentBarRow">
 						<p class="bar" style="background-color:#f1d6a4;  width:{{ECostCStatusWidth}}%; "></p>
 					</div>
@@ -137,10 +157,16 @@
 					</div>
 				</div>
 				
-				{% set REUseCStatusWidth= currentStatus[0].statusREUse / maxValue %}
+				{% if currentStatus | length > 0 %}
+					{% set REUseCStatusPerc= currentStatus[0].statusREUse %}
+					{% set REUseCStatusWidth= currentStatus[0].statusREUse / maxValue %}
+				{% else %}
+					{% set REUseCStatusPerc= 0 %}
+					{% set REUseCStatusWidth= 0 %}
+				{% endif %}
 				
 				<div class="contentRow last">
-					<p class="nameRow" style="color:#42d890;">CURRENT STATUS ({{currentStatus[0].statusREUse|round(0)}}%)</p>
+					<p class="nameRow" style="color:#42d890;">CURRENT STATUS ({{REUseCStatusPerc|round(0)}}%)</p>
 					<div class="contentBarRow">
 						<p class="bar" style="background-color:#b3efd3; width:{{REUseCStatusWidth}}%; "></p>
 					</div>

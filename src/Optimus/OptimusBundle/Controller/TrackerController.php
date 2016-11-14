@@ -23,7 +23,13 @@ class TrackerController extends Controller
 		//$this->get('service_tracker')->currentStatusTracker();
 		
 		$data['currentStatus']=$em->getRepository('OptimusOptimusBundle:CurrentStatus')->findBy(array(), array('date'=>'desc'));
-		$data['city_name']=$em->getRepository('OptimusOptimusBundle:Building')->find(1)->getCity();
+		$aBuilding = $em->getRepository('OptimusOptimusBundle:Building')->findOneBy([]);
+		if($aBuilding){
+			$data['city_name']=$aBuilding->getCity();
+		}
+		else{
+			$data['city_name']="";
+		}
 		return $this->render('OptimusOptimusBundle:Tracker:tracker.html.twig', $data);
 	}
 	
