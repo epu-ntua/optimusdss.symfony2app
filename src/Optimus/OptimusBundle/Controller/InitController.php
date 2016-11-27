@@ -75,22 +75,30 @@ class InitController extends Controller
 					 //processing the four indicators
 					for($d = 0; $d < 4; $d++) {
 						$max = -1;
+						$maxChanged = 0;
 						for($j = 0; $j < count($mappingVariableTmp[$d]["data"]); $j++)  {
 							
 							$mappingVariable[$d]["data"][$j]["value"] += $mappingVariableTmp[$d]["data"][$j]["value"];
 							
 							if($max < $mappingVariable[$d]["data"][$j]["value"]) {
 								$max = $mappingVariable[$d]["data"][$j]["value"];
+								$maxChanged = 1;
 							}							
 						}
 						// updating the max value
-						$mappingVariable[$d]["maxValue"] = $max;
+						if ($maxChanged == 1){
+							$mappingVariable[$d]["maxValue"] = $max;
+						}
 					}
 				}
 			}
 		}else{ 
 			$mappingVariable = $this->get('service_sensorsRTime')->getDataforRenderingChart($dTo, $dFrom, null);
 		}
+		//dump($mappingVariable);
+		
+		$mappingVariable[3]["maxValue"] = $mappingVariable[0]["maxValue"];
+			
 		
 		return $this->render('OptimusOptimusBundle:Dashboard:cityDashboard.html.twig', array('buildings'=>$buildings, "datesBuildings"=>$datesBuildings, "globalRTime"=>$globalRTime, "dataDashboard"=>$dataDashboard, "mappingVariable"=>$mappingVariable, "startDate"=>$startDate, "endDate"=>$endDate, "unitsRTime"=>$unitsRTime));
 	}
