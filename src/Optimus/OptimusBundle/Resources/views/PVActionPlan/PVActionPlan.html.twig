@@ -413,13 +413,13 @@
 									{% endfor %}							
 								</tr>
 								<tr>
-									<td colspan="2" style=" border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; ">{%trans%} Purchase energy price {%endtrans%}(€/kWh) </td>
+									<td colspan="2" style=" border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; ">{%trans%} Purchase energy price {%endtrans%}(€/MWh) </td>
 									{% for i in 0..6 %}
 										<td>{{ dataActionPlan[i].purchase_price }}</td>				
 									{% endfor %}								
 								</tr>
 								<tr>
-									<td class="lastFirstBlock" colspan="2" style=" border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; ">{%trans%} Selling energy price{%endtrans%} (€/kWh) </td>
+									<td class="lastFirstBlock" colspan="2" style=" border-right: 2px solid #efefef; text-align:left; color:#0069b4; padding-left:15px; font-size:11px; font-weight:bold; letter-spacing:1px; ">{%trans%} Selling energy price{%endtrans%} (€/MWh) </td>
 									{% for i in 0..6 %}
 										<td class="lastFirstBlock">{{ dataActionPlan[i].selling_price }}</td>				
 									{% endfor %}							
