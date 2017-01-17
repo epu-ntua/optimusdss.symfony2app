@@ -55,6 +55,9 @@ class VirtualSensorsCommand extends ContainerAwareCommand
 			$this->epuCO2sensor($output);
 			$this->epuEnergyCostsensor($output);
         }
+		else if(strcmp(strtolower($city), "rae") == 0 ) {
+            $this->raeEnergyConsumptionsensor($output);
+        }
 
 		$output->writeln("");
 		$output->writeln("------** END **--------");
@@ -177,6 +180,50 @@ class VirtualSensorsCommand extends ContainerAwareCommand
             }
         }
     }
+	
+	
+	/*
+    /********************************************************************
+    * RAE
+    *
+    */
+    protected function raeEnergyConsumptionsensor($output)
+    {
+        $output->writeln(" - raeEnergyConsumptionsensor -");
+
+        //the first one is the virtual sensor (42)
+        //id42 = id4
+        $arr_sensors = "42_4";
+
+        $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+        $vconsumptionSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("42");
+        $virturl = $vconsumptionSensor->getUrl();
+
+        $array_ret = $this->getValues($arr_sensors);
+
+        //For each hour
+        for($i = 0; $i < count($array_ret); $i++) {
+            $value = 0;
+            $allWithValue = 1;
+            //For each sensor, after the first and before the last(date)
+            for($j = 1; $j < count($array_ret[$i])-1; $j++) {
+                if($array_ret[$i][$j] > -1) {
+                    $value += $array_ret[$i][$j];
+                }
+                else{
+                    $allWithValue = 0;
+                    break;
+                }
+            }
+            if($allWithValue == 1) {
+                $date = $array_ret[$i][count($array_ret[$i]) - 1]->format('Y-m-d H:i:s');
+                $date = str_replace(" ", "T", $date) . "Z";
+
+                $this->insertData($virturl, "rae", "http://optimus_rae", "total_energy_consumption_42", $value, $date);
+            }
+        }
+    }
+	
 	
 	/*
 	/********************************************************************
