@@ -192,8 +192,8 @@ class VirtualSensorsCommand extends ContainerAwareCommand
         $output->writeln(" - raeEnergyConsumptionsensor -");
 
         //the first one is the virtual sensor (42)
-        //id42 = id4
-        $arr_sensors = "42_4";
+        //id42 = id20
+        $arr_sensors = "42_20";
 
         $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
         $vconsumptionSensor = $entityManager->getRepository('OptimusOptimusBundle:Sensor')->findOneById("42");

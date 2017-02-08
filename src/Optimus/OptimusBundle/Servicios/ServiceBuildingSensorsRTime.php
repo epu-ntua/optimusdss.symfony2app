@@ -109,15 +109,14 @@ class ServiceBuildingSensorsRTime
 		$dataCo2 = array();
 		$dataCost = array();
 		
-		
-		$maxValue = 1;
-		$minValue = 0;		
-		$maxValueProd = 1;
-		$minValueProd = 0;		
-		$maxValueCost = 1;
-		$minValueCost = 0;		
-		$maxValueCo2 = 1;
-		$minValueCo2 = 0;	
+		$maxValue = null;
+		$minValue = null;
+		$maxValueProd = null;
+		$minValueProd = null;
+		$maxValueCo2 = null;
+		$minValueCo2 = null;
+		$maxValueCost = null;
+		$minValueCost = null;
 		
 		
 		////////////////////////////
@@ -165,6 +164,22 @@ class ServiceBuildingSensorsRTime
 			$dataProduction  = $this->datacapturing->getDataVariables($sensor, $to, $from, '', 'variable', $idBuilding);
 		}
 		if(count($dataConsumption) > 0) {
+			
+			$maxValue = $dataConsumption[0]["values"][0]["value"];
+			$minValue = $dataConsumption[0]["values"][0]["value"];	
+			if(count($dataProduction) > 0) {			
+				$maxValueProd = $dataProduction[0]["values"][0]["value"];
+				$minValueProd = $dataProduction[0]["values"][0]["value"];	
+			}	
+			if(count($dataCo2) > 0) {			
+				$maxValueCo2 = $dataCo2[0]["values"][0]["value"];
+				$minValueCo2 = $dataCo2[0]["values"][0]["value"];	
+			}	
+			if(count($dataCost) > 0) {			
+				$maxValueCost = $dataCost[0]["values"][0]["value"];
+				$minValueCost = $dataCost[0]["values"][0]["value"];	
+			}				
+			
 			for($i = 0; $i < count($dataConsumption[0]["values"]); $i++ )
 			{
 				if($maxValue < $dataConsumption[0]["values"][$i]["value"]) 	$maxValue = $dataConsumption[0]["values"][$i]["value"];
